@@ -1,0 +1,24 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+[Service]
+RuntimeDirectory=kube-apiserver
+RuntimeDirectoryMode=0700
+EnvironmentFile=/etc/s3secrets
+ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/kube-apiserver
+ExecStart=/opt/bin/hyperkube apiserver \
+  --cloud-provider=aws \
+  --insecure-port=0 \
+  --secure-port=16443 \
+  --token-auth-file=%t/kube-apiserver/tokens.csv \
+  --service-cluster-ip-range=10.200.0.0/16 \
+  --etcd-servers=https://127.0.0.1:2379 \
+  --logtostderr=true \
+  --tls-cert-file=%t/kube-apiserver/kube-apiserver-crt.pem \
+  --tls-private-key-file=%t/kube-apiserver/kube-apiserver-key.pem
+Restart=always
+RestartSec=10
+
+[X-Fleet]
+MachineMetadata=role=kubernetes

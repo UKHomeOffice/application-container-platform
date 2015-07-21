@@ -1,0 +1,43 @@
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: brpapp
+  labels:
+    name: brpapp
+spec:
+  replicas: 3
+  selector:
+    name: brpapp
+  template:
+    metadata:
+      labels:
+        name: brpapp
+    spec:
+      containers:
+      - name: brpapp
+        image: quay.io/hodsp/brpapp:latest
+        env:
+        - name: LISTEN_HOST
+          value: 127.0.0.1
+        - name: REDIS_PORT
+          value: "6379"
+        - name: SESSION_SECRET
+          value: q0q2UAV1N0Z3BEPFOCXaNHJD
+        command:
+          - "bash"
+          - "-c"
+          - "export REDIS_HOST=${BRP_REDIS_SERVICE_HOST}; /app/run.sh"
+        volumeMounts:
+        - mountPath: /public
+          name: public
+      - name: nginx-proxy
+        image: quay.io/hodsp/brpapp-nginx:v0.2
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /public
+          name: public
+      volumes:
+      - name: public
+        emptyDir: {}

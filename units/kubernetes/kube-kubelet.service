@@ -1,0 +1,24 @@
+[Unit]
+Description=Kubernetes Kubelet
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+Requires=flanneld.service
+After=flanneld.service
+
+[Service]
+RuntimeDirectory=kube-kubelet
+RuntimeDirectoryMode=0700
+EnvironmentFile=/etc/s3secrets
+EnvironmentFile=/etc/environment
+ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/kube-kubelet
+ExecStart=/opt/bin/hyperkube kubelet \
+  --address=0.0.0.0 \
+  --hostname-override=${COREOS_PRIVATE_IPV4} \
+  --api-servers=https://localhost:6443 \
+  --kubeconfig=%t/kube-kubelet/kubeconfig \
+  --logtostderr=true
+Restart=always
+RestartSec=10
+
+[X-Fleet]
+Global=true
+MachineMetadata=role=kubernetes
