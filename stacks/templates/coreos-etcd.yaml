@@ -1,0 +1,272 @@
+---
+# WARNING: any changes here will most likely terminate all instances at once
+#
+# This stack template creates a number of EC2 instances which are not part of
+# any ASG. EBS, ENI and EIP are also created for each instance, so that
+# instances can be terminated in case some failure happens. The terminated
+# instance can be recreated by changing a value of the `name` field in
+# config.yaml for a particular env in etcd_nodes list and then doing a stack
+# update. There is no easy way to recreate a terminated instance with the same
+# logical resource ID with CloudFormation, so we just have to set a new
+# instance logical ID and let CF reuse existing EBS, ENI and EIP which used to
+# belong to the terminated instance. That allows us to replace failed etcd node
+# without touching etcd itself.
+#
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CoreOS etcd Cluster Stack in {{ env }} environment
+Resources:
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+      - {{ get_stack_output(cf_conn, infra_stack_name, 'EtcdCoreOSRole') }}
+      Path: /
+
+  RolePolicies:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: {{ env }}-coreos-etcd
+      Roles:
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'EtcdCoreOSRole') }}
+      PolicyDocument:
+        Statement:
+        - Resource: 'arn:aws:kms:{{ region }}:*:key/{{ kms_master_key_id }}'
+          Effect: Allow
+          Action:
+            - 'kms:Decrypt'
+        - Resource: 'arn:aws:s3:::{{ secrets_bucket_name }}/*'
+          Effect: Allow
+          Action:
+            - 's3:Get*'
+        - Resource: 'arn:aws:s3:::{{ secrets_bucket_name }}'
+          Effect: Allow
+          Action:
+            - 's3:List*'
+
+{%- for node in etcd_nodes %}
+  # We do not want to replace this resource
+  EtcdNode{{ loop.index0 }}EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: {Ref: {{ node['name'] }}}
+
+  # We do not want to replace this resource
+  EtcdNode{{ loop.index0 }}ENI:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      Description: etcd EtcdNode{{ loop.index0 }} ENI
+      GroupSet:
+      - {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
+      SubnetId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureSubnet'+node['az_id']) }}
+      PrivateIpAddress: {{ node['ip'] }}
+      Tags:
+        - Key: Name
+          Value: {{ env }}-etcd-node{{ loop.index0 }}-eni
+        - Key: Env
+          Value: {{ env }}
+
+  # We do not want to replace this resource
+  EtcdNode{{ loop.index0 }}Volume:
+    Type: AWS::EC2::Volume
+    Properties:
+      Size: 10
+      VolumeType: gp2
+      AvailabilityZone:
+        Fn::Select:
+        - {{ node['az_id'] }}
+        - Fn::GetAZs: ''
+      Tags:
+        - Key: Name
+          Value: {{ env }}-etcd-node{{ loop.index0 }}-volume
+        - Key: Env
+          Value: {{ env }}
+
+  # This resource can be replaced by just changing node name in the config file
+  {{ node['name']}}:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: {{ get_ami_id(ec2_conn, coreos_ami_name) }}
+      InstanceType: t2.small
+      KeyName: {{ ssh_key_name }}
+      IamInstanceProfile: {Ref: InstanceProfile}
+      NetworkInterfaces:
+      - DeviceIndex: 0
+        NetworkInterfaceId: {Ref: EtcdNode{{ loop.index0 }}ENI}
+      BlockDeviceMappings:
+      - DeviceName: /dev/xvda
+        Ebs:
+          DeleteOnTermination: true
+          VolumeSize: 10
+          VolumeType: gp2
+      Volumes:
+      # /data volume
+      - Device: /dev/xvdd
+        VolumeId: {Ref: EtcdNode{{ loop.index0 }}Volume}
+      Tags:
+        - Key: Name
+          Value: {{ env }}-etcd-node{{ loop.index0 }}
+        - Key: Env
+          Value: {{ env }}
+        - Key: Role
+          Value: etcd
+      UserData:
+        'Fn::Base64': |
+          #cloud-config
+
+          coreos:
+            etcd2:
+              data-dir: /data/etcd2
+              name: node{{ loop.index0 }}
+              initial-cluster-state: new
+              initial-cluster-token: etcd-dsp-cluster
+              initial-cluster: {% for n in etcd_nodes %}node{{ loop.index0 }}=https://{{ n['ip'] }}:2380{%- if not loop.last %},{% endif %}{%- endfor %}
+              initial-advertise-peer-urls: https://$private_ipv4:2380
+              listen-peer-urls: https://$private_ipv4:2380
+              listen-client-urls: https://$private_ipv4:2379,https://127.0.0.1:2379
+              advertise-client-urls: https://$private_ipv4:2379
+              cert-file: /run/etcd2/etcd-crt.pem
+              key-file: /run/etcd2/etcd-key.pem
+              peer-cert-file: /run/etcd2/etcd-crt.pem
+              peer-key-file: /run/etcd2/etcd-key.pem
+            fleet:
+              metadata: env={{ env }},public_ip=$public_ipv4,private_ipv4=$private_ipv4,region={{ region }},role=etcd
+              etcd_servers: https://127.0.0.1:2379
+            locksmith:
+              endpoint: https://127.0.0.1:2379
+            update:
+              reboot-strategy: 'best-effort'
+            units:
+            - name: fleet.service
+              command: start
+              enable: true
+            - name: format-data-volume.service
+              command: start
+              content: |
+                [Unit]
+                Description=Formats the data volume
+                After=dev-xvdd.device
+                Requires=dev-xvdd.device
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                ExecStart=/usr/bin/bash -c '/usr/sbin/blkid /dev/xvdd || (/usr/sbin/wipefs -f /dev/xvdd && /usr/sbin/mkfs.ext4 /dev/xvdd)'
+            - name: data.mount
+              command: start
+              enable: true
+              content: |
+                [Unit]
+                Description=Mount data volume
+                Requires=format-data-volume.service
+                After=format-data-volume.service
+                Before=etcd2.service
+                [Mount]
+                What=/dev/xvdd
+                Where=/data
+                Type=ext4
+            - name: etcd2-datadir.service
+              command: start
+              enable: true
+              content: |
+                [Unit]
+                Description=Formats the etcd data volume
+                After=data.mount
+                Before=etcd2.service
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                ExecStart=/usr/bin/install -d -o etcd -g etcd -m 0750 /data/etcd2
+            - name: etcd2.service
+              command: start
+              enable: true
+              drop-ins:
+              - name: 10-dependencies.conf
+                content: |
+                  [Unit]
+                  After=etcd2-datadir.service
+                  Requires=install-s3secrets.service
+              - name: 15-s3secrets.conf
+                content: |
+                  [Service]
+                  RuntimeDirectory=etcd2
+                  RuntimeDirectoryMode=0700
+                  EnvironmentFile=/etc/s3secrets
+                  ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/etcd2
+            - name: install-vault.service
+              command: start
+              content: |
+                [Unit]
+                Description=Install vault
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=300
+                Environment="URL=https://dl.bintray.com/mitchellh/vault/vault_0.2.0_linux_amd64.zip"
+                Environment="OUTPUT_FILE=/opt/bin/vault"
+                Environment="TMP_FILE=/tmp/vault.zip"
+                Environment="MD5SUM=8ca4cb6539441117d77e53bd25854609"
+                ExecStart=/usr/bin/mkdir -p /opt/bin
+                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${TMP_FILE} ${URL} && unzip ${TMP_FILE} -d /opt/bin; done'
+            - name: install-s3secrets.service
+              command: start
+              content: |
+                [Unit]
+                Description=Install s3secrets
+                Documentation=https://github.com/UKHomeOffice/s3secrets
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=30
+                Environment="URL=https://github.com/UKHomeOffice/s3secrets/releases/download/v0.0.1/s3secrets-0.0.1-linux-amd64"
+                Environment="OUTPUT_FILE=/opt/bin/s3secrets"
+                Environment="MD5SUM=aecf1a0d9c0a113432bb15bb10d16541"
+                ExecStart=/usr/bin/mkdir -p /opt/bin
+                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
+            - name: update-ca-certificates.service
+              command: start
+              enable: true
+              content: |
+                [Unit]
+                Description=Update CA Certificates
+                Before=etcd2.service
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=300
+                ExecStart=/usr/sbin/update-ca-certificates
+          write_files:
+          - path: /etc/s3secrets
+            content: |
+              BUCKET_NAME={{ secrets_bucket_name }}
+              AWS_REGION={{ region }}
+          - path: /etc/vault.hcl
+            content: |
+              backend "etcd" {
+                address = "https://127.0.0.1:2379"
+                advertise_addr = "https://$private_ipv4:8200"
+              }
+
+              listener "tcp" {
+                address = "0.0.0.0:8200"
+                tls_cert_file = "/run/vault/vault-crt.pem"
+                tls_key_file = "/run/vault/vault-key.pem"
+              }
+
+              # TODO(vaijab): give CAP_IPC_LOCK via systemd service instead
+              disable_mlock = true
+          - path: /etc/ssl/certs/platform_ca.pem
+            encoding: base64
+            content: {{ ca_cert }}
+          users:
+          - name: vault
+            shell: /sbin/nologin
+            homedir: /dev/null
+            no-create-home: "true"
+
+{%- endfor %}
+
+Outputs:
+  EtcdInitialCluster:
+    Value: {% for n in etcd_nodes %}node{{ loop.index0 }}=https://{{ n['ip'] }}:2380{%- if not loop.last %},{% endif %}{%- endfor %}

@@ -1,0 +1,17 @@
+[Unit]
+Description=Vault
+Documentation=https://vaultproject.io/docs
+After=etcd2.service
+
+[Service]
+User=vault
+RuntimeDirectory=vault
+RuntimeDirectoryMode=0700
+EnvironmentFile=/etc/s3secrets
+ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/vault
+ExecStart=/opt/bin/vault server -config=/etc/vault.hcl
+Restart=always
+RestartSec=30
+
+[X-Fleet]
+MachineMetadata=role=etcd

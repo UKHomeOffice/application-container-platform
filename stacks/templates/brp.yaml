@@ -1,0 +1,84 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: BRP stack in {{ env }} environment
+Resources:
+  BRPELBSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: BRP ELB SG
+      VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 30010
+          ToPort: 30010
+          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
+
+  BRPELBSGToDefaultSGIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
+      IpProtocol: tcp
+      SourceSecurityGroupId: {Ref: BRPELBSG}
+      FromPort: 30010
+      ToPort: 30010
+
+  BRPELB:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      CrossZone: true
+      Subnets:
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet0') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet1') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet2') }}
+      SecurityGroups:
+        - {Ref : BRPELBSG}
+      HealthCheck:
+        Target: 'TCP:30010'
+        HealthyThreshold: 2
+        Interval: 30
+        Timeout: 5
+        UnhealthyThreshold: 2
+      ConnectionDrainingPolicy:
+        Enabled: true
+        Timeout: 30
+      Listeners:
+      - LoadBalancerPort: 443
+        Protocol: HTTPS
+        InstancePort: 30010
+        InstanceProtocol: HTTP
+        SSLCertificateId:
+          'Fn::Join':
+          - ''
+          -
+            - 'arn:aws:iam::'
+            - Ref: AWS::AccountId
+            - ':server-certificate/wildcard.notprod.homeoffice.gov.uk'
+      Tags:
+      - Key: Name
+        Value: dev-brp-elb
+      - Key: Env
+        Value: {{ env }}
+      - Key: Service
+        Value: brpapp
+
+  BRPELBDNS:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: {{ dns_zone_name }}.
+      RecordSets:
+        - Name: brp-{{ env }}.{{ dns_zone_name }}
+          Type: A
+          AliasTarget:
+            HostedZoneId:
+              'Fn::GetAtt':
+                - BRPELB
+                - CanonicalHostedZoneNameID
+            DNSName:
+              'Fn::GetAtt':
+                - BRPELB
+                - CanonicalHostedZoneName

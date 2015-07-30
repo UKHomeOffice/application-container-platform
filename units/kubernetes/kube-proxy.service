@@ -1,0 +1,19 @@
+[Unit]
+Description=Kubernetes Proxy
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+[Service]
+RuntimeDirectory=kube-proxy
+RuntimeDirectoryMode=0700
+EnvironmentFile=/etc/s3secrets
+ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/kube-proxy
+ExecStart=/opt/bin/hyperkube proxy \
+  --master=https://localhost:6443 \
+  --kubeconfig=%t/kube-proxy/kubeconfig \
+  --logtostderr=true
+Restart=always
+RestartSec=10
+
+[X-Fleet]
+Global=true
+MachineMetadata=role=kubernetes

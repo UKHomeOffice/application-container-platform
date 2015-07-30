@@ -1,0 +1,249 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CoreOS Compute Cluster Stack in {{ env }} environment
+Resources:
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeCoreOSRole') }}
+      Path: /
+
+  RolePolicies:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: {{ env }}-coreos-compute
+      Roles:
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeCoreOSRole') }}
+      PolicyDocument:
+        Statement:
+        - Resource: '*'
+          Effect: Allow
+          Action:
+            - ec2:DescribeInstances
+            - ec2:DescribeTags
+            - ec2:DescribeRouteTables
+            - ec2:DescribeVpcs
+            - elasticloadbalancing:DescribeLoadBalancers
+            - elasticloadbalancing:RegisterInstancesWithLoadBalancer
+            - elasticloadbalancing:DeregisterInstancesFromLoadBalancer
+        - Resource: 'arn:aws:kms:{{ region }}:*:key/{{ kms_master_key_id }}'
+          Effect: Allow
+          Action:
+            - 'kms:Decrypt'
+        - Resource: 'arn:aws:s3:::{{ secrets_bucket_name }}/*'
+          Effect: Allow
+          Action:
+            - 's3:Get*'
+        - Resource: 'arn:aws:s3:::{{ secrets_bucket_name }}'
+          Effect: Allow
+          Action:
+            - 's3:List*'
+
+  CoreOSComputeScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      # This won't work in regions with 2 AZs
+      AvailabilityZones:
+        - Fn::Select:
+          - '0'
+          - Fn::GetAZs: ''
+        - Fn::Select:
+          - '1'
+          - Fn::GetAZs: ''
+        - Fn::Select:
+          - '2'
+          - Fn::GetAZs: ''
+      LaunchConfigurationName: {Ref: CoreOSComputeLaunchConfig}
+      VPCZoneIdentifier:
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet0') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet1') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet2') }}
+      TerminationPolicies:
+        - 'OldestInstance'
+        - 'Default'
+      MaxSize: 100
+      MinSize: {{ compute_min_instances }}
+      Tags:
+        - Key: Name
+          Value: {{ env }}-coreos-compute
+          PropagateAtLaunch: true
+        - Key: Env
+          Value: {{ env }}
+          PropagateAtLaunch: true
+        - Key: Role
+          Value: kubernetes
+          PropagateAtLaunch: true
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: {{ compute_min_instances }}
+        PauseTime: PT30S
+
+  CoreOSComputeLaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      AssociatePublicIpAddress: true
+      IamInstanceProfile: {Ref: InstanceProfile}
+      ImageId: {{ get_ami_id(ec2_conn, coreos_ami_name) }}
+      InstanceMonitoring: false
+      InstanceType: {{ instance_type }}
+      KeyName: {{ ssh_key_name }}
+      SecurityGroups:
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
+      BlockDeviceMappings:
+        - DeviceName: "/dev/xvda"
+          Ebs:
+            VolumeSize: "30"
+            DeleteOnTermination: true
+            VolumeType: "gp2"
+      UserData:
+        'Fn::Base64': |
+          #cloud-config
+
+          coreos:
+            etcd2:
+              proxy: on
+              initial-cluster: {% for n in etcd_nodes %}node{{ loop.index0 }}=https://{{ n['ip'] }}:2380{%- if not loop.last %},{% endif %}{%- endfor %}
+              listen-client-urls: https://127.0.0.1:2379
+              cert-file: /run/etcd2/etcd-crt.pem
+              key-file: /run/etcd2/etcd-key.pem
+            fleet:
+              metadata: env={{ env }},public_ip=$public_ipv4,private_ipv4=$private_ipv4,region={{ region }},role=kubernetes
+              etcd_servers: https://127.0.0.1:2379
+            flannel:
+              interface: $private_ipv4
+              etcd_endpoints: https://127.0.0.1:2379
+            locksmith:
+              endpoint: https://127.0.0.1:2379
+            update:
+              reboot-strategy: 'best-effort'
+            units:
+            - name: etcd2.service
+              command: start
+              enable: true
+              drop-ins:
+              - name: 10-dependencies.conf
+                content: |
+                  [Unit]
+                  Requires=update-ca-certificates.service install-s3secrets.service
+              - name: 15-s3secrets.conf
+                content: |
+                  [Service]
+                  RuntimeDirectory=etcd2
+                  RuntimeDirectoryMode=0700
+                  EnvironmentFile=/etc/s3secrets
+                  ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/etcd2
+            - name: fleet.service
+              command: start
+              enable: true
+            - name: flanneld.service
+              command: start
+              enable: true
+              drop-ins:
+              - name: 50-network-config.conf
+                content: |
+                  [Service]
+                  ExecStartPre=/usr/bin/etcdctl --peers https://127.0.0.1:2379 set /coreos.com/network/config '{"Network":"{{ flannel_cidr }}","Backend":{"Type":"vxlan"}}'
+              - name: 10-env-config.conf
+                content: |
+                  [Service]
+                  EnvironmentFile=/run/flannel/options.env
+            - name: install-kubernetes.service
+              command: start
+              content: |
+                [Unit]
+                Description=Install kubernetes
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=30
+                Environment="URL=https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/linux/amd64/hyperkube"
+                Environment="OUTPUT_FILE=/opt/bin/hyperkube"
+                Environment="MD5SUM=7ed6771de55ef14769048253bbbd8d39"
+                ExecStart=/usr/bin/install -d -o root -g root -m 0700 /etc/kubernetes
+                ExecStart=/usr/bin/mkdir -p /opt/bin
+                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
+            - name: install-kubectl.service
+              command: start
+              content: |
+                [Unit]
+                Description=Install kubectl binary
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=30
+                Environment="URL=https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/linux/amd64/kubectl"
+                Environment="OUTPUT_FILE=/opt/bin/kubectl"
+                Environment="MD5SUM=d55f69a79a01477ec8d0ab0584a91355"
+                ExecStart=/usr/bin/mkdir -p /opt/bin
+                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
+            - name: install-kube-apiproxy.service
+              command: start
+              content: |
+                [Unit]
+                Description=Install kube-apiproxy
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=30
+                Environment="URL=https://github.com/vaijab/kube-apiproxy/releases/download/v0.0.2/kube-apiproxy-0.0.2-linux-amd64"
+                Environment="OUTPUT_FILE=/opt/bin/kube-apiproxy"
+                Environment="MD5SUM=06d0a0465524f74a682ce1de85f6b662"
+                ExecStart=/usr/bin/mkdir -p /opt/bin
+                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
+            - name: install-vault.service
+              command: start
+              content: |
+                [Unit]
+                Description=Install vault
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=300
+                Environment="URL=https://dl.bintray.com/mitchellh/vault/vault_0.2.0_linux_amd64.zip"
+                Environment="OUTPUT_FILE=/opt/bin/vault"
+                Environment="TMP_FILE=/tmp/vault.zip"
+                Environment="MD5SUM=8ca4cb6539441117d77e53bd25854609"
+                ExecStart=/usr/bin/mkdir -p /opt/bin
+                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${TMP_FILE} ${URL} && unzip ${TMP_FILE} -d /opt/bin; done'
+            - name: install-s3secrets.service
+              command: start
+              content: |
+                [Unit]
+                Description=Install s3secrets
+                Documentation=https://github.com/UKHomeOffice/s3secrets
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=30
+                Environment="URL=https://github.com/UKHomeOffice/s3secrets/releases/download/v0.0.1/s3secrets-0.0.1-linux-amd64"
+                Environment="OUTPUT_FILE=/opt/bin/s3secrets"
+                Environment="MD5SUM=aecf1a0d9c0a113432bb15bb10d16541"
+                ExecStart=/usr/bin/mkdir -p /opt/bin
+                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
+            - name: update-ca-certificates.service
+              command: start
+              enable: true
+              content: |
+                [Unit]
+                Description=Update CA Certificates
+                Before=etcd2.service
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=300
+                ExecStart=/usr/sbin/update-ca-certificates
+          write_files:
+          - path: /etc/s3secrets
+            content: |
+              BUCKET_NAME={{ secrets_bucket_name }}
+              AWS_REGION={{ region }}
+          - path: /etc/ssl/certs/platform_ca.pem
+            encoding: base64
+            content: {{ ca_cert }}
