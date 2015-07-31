@@ -259,11 +259,6 @@ Resources:
           - path: /etc/ssl/certs/platform_ca.pem
             encoding: base64
             content: {{ ca_cert }}
-          users:
-          - name: vault
-            shell: /sbin/nologin
-            homedir: /dev/null
-            no-create-home: "true"
 
 {%- endfor %}
 

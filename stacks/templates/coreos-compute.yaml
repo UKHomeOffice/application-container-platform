@@ -144,6 +144,8 @@ Resources:
                 content: |
                   [Service]
                   ExecStartPre=/usr/bin/etcdctl --peers https://127.0.0.1:2379 set /coreos.com/network/config '{"Network":"{{ flannel_cidr }}","Backend":{"Type":"vxlan"}}'
+              # TODO(vaijab): Below should not be required.
+              # See https://github.com/coreos/flannel/issues/162
               - name: 10-env-config.conf
                 content: |
                   [Service]

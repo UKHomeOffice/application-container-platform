@@ -27,14 +27,6 @@ and is used for running kubernetes and docker.
 Amazon Elastic Load Balancers (ELBs) are used to load balance external traffic
 between healthy compute nodes as well as terminate TLS.
 
-All platform endpoints, including kubernetes, etcd, vault, are secured with TLS
-certificates. CA and TLS certs/keys are managed using cfssl tool, more
-information can be found [here](ca_tls.md). With the help of AWS KMS service and
-S3, we can securely store and deploy TLS certs/keys onto specific machines. TLS
-certs/keys are never stored on disk, they get deployed onto a tmpfs (in memory
-file system) which gets destroyed as soon as the service needing them is
-restarted or stopped.
-
 AWS Auto Scaling Groups, CoreOS Linux distribution and kubernetes play a key
 role in Digital Service Platform scalability and ability to recover from
 failure. CoreOS itself is an immutable operating system designed to orchestrate
