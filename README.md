@@ -15,6 +15,7 @@ Technical documentation can be found at [docs](docs/).
 ### Platform
 
 * [Platform Overview](docs/overview.md)
+* [Security](docs/security.md)
 * [Platform Setup Howto](docs/platform_setup.md)
 * [CoreOS Linux](docs/coreos.md)
 * [etcd](docs/etcd.md)

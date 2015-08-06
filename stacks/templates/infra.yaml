@@ -51,11 +51,12 @@ Resources:
           FromPort: -1
           ToPort: -1
       SecurityGroupIngress:
-        # TODO: remove ssh access
+{% for subnet in ssh_access_subnets %}
         - IpProtocol: tcp
-          CidrIp: 0.0.0.0/0
+          CidrIp: {{ subnet }}
           FromPort: 22
           ToPort: 22
+{%- endfor %}
       Tags:
         - Key: Name
           Value: {{ env }}-compute-default
@@ -73,11 +74,12 @@ Resources:
           FromPort: -1
           ToPort: -1
       SecurityGroupIngress:
-        # TODO: remove ssh access
+{% for subnet in ssh_access_subnets %}
         - IpProtocol: tcp
-          CidrIp: 0.0.0.0/0
+          CidrIp: {{ subnet }}
           FromPort: 22
           ToPort: 22
+{%- endfor %}
         # Allow etcd peer traffic from compute subnets
         - IpProtocol: tcp
           SourceSecurityGroupId: {Ref: ComputeDefaultSG}
