@@ -1,7 +1,7 @@
 ---
 common:
   ssh_key_name: vaijab
-  coreos_ami_name: CoreOS-alpha-758.1.0-hvm
+  coreos_ami_name: CoreOS-alpha-766.0.0-hvm
   compute_min_instances: 3
   vpc_cidr: 10.50.0.0/16
   compute_subnets:
