@@ -76,8 +76,7 @@ Resources:
           PropagateAtLaunch: true
     UpdatePolicy:
       AutoScalingRollingUpdate:
-        MinInstancesInService: {{ compute_min_instances }}
-        PauseTime: PT30S
+        PauseTime: PT5M
 
   CoreOSComputeLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
@@ -118,6 +117,15 @@ Resources:
             update:
               reboot-strategy: 'best-effort'
             units:
+            - name: iptables-restore.service
+              enable: true
+              command: start
+            - name: docker.service
+              drop-ins:
+              - name: 10-opts.conf
+                content: |
+                  [Service]
+                  Environment=DOCKER_OPTS='--iptables="false"'
             - name: etcd2.service
               command: start
               enable: true
@@ -249,3 +257,13 @@ Resources:
           - path: /etc/ssl/certs/platform_ca.pem
             encoding: base64
             content: {{ ca_cert }}
+          - path: /var/lib/iptables/rules-save
+            content: |
+              *filter
+              :INPUT ACCEPT [0:0]
+              :FORWARD ACCEPT [0:0]
+              -A FORWARD -d 169.254.169.254/32 -i docker0 -p tcp -m tcp --dport 80 -j DROP
+              -A FORWARD -i docker0 -p tcp -m tcp --dport 2379 -j DROP
+              :OUTPUT ACCEPT [0:0]
+              COMMIT
+
