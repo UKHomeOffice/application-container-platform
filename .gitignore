@@ -16,3 +16,11 @@
 .ropeproject
 .DS_Store
 *-key.pem
+*.encrypted
+etcd.csr
+etcd.pem
+vault.csr
+vault.pem
+kube-apiserver.pem
+kube-apiserver.csr
+tmp/*
