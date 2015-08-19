@@ -101,7 +101,14 @@ Resources:
       RecordSets:
         - Name: brp-{{ env }}.{{ dns_zone_name }}
           Type: A
+{% if env == 'prod' %}
+          SetIdentifier: brp-{{ env }}-Primary
+          Failover: PRIMARY
+{% endif %}
           AliasTarget:
+{% if env == 'prod' %}
+            EvaluateTargetHealth: true
+{% endif %}
             HostedZoneId:
               'Fn::GetAtt':
                 - BRPELB
@@ -110,3 +117,15 @@ Resources:
               'Fn::GetAtt':
                 - BRPELB
                 - CanonicalHostedZoneName
+{% if env == 'prod' %}
+        - Name: brp-{{ env }}.{{ dns_zone_name }}
+          Type: A
+          SetIdentifier: brp-{{ env }}-Secondary
+          Failover: SECONDARY
+          AliasTarget:
+            # CloudFront zone id
+            HostedZoneId: Z2FDTNDATAQYW2
+            DNSName: 'd3oehowpbcly38.cloudfront.net.'
+            EvaluateTargetHealth: false
+{% endif %}
+
