@@ -1,0 +1,84 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: BRP Mock API stack in {{ env }} environment
+Resources:
+  ELBSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: API ELB SG
+      VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 30111
+          ToPort: 30111
+          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
+
+  HTTPToComputeDefaultSGIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
+      IpProtocol: tcp
+      SourceSecurityGroupId: {Ref: ELBSG}
+      FromPort: 30111
+      ToPort: 30111
+
+  ELB:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      CrossZone: true
+      Subnets:
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet0') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet1') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet2') }}
+      SecurityGroups:
+        - {Ref : ELBSG}
+      HealthCheck:
+        Target: 'TCP:30111'
+        HealthyThreshold: 2
+        Interval: 10
+        Timeout: 5
+        UnhealthyThreshold: 2
+      ConnectionDrainingPolicy:
+        Enabled: true
+        Timeout: 30
+      Listeners:
+      - LoadBalancerPort: 443
+        Protocol: HTTPS
+        InstancePort: 30111
+        InstanceProtocol: HTTP
+        SSLCertificateId:
+          'Fn::Join':
+          - ''
+          -
+            - 'arn:aws:iam::'
+            - Ref: AWS::AccountId
+            - ':server-certificate/wildcard.notprod.homeoffice.gov.uk'
+      Tags:
+      - Key: Name
+        Value: dev-brpmock-elb
+      - Key: Env
+        Value: {{ env }}
+      - Key: Service
+        Value: brpmock
+
+  ELBDNS:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: {{ dns_zone_name }}.
+      RecordSets:
+        - Name: brpmock-{{ env }}.{{ dns_zone_name }}
+          Type: A
+          AliasTarget:
+            HostedZoneId:
+              'Fn::GetAtt':
+                - ELB
+                - CanonicalHostedZoneNameID
+            DNSName:
+              'Fn::GetAtt':
+                - ELB
+                - CanonicalHostedZoneName
