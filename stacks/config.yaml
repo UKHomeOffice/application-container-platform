@@ -33,6 +33,9 @@ common:
   ssh_access_subnets:
   - 80.193.85.91/32
   - 80.169.158.34/32
+  kube_access_subnets:
+  - 80.193.85.91/32
+  - 80.169.158.34/32
 
 prod:
   vpc_name: prod-vpc

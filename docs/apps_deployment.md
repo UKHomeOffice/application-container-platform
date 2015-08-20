@@ -3,7 +3,7 @@
 One of nicest features of this platform is that it provides us with a
 unified Kubernetes API, which allows us to compose, deploy, and scale
 services and applications running on this platform. That is all that a
-developer needs to know, except when a service needs to be expose to the
+developer needs to know, except when a service needs to be exposed to the
 outside world (see below).
 
 This documents does not aim to document how Kubernetes API works and how to
@@ -18,7 +18,7 @@ noticed that in [coreos-compute template](../stacks/templates/coreos-compute.yam
 there are no ELBs defined.  It is quite common to create a load balancer within
 the same CloudFormation stack and attach it directly to an auto scaling group
 during its creation.  While this approach is quite simple to do, it is not the
-most reliable, because an ASG + LaunchConfiguration is an immutable objec,
+most reliable, because an ASG + LaunchConfiguration is an immutable object,
 therefore any changes to an ELB resource during stack update terminates all
 instances at once and recreates them and the ELB.
 
@@ -27,7 +27,8 @@ compute nodes live, is to create an ELB in a separate stack template and then
 attach it to the auto scaling group via AWS API.
 
 Kubernetes has a basic support for AWS Cloud, can create an ELB and attached it
-to compute instances, but that needs more testing.
+to compute instances, but that needs more testing and it is very limited at the
+moment.
 
 ## Example Deployment
 
@@ -69,7 +70,7 @@ $ stacks -p hod-dsp create -e dev -t templates/brp.yaml dev-brp
 Remember, by default the ELB does not get attached to any auto scaling group,
 but it is very easy to do that using aws cli.
 
-* Let's find an ID for our newly created ELB first
+* **Let's find an ID for our newly created ELB first**
 
 ```bash
 $ aws --profile hod-dsp elb \
@@ -78,7 +79,7 @@ $ aws --profile hod-dsp elb \
 "dev-brp-BRPELB-IU7XN24U7CVI"
 ```
 
-* Next, we need to find compute ASG
+* **Next, we need to find compute ASG**
 
 ```bash
 aws --profile hod-dsp autoscaling \
@@ -87,7 +88,7 @@ aws --profile hod-dsp autoscaling \
 "dev-coreos-compute-CoreOSComputeScalingGroup-MW0AEFC467S"
 ```
 
-* And finally attach the ELB
+* **And finally attach the ELB**
 
 ```bash
 aws --profile hod-dsp autoscaling attach-load-balancers \
