@@ -2,32 +2,34 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Kubernetes ELB stack in {{ env }} environment
 Resources:
-  KubernetesELBSG:
+  ELBSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Kubernetes API ELB SG
       VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
       SecurityGroupIngress:
+{% for subnet in kube_access_subnets %}
         - IpProtocol: tcp
+          CidrIp: {{ subnet }}
           FromPort: 443
           ToPort: 443
-          CidrIp: 0.0.0.0/0
+{%- endfor %}
       SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: 6443
           ToPort: 6443
           DestinationSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
 
-  KubernetesELBSGToDefaultSGIngress:
+  ELBSGToDefaultSGIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
       IpProtocol: tcp
-      SourceSecurityGroupId: {Ref: KubernetesELBSG}
+      SourceSecurityGroupId: {Ref: ELBSG}
       FromPort: 6443
       ToPort: 6443
 
-  KubernetesELB:
+  ELB:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
     Properties:
       CrossZone: true
@@ -36,7 +38,7 @@ Resources:
         - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet1') }}
         - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet2') }}
       SecurityGroups:
-        - {Ref : KubernetesELBSG}
+        - {Ref: ELBSG}
       HealthCheck:
         Target: 'TCP:6443'
         HealthyThreshold: 2
@@ -60,11 +62,13 @@ Resources:
             - ':server-certificate/wildcard.notprod.homeoffice.gov.uk'
       Tags:
       - Key: Name
-        Value: {{ env }}-kubernetes
+        Value: {{ env }}-kubernetes-elb
       - Key: Env
         Value: {{ env }}
+      - Key: Service
+        Value: kubernetes
 
-  KubernetesELBDNS:
+  ELBDNS:
     Type: AWS::Route53::RecordSetGroup
     Properties:
       HostedZoneName: {{ dns_zone_name }}.
@@ -74,9 +78,9 @@ Resources:
           AliasTarget:
             HostedZoneId:
               'Fn::GetAtt':
-                - KubernetesELB
+                - ELB
                 - CanonicalHostedZoneNameID
             DNSName:
               'Fn::GetAtt':
-                - KubernetesELB
+                - ELB
                 - CanonicalHostedZoneName

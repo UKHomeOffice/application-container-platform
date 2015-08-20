@@ -178,6 +178,14 @@ stacks -p hod-dsp create -e ${ENV} -t templates/coreos-etcd.yaml ${ENV}-coreos-e
 stacks -p hod-dsp create -e ${ENV} -t templates/coreos-compute.yaml ${ENV}-coreos-compute
 ```
 
+* **Create an ELB for Kubernetes API**
+```
+stacks -p hod-dsp create -e ${ENV} -t templates/kubernetes-elb.yaml ${ENV}-kubernetes-elb
+```
+
+You will need to attach the ELB to the compute auto scaling group. See
+[here](apps_deployment.md) how to do that.
+
 ## Vault
 
 ### Start Vault service
