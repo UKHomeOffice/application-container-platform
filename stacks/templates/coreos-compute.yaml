@@ -134,6 +134,7 @@ Resources:
                 content: |
                   [Unit]
                   Requires=update-ca-certificates.service install-s3secrets.service
+                  After=update-ca-certificates.service install-s3secrets.service
               - name: 15-s3secrets.conf
                 content: |
                   [Service]
@@ -144,6 +145,16 @@ Resources:
             - name: fleet.service
               command: start
               enable: true
+              drop-ins:
+              # TODO remove below once fixed, see https://github.com/coreos/fleet/issues/1329
+              - name: 10-dependencies.conf
+                content: |
+                  [Unit]
+                  After=etcd.service
+                  After=etcd2.service
+                  Wants=fleet.socket
+                  After=fleet.socket
+                  Requires=etcd2.service
             - name: flanneld.service
               command: start
               enable: true
@@ -226,6 +237,7 @@ Resources:
                 [Unit]
                 Description=Install s3secrets
                 Documentation=https://github.com/UKHomeOffice/s3secrets
+                Before=etcd2.service
 
                 [Service]
                 Type=oneshot
