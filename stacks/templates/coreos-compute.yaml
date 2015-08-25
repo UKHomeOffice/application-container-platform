@@ -150,7 +150,6 @@ Resources:
               - name: 10-dependencies.conf
                 content: |
                   [Unit]
-                  After=etcd.service
                   After=etcd2.service
                   Wants=fleet.socket
                   After=fleet.socket

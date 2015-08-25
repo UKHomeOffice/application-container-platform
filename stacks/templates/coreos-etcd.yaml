@@ -139,6 +139,15 @@ Resources:
             - name: fleet.service
               command: start
               enable: true
+              drop-ins:
+              # TODO remove below once fixed, see https://github.com/coreos/fleet/issues/1329
+              - name: 10-dependencies.conf
+                content: |
+                  [Unit]
+                  After=etcd2.service
+                  Wants=fleet.socket
+                  After=fleet.socket
+                  Requires=etcd2.service
             - name: format-data-volume.service
               command: start
               content: |
@@ -182,8 +191,8 @@ Resources:
               - name: 10-dependencies.conf
                 content: |
                   [Unit]
-                  After=etcd2-datadir.service
-                  Requires=install-s3secrets.service
+                  Requires=update-ca-certificates.service install-s3secrets.service
+                  After=update-ca-certificates.service install-s3secrets.service,etcd2-datadir.service
               - name: 15-s3secrets.conf
                 content: |
                   [Service]
