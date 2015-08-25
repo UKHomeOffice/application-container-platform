@@ -45,27 +45,6 @@ Resources:
 
 {%- for node in etcd_nodes %}
   # We do not want to replace this resource
-  EtcdNode{{ loop.index0 }}EIP:
-    Type: AWS::EC2::EIP
-    Properties:
-      InstanceId: {Ref: {{ node['name'] }}}
-
-  # We do not want to replace this resource
-  EtcdNode{{ loop.index0 }}ENI:
-    Type: AWS::EC2::NetworkInterface
-    Properties:
-      Description: etcd EtcdNode{{ loop.index0 }} ENI
-      GroupSet:
-      - {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
-      SubnetId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureSubnet'+node['az_id']) }}
-      PrivateIpAddress: {{ node['ip'] }}
-      Tags:
-        - Key: Name
-          Value: {{ env }}-etcd-node{{ loop.index0 }}-eni
-        - Key: Env
-          Value: {{ env }}
-
-  # We do not want to replace this resource
   EtcdNode{{ loop.index0 }}Volume:
     Type: AWS::EC2::Volume
     Properties:
@@ -90,8 +69,12 @@ Resources:
       KeyName: {{ ssh_key_name }}
       IamInstanceProfile: {Ref: InstanceProfile}
       NetworkInterfaces:
-      - DeviceIndex: 0
-        NetworkInterfaceId: {Ref: EtcdNode{{ loop.index0 }}ENI}
+        - DeviceIndex: 0
+          AssociatePublicIpAddress: true
+          SubnetId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureSubnet'+node['az_id']) }}
+          GroupSet:
+            - {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
+          PrivateIpAddress: {{ node['ip'] }}
       BlockDeviceMappings:
       - DeviceName: /dev/xvda
         Ebs:
