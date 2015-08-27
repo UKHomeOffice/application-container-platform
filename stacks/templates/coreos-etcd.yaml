@@ -44,22 +44,6 @@ Resources:
             - 's3:List*'
 
 {%- for node in etcd_nodes %}
-  # We do not want to replace this resource
-  EtcdNode{{ loop.index0 }}Volume:
-    Type: AWS::EC2::Volume
-    Properties:
-      Size: 10
-      VolumeType: gp2
-      AvailabilityZone:
-        Fn::Select:
-        - {{ node['az_id'] }}
-        - Fn::GetAZs: ''
-      Tags:
-        - Key: Name
-          Value: {{ env }}-etcd-node{{ loop.index0 }}-volume
-        - Key: Env
-          Value: {{ env }}
-
   # This resource can be replaced by just changing node name in the config file
   {{ node['name']}}:
     Type: AWS::EC2::Instance
@@ -84,7 +68,7 @@ Resources:
       Volumes:
       # /data volume
       - Device: /dev/xvdd
-        VolumeId: {Ref: EtcdNode{{ loop.index0 }}Volume}
+        VolumeId: {{ get_stack_output(cf_conn, etcd_volumes_stack_name, "EtcdNode%dVolume"|format(loop.index0)) }}
       Tags:
         - Key: Name
           Value: {{ env }}-etcd-node{{ loop.index0 }}
