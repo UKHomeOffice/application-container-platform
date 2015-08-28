@@ -43,6 +43,7 @@ common:
 prod:
   vpc_name: prod-vpc
   infra_stack_name: prod-infra
+  etcd_volumes_stack_name: prod-coreos-etcd-volumes
   instance_type: t2.large
   compute_min_instances: 5
   dns_zone_name: dsp.notprod.homeoffice.gov.uk
@@ -55,6 +56,7 @@ prod:
 dev:
   vpc_name: dev-vpc
   infra_stack_name: dev-infra
+  etcd_volumes_stack_name: dev-coreos-etcd-volumes
   instance_type: t2.medium
   dns_zone_name: dsp.notprod.homeoffice.gov.uk
   kms_master_key_id: 448a33c3-694b-46fe-9635-4cfecff6877a

@@ -170,6 +170,12 @@ dev-infra  CREATE_COMPLETE
 
 * **Next step is to create an etcd cluster**
 ```
+stacks -p hod-dsp create -e ${ENV} -t templates/coreos-etcd-volumes.yaml ${ENV}-coreos-etcd-volumes
+```
+
+Wait for the volumes stack to finish creating, it usually takes less than 30 seconds
+
+```
 stacks -p hod-dsp create -e ${ENV} -t templates/coreos-etcd.yaml ${ENV}-coreos-etcd
 ```
 
