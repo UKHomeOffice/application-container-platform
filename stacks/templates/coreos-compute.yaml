@@ -112,6 +112,7 @@ Resources:
             flannel:
               interface: $private_ipv4
               etcd_endpoints: https://127.0.0.1:2379
+              etcd_cafile: /etc/ssl/etcd/platform_ca.pem
             locksmith:
               endpoint: https://127.0.0.1:2379
             update:
@@ -168,12 +169,6 @@ Resources:
                 content: |
                   [Service]
                   EnvironmentFile=/run/flannel/options.env
-              # TODO(vaijab): Remove below / Switch to OEM version of flannel
-              # See https://github.com/coreos/flannel/issues/302
-              - name: 05-env-config.conf
-                content: |
-                  [Service]
-                  Environment="FLANNEL_VER=0.5.2"
             - name: install-kubernetes.service
               command: start
               content: |
@@ -272,6 +267,9 @@ Resources:
               BUCKET_NAME={{ secrets_bucket_name }}
               AWS_REGION={{ region }}
           - path: /etc/ssl/certs/platform_ca.pem
+            encoding: base64
+            content: {{ ca_cert }}
+          - path: /etc/ssl/etcd/platform_ca.pem
             encoding: base64
             content: {{ ca_cert }}
           - path: /var/lib/iptables/rules-save
