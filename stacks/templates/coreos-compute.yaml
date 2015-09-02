@@ -179,9 +179,9 @@ Resources:
                 Type=oneshot
                 RemainAfterExit=yes
                 TimeoutStartSec=30
-                Environment="URL=https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/linux/amd64/hyperkube"
+                Environment="URL=https://storage.googleapis.com/kubernetes-release/release/v1.0.5/bin/linux/amd64/hyperkube"
                 Environment="OUTPUT_FILE=/opt/bin/hyperkube"
-                Environment="MD5SUM=7ed6771de55ef14769048253bbbd8d39"
+                Environment="MD5SUM=854d3e2caa3463948a151177a8dab387"
                 ExecStart=/usr/bin/install -d -o root -g root -m 0700 /etc/kubernetes
                 ExecStart=/usr/bin/mkdir -p /opt/bin
                 ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
@@ -195,9 +195,9 @@ Resources:
                 Type=oneshot
                 RemainAfterExit=yes
                 TimeoutStartSec=30
-                Environment="URL=https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/linux/amd64/kubectl"
+                Environment="URL=https://storage.googleapis.com/kubernetes-release/release/v1.0.5/bin/linux/amd64/kubectl"
                 Environment="OUTPUT_FILE=/opt/bin/kubectl"
-                Environment="MD5SUM=d55f69a79a01477ec8d0ab0584a91355"
+                Environment="MD5SUM=7b20ed05a043dbaffabff944d1da9615"
                 ExecStart=/usr/bin/mkdir -p /opt/bin
                 ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
             - name: install-kube-apiproxy.service
