@@ -80,7 +80,11 @@ Resources:
           -
             - 'arn:aws:iam::'
             - Ref: AWS::AccountId
-            - ':server-certificate/wildcard.notprod.homeoffice.gov.uk'
+{% if env == 'prod' %}
+            - ':server-certificate/www.biometric-residence-permit.service.gov.uk'
+{% else %}
+            - ':{{ platform_tls_cert_name }}'
+{% endif %}
       AccessLoggingPolicy:
         EmitInterval: 5
         Enabled: true
@@ -99,7 +103,7 @@ Resources:
     Properties:
       HostedZoneName: {{ dns_zone_name }}.
       RecordSets:
-        - Name: brp-{{ env }}.{{ dns_zone_name }}
+        - Name: brp{% if env != 'prod' %}-{{ env }}{% endif %}.{{ dns_zone_name }}
           Type: A
 {% if env == 'prod' %}
           SetIdentifier: brp-{{ env }}-Primary
@@ -118,7 +122,7 @@ Resources:
                 - BRPELB
                 - CanonicalHostedZoneName
 {% if env == 'prod' %}
-        - Name: brp-{{ env }}.{{ dns_zone_name }}
+        - Name: brp{% if env != 'prod' %}-{{ env }}{% endif %}.{{ dns_zone_name }}
           Type: A
           SetIdentifier: brp-{{ env }}-Secondary
           Failover: SECONDARY

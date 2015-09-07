@@ -46,7 +46,8 @@ prod:
   etcd_volumes_stack_name: prod-coreos-etcd-volumes
   instance_type: t2.large
   compute_min_instances: 5
-  dns_zone_name: dsp.notprod.homeoffice.gov.uk
+  dns_zone_name: dsp.digital.homeoffice.gov.uk
+  platform_tls_cert_name: 'server-certificate/wildcard.dsp.digital.homeoffice.gov.uk'
   kms_master_key_id: 52933029-773a-49ba-af66-b8920d198175
   access_log_bucket_name: prod-elb-access-logs-eu-west-1
   secrets_bucket_name: prod-platform-secrets-eu-west-1
@@ -59,6 +60,7 @@ dev:
   etcd_volumes_stack_name: dev-coreos-etcd-volumes
   instance_type: t2.medium
   dns_zone_name: dsp.notprod.homeoffice.gov.uk
+  platform_tls_cert_name: 'server-certificate/wildcard.notprod.homeoffice.gov.uk'
   kms_master_key_id: 448a33c3-694b-46fe-9635-4cfecff6877a
   secrets_bucket_name: dev-platform-secrets-eu-west-1
   access_log_bucket_name: dev-elb-access-logs-eu-west-1

@@ -57,7 +57,7 @@ Resources:
           -
             - 'arn:aws:iam::'
             - Ref: AWS::AccountId
-            - ':server-certificate/wildcard.notprod.homeoffice.gov.uk'
+            - '{{ platform_tls_cert_name }}'
       Tags:
       - Key: Name
         Value: dev-brpmock-elb

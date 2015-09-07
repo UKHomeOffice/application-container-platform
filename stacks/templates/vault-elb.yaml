@@ -59,7 +59,7 @@ Resources:
           -
             - 'arn:aws:iam::'
             - Ref: AWS::AccountId
-            - ':server-certificate/wildcard.notprod.homeoffice.gov.uk'
+            - ':{{ platform_tls_cert_name }}'
       Tags:
       - Key: Name
         Value: {{ env }}-vault-elb
@@ -73,7 +73,7 @@ Resources:
     Properties:
       HostedZoneName: {{ dns_zone_name }}.
       RecordSets:
-        - Name: vault-{{ env }}.{{ dns_zone_name }}
+        - Name: vault{% if env != 'prod' %}-{{ env }}{% endif %}.{{ dns_zone_name }}
           Type: A
           AliasTarget:
             HostedZoneId:
