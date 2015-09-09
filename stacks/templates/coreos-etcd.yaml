@@ -101,7 +101,7 @@ Resources:
             locksmith:
               endpoint: https://127.0.0.1:2379
             update:
-              reboot-strategy: 'best-effort'
+              reboot-strategy: 'off'
             units:
             - name: fleet.service
               command: start

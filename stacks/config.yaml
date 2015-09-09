@@ -1,8 +1,8 @@
 ---
 common:
   ssh_key_name: vaijab
-  coreos_ami_name: CoreOS-alpha-789.0.0-hvm
-  compute_min_instances: 3
+  coreos_ami_name: CoreOS-alpha-794.0.0-hvm
+  compute_min_instances: 5
   vpc_cidr: 10.50.0.0/16
   compute_subnets:
     - 10.50.0.0/24
@@ -45,7 +45,6 @@ prod:
   infra_stack_name: prod-infra
   etcd_volumes_stack_name: prod-coreos-etcd-volumes
   instance_type: t2.large
-  compute_min_instances: 5
   dns_zone_name: dsp.digital.homeoffice.gov.uk
   platform_tls_cert_name: 'server-certificate/wildcard.dsp.digital.homeoffice.gov.uk'
   kms_master_key_id: 52933029-773a-49ba-af66-b8920d198175
@@ -58,7 +57,7 @@ dev:
   vpc_name: dev-vpc
   infra_stack_name: dev-infra
   etcd_volumes_stack_name: dev-coreos-etcd-volumes
-  instance_type: t2.medium
+  instance_type: m4.2xlarge
   dns_zone_name: dsp.notprod.homeoffice.gov.uk
   platform_tls_cert_name: 'server-certificate/wildcard.notprod.homeoffice.gov.uk'
   kms_master_key_id: 448a33c3-694b-46fe-9635-4cfecff6877a
