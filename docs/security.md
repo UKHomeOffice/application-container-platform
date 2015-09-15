@@ -91,3 +91,7 @@ key must be forgotten.
 Partially, due to lack of proper Kubernetes user management support there is a
 static token used to access the API.
 
+There is `auth-policy.json` file for restricting user access to specific
+resources and namespaces. However that is still fairly static.
+
+

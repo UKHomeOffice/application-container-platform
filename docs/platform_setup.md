@@ -61,14 +61,14 @@ $ cfssl gencert -config=../ca/ca-config.json -ca-key=../ca/${ENV}/ca-key.pem \
 ```
 
 
-### Generate Kubernetes Secrets
+### Generate Kubernetes Secrets and Configs
 
 Make a note of `KUBE_TOKEN` because that's what you will be using to talk to
 kubernetes API for now.
 
 ```bash
 $ aws --profile hod-dsp kms encrypt --key-id ${KMS_KEY_ID} \
-  --plaintext "$(echo ${KUBE_TOKEN},${ENV}-dsp,${ENV}-dsp)" \
+  --plaintext "$(echo ${KUBE_TOKEN},kube,kube)" \
   --query CiphertextBlob \
   --output text | base64 -d > tokens.csv.encrypted
 ```
@@ -80,18 +80,18 @@ kind: Config
 preferences: {}
 contexts:
 - context:
-    user: ${ENV}-dsp
+    user: kube
   name: default
 current-context: default
 users:
-- name: ${ENV}-dsp
+- name: kube
   user:
     token: ${KUBE_TOKEN}
 EOF
 ```
 
 
-### Encrypt Keys and Secrets
+### Encrypt Keys, Secrets and Configs
 
 * **etcd**
 ```
@@ -140,7 +140,23 @@ $ aws --profile hod-dsp kms encrypt --key-id ${KMS_KEY_ID} \
   --output text | base64 -d > kubeconfig.encrypted
 ```
 
+* **auth-policy**
+```
+$ aws --profile hod-dsp kms encrypt --key-id ${KMS_KEY_ID} \
+  --plaintext "$(cat ../kube/${ENV}/auth-policy.json)" \
+  --query CiphertextBlob \
+  --output text | base64 -d > auth-policy.json.encrypted
+```
+
+
 ### Upload TLS Keys and Secrets
+
+First we need to make sure that secrets bucket exists.
+
+```bash
+$ aws --profile hod-dsp s3 mb s3://${ENV}-platform-secrets-eu-west-1
+
+```
 
 ```bash
 for n in $(ls -1 *.encrypted); do
