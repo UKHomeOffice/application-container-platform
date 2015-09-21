@@ -30,6 +30,20 @@ Kubernetes has a basic support for AWS Cloud, can create an ELB and attached it
 to compute instances, but that needs more testing and it is very limited at the
 moment.
 
+### Node Ports
+
+These ELBs map to NodePorts on the node. As a limited resource please state what 
+range you want to be assigned to your application. The currently assigned ranges 
+are
+
+ Application  | Ports
+--------------|------------
+BRP           | 30000-30099 
+BRP Mock API  | 30100-30199
+API Catalogue | 30300-30399   
+
+Please create a new pull request to request a range.
+
 ## Example Deployment
 
 Since BRP is the first resident to run on this platform, we are going to use it
