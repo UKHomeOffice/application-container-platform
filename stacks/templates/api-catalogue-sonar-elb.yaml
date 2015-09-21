@@ -9,8 +9,8 @@ Resources:
       VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
+          FromPort: 443
+          ToPort: 443
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 9090
@@ -64,8 +64,8 @@ Resources:
         Enabled: true
         Timeout: 30
       Listeners:
-      - LoadBalancerPort: 80
-        Protocol: HTTP
+      - LoadBalancerPort: 443
+        Protocol: HTTPS
         InstancePort: 30311
         InstanceProtocol: HTTP
         SSLCertificateId:
@@ -74,9 +74,9 @@ Resources:
           -
             - 'arn:aws:iam::'
             - Ref: AWS::AccountId
-            - '{{ platform_tls_cert_name }}'
+            - ':{{ platform_tls_cert_name }}'
       - LoadBalancerPort: 9090
-        Protocol: HTTP
+        Protocol: HTTPS
         InstancePort: 30312
         InstanceProtocol: HTTP
         SSLCertificateId:
@@ -85,7 +85,7 @@ Resources:
           -
             - 'arn:aws:iam::'
             - Ref: AWS::AccountId
-            - '{{ platform_tls_cert_name }}'
+            - ':{{ platform_tls_cert_name }}'
       Tags:
       - Key: Name
         Value: {{ env }}-api-catalogue-sonar-elb
