@@ -24,3 +24,4 @@ vault.pem
 kube-apiserver.pem
 kube-apiserver.csr
 tmp/*
+/.idea

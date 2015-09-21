@@ -1,0 +1,85 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: API Catalogue Jenkins Endpoint stack in {{ env }} environment
+Resources:
+  ELBSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: API Catalogue Jenkins ELB SG
+      VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 30313
+          ToPort: 30313
+          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
+
+
+  HTTPToComputeDefaultSGIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
+      IpProtocol: tcp
+      SourceSecurityGroupId: {Ref: ELBSG}
+      FromPort: 30313
+      ToPort: 30313
+
+  ELB:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      CrossZone: true
+      Subnets:
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet0') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet1') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet2') }}
+      SecurityGroups:
+        - {Ref : ELBSG}
+      HealthCheck:
+        Target: 'TCP:30313'
+        HealthyThreshold: 2
+        Interval: 10
+        Timeout: 5
+        UnhealthyThreshold: 2
+      ConnectionDrainingPolicy:
+        Enabled: true
+        Timeout: 30
+      Listeners:
+      - LoadBalancerPort: 443
+        Protocol: HTTPS
+        InstancePort: 30313
+        InstanceProtocol: HTTP
+        SSLCertificateId:
+          'Fn::Join':
+          - ''
+          -
+            - 'arn:aws:iam::'
+            - Ref: AWS::AccountId
+            - '{{ platform_tls_cert_name }}'
+      Tags:
+      - Key: Name
+        Value: {{ env }}-api-catalogue-jenkins-elb
+      - Key: Env
+        Value: {{ env }}
+      - Key: Service
+        Value: api-catalogue-jenkins
+
+  ELBDNS:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: {{ dns_zone_name }}.
+      RecordSets:
+        - Name: api-catalogue-jenkins-{{ env }}.{{ dns_zone_name }}
+          Type: A
+          AliasTarget:
+            HostedZoneId:
+              'Fn::GetAtt':
+                - ELB
+                - CanonicalHostedZoneNameID
+            DNSName:
+              'Fn::GetAtt':
+                - ELB
+                - CanonicalHostedZoneName
