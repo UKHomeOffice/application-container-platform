@@ -58,7 +58,7 @@ Resources:
           -
             - 'arn:aws:iam::'
             - Ref: AWS::AccountId
-            - '{{ platform_tls_cert_name }}'
+            - ':{{ platform_tls_cert_name }}'
       Tags:
       - Key: Name
         Value: {{ env }}-api-catalogue-jenkins-elb
