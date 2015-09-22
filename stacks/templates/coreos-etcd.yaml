@@ -159,7 +159,7 @@ Resources:
                 content: |
                   [Unit]
                   Requires=update-ca-certificates.service install-s3secrets.service
-                  After=update-ca-certificates.service install-s3secrets.service,etcd2-datadir.service
+                  After=update-ca-certificates.service install-s3secrets.service etcd2-datadir.service
               - name: 15-s3secrets.conf
                 content: |
                   [Service]
