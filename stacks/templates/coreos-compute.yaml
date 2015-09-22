@@ -121,6 +121,32 @@ Resources:
             - name: iptables-restore.service
               enable: true
               command: start
+            - name: 90-mtu.network
+              command: start
+              enable: true
+              content: |
+                [Network]
+                DHCP=v4
+
+                [DHCP]
+                UseMTU=false
+                UseDomains=true
+
+                [Link]
+                MTUBytes=1500
+            - name: systemd-networkd.service
+              command: start
+              enable: true
+            - name: set-eth0-mtu.service
+              command: start
+              content: |
+                [Unit]
+                Description=Set eth0 MTU
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                ExecStart=/usr/bin/ip link set mtu 1500 dev eth0
             - name: docker.service
               drop-ins:
               - name: 10-opts.conf
