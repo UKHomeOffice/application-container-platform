@@ -128,7 +128,7 @@ Resources:
                   [Service]
                   # TODO: remove below line once https://github.com/coreos/bugs/issues/483 is fixed
                   ExecStart=
-                  ExecStart=/usr/lib/coreos/dockerd daemon --host=fd:// --log-driver=json-file $DOCKER_OPTS $DOCKER_OPT_BIP $DOCKER_OPT_MTU $DOCKER_OPT_IPMASQ
+                  ExecStart=/usr/lib/coreos/dockerd --daemon --host=fd:// --log-driver=json-file $DOCKER_OPTS $DOCKER_OPT_BIP $DOCKER_OPT_MTU $DOCKER_OPT_IPMASQ
                   Environment=DOCKER_OPTS='--iptables="false"'
             - name: etcd2.service
               command: start
