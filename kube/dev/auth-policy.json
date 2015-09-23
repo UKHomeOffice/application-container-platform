@@ -5,6 +5,4 @@
 {"user":"mikeyhu"}
 {"user":"jenkins"}
 {"user":"vamsi-qa"}
-{"user":"skydns", "readonly": true, "resource": "pods"}
-{"user":"skydns", "readonly": true, "resource": "services"}
-{"user":"skydns", "readonly": true, "resource": "endpoints"}
+{"user":"skydns"}
