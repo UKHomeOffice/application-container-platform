@@ -38,7 +38,7 @@ Resources:
       SecurityGroups:
         - {Ref : ELBSG}
       HealthCheck:
-        Target: 'TCP:30311'
+        Target: 'TCP:30314'
         HealthyThreshold: 2
         Interval: 10
         Timeout: 5
