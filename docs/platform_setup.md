@@ -22,6 +22,10 @@ $ mkdir -p tmp; cd tmp
 ```
 
 * **Set env variables**
+
+AWS_PROFILE is used if set by the aws cli so no further commands for AWS require setting of a profile
+however stacks does require it to be explicitly set
+
 ```bash
 $ export ENV=dev
 $ export KUBE_TOKEN=$(uuidgen)
@@ -70,7 +74,7 @@ kubernetes API for now.
 The user attached to the `KUBE_TOKEN` is also used by the kubernetes processes to communicate with the API as such it needs to exist in the auth-policy that is used for your environment
 
 ```bash
-$ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
+$ aws kms encrypt --key-id ${KMS_KEY_ID} \
   --plaintext "$(echo ${KUBE_TOKEN},kube,kube)" \
   --query CiphertextBlob \
   --output text | base64 --decode > tokens.csv.encrypted
@@ -99,12 +103,12 @@ EOF
 
 * **etcd**
 ```
-$ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
+$ aws kms encrypt --key-id ${KMS_KEY_ID} \
   --plaintext "$(cat etcd.pem)" \
   --query CiphertextBlob \
   --output text | base64 --decode > etcd-crt.pem.encrypted
 
-$ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
+$ aws kms encrypt --key-id ${KMS_KEY_ID} \
   --plaintext "$(cat etcd-key.pem)" \
   --query CiphertextBlob \
   --output text | base64 --decode > etcd-key.pem.encrypted
@@ -112,12 +116,12 @@ $ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
 
 * **vault**
 ```
-$ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
+$ aws kms encrypt --key-id ${KMS_KEY_ID} \
   --plaintext "$(cat vault.pem)" \
   --query CiphertextBlob \
   --output text | base64 --decode > vault-crt.pem.encrypted
 
-$ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
+$ aws kms encrypt --key-id ${KMS_KEY_ID} \
   --plaintext "$(cat vault-key.pem)" \
   --query CiphertextBlob \
   --output text | base64 --decode > vault-key.pem.encrypted
@@ -125,12 +129,12 @@ $ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
 
 * **kube-apiserver**
 ```
-$ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
+$ aws kms encrypt --key-id ${KMS_KEY_ID} \
   --plaintext "$(cat kube-apiserver.pem)" \
   --query CiphertextBlob \
   --output text | base64 --decode > kube-apiserver-crt.pem.encrypted
 
-$ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
+$ aws kms encrypt --key-id ${KMS_KEY_ID} \
   --plaintext "$(cat kube-apiserver-key.pem)" \
   --query CiphertextBlob \
   --output text | base64 --decode > kube-apiserver-key.pem.encrypted
@@ -138,7 +142,7 @@ $ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
 
 * **kubeconfig**
 ```
-$ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
+$ aws kms encrypt --key-id ${KMS_KEY_ID} \
   --plaintext "$(cat kubeconfig)" \
   --query CiphertextBlob \
   --output text | base64 --decode > kubeconfig.encrypted
@@ -148,7 +152,7 @@ $ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
 Confirm that the user you declared in the tokens file above is in your environment auth policy and has the relevant access ( for dev this should be everything )
 
 ```
-$ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
+$ aws kms encrypt --key-id ${KMS_KEY_ID} \
   --plaintext "$(cat ../kube/${ENV}/auth-policy.json)" \
   --query CiphertextBlob \
   --output text | base64 --decode > auth-policy.json.encrypted
@@ -160,13 +164,13 @@ $ aws --profile $AWS_PROFILE kms encrypt --key-id ${KMS_KEY_ID} \
 First we need to make sure that the secrets bucket exists.
 
 ```bash
-$ aws --profile $AWS_PROFILE s3 mb s3://${ENV}-platform-secrets-eu-west-1
+$ aws s3 mb s3://${ENV}-platform-secrets-eu-west-1
 
 ```
 
 ```bash
 for n in $(ls -1 *.encrypted); do
-  aws --profile $AWS_PROFILE s3 cp ${n} s3://${ENV}-platform-secrets-eu-west-1
+  aws s3 cp ${n} s3://${ENV}-platform-secrets-eu-west-1
 done
 ```
 
@@ -259,7 +263,7 @@ unsealed automatically.
 
 * **Encrypt the key**
 ```
-$ aws --profile $AWS_PROFILE kms encrypt \
+$ aws kms encrypt \
   --key-id ${KMS_KEY_ID} \
   --plaintext "0efc52423a2c31359cb74a91e47b6ccf8df658e0a3c1dfeb64ffbd30b0e45c01" \
   --query CiphertextBlob --output text | base64 --decode > vault-unseal.key.encrypted
@@ -267,8 +271,7 @@ $ aws --profile $AWS_PROFILE kms encrypt \
 
 * **Upload encrypted key to S3 secrets bucket**
 ```
-$ aws --profile $AWS_PROFILE \
-  s3 cp vault-unseal.key.encrypted s3://${ENV}-platform-secrets-eu-west-1
+$ aws s3 cp vault-unseal.key.encrypted s3://${ENV}-platform-secrets-eu-west-1
 ```
 
 * **Restart vault service**
