@@ -152,9 +152,6 @@ Resources:
               - name: 10-opts.conf
                 content: |
                   [Service]
-                  # TODO: remove below line once https://github.com/coreos/bugs/issues/483 is fixed
-                  ExecStart=
-                  ExecStart=/usr/lib/coreos/dockerd daemon --host=fd:// --log-driver=json-file $DOCKER_OPTS $DOCKER_OPT_BIP $DOCKER_OPT_MTU $DOCKER_OPT_IPMASQ
                   Environment=DOCKER_OPTS='--iptables="false"'
             - name: etcd2.service
               command: start
@@ -208,9 +205,9 @@ Resources:
                 Type=oneshot
                 RemainAfterExit=yes
                 TimeoutStartSec=30
-                Environment="URL=https://storage.googleapis.com/kubernetes-release/release/v1.0.5/bin/linux/amd64/hyperkube"
+                Environment="URL=https://storage.googleapis.com/kubernetes-release/release/v1.0.6/bin/linux/amd64/hyperkube"
                 Environment="OUTPUT_FILE=/opt/bin/hyperkube"
-                Environment="MD5SUM=854d3e2caa3463948a151177a8dab387"
+                Environment="MD5SUM=86f6ec34e71c7d9db5f896bca3a69634"
                 ExecStart=/usr/bin/install -d -o root -g root -m 0700 /etc/kubernetes
                 ExecStart=/usr/bin/mkdir -p /opt/bin
                 ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
@@ -224,9 +221,9 @@ Resources:
                 Type=oneshot
                 RemainAfterExit=yes
                 TimeoutStartSec=30
-                Environment="URL=https://storage.googleapis.com/kubernetes-release/release/v1.0.5/bin/linux/amd64/kubectl"
+                Environment="URL=https://storage.googleapis.com/kubernetes-release/release/v1.0.6/bin/linux/amd64/kubectl"
                 Environment="OUTPUT_FILE=/opt/bin/kubectl"
-                Environment="MD5SUM=7b20ed05a043dbaffabff944d1da9615"
+                Environment="MD5SUM=3f66cb511dd41e313e0013aab8094244"
                 ExecStart=/usr/bin/mkdir -p /opt/bin
                 ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
             - name: install-kube-apiproxy.service
