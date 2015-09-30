@@ -50,16 +50,9 @@ Resources:
         Timeout: 30
       Listeners:
       - LoadBalancerPort: 443
-        Protocol: HTTPS
+        Protocol: TCP
         InstancePort: 6443
         InstanceProtocol: HTTPS
-        SSLCertificateId:
-          'Fn::Join':
-          - ''
-          -
-            - 'arn:aws:iam::'
-            - Ref: AWS::AccountId
-            - ':{{ platform_tls_cert_name }}'
       Tags:
       - Key: Name
         Value: {{ env }}-kubernetes-elb
