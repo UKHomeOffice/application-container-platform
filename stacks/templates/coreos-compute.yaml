@@ -125,21 +125,6 @@ Resources:
             update:
               reboot-strategy: 'off'
             units:
-            - name: aws-usersync.service
-              command: start
-              content: |
-                [Unit]
-                Description=Sync users from IAM
-
-                [Service]
-                TimeoutStartSec=300
-                Restart=always
-                Environment="URL=https://github.com/UKHomeOffice/aws_usersync/releases/download/v0.1.0/aws_usersync-0.1.0-linux-amd64"
-                Environment="OUTPUT_FILE=/opt/bin/aws_usersync"
-                Environment="MD5SUM=bd7e299597a38cd9c64f202d9f16e923"
-                ExecStartPre=/usr/bin/mkdir -p /opt/bin
-                ExecStartPre=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE} ; done'
-                ExecStart=/opt/bin/aws_usersync -o=false -i=5 -g="{{ aws_groups_csv }}" -I="root,core,vault"
             - name: iptables-restore.service
               enable: true
               command: start
@@ -329,4 +314,3 @@ Resources:
               -A FORWARD -i docker0 -p tcp -m tcp --dport 2379 -j DROP
               :OUTPUT ACCEPT [0:0]
               COMMIT
-
