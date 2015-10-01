@@ -3,6 +3,7 @@ Description=Kubernetes Proxy
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
+LimitNOFILE=10240
 RuntimeDirectory=kube-proxy
 RuntimeDirectoryMode=0700
 EnvironmentFile=/etc/s3secrets
