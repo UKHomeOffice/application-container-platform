@@ -313,3 +313,24 @@ $ fleetctl start kube-*
 
 Give it a couple of minutes and you should have a secure and fully working
 Kubernetes cluster.
+
+## Enable Kubernetes Logging
+
+If you want to push docker logs with kubernetes metadata attached to Cloudwatch
+Logs, then you can start an additional fleet unit.
+
+Logstash service expects `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to be
+set. Best way to do that is via secrets.
+
+```bash
+$ cat logstash_kubernetes_aws_key
+AWS_ACCESS_KEY_ID=<REPLACE ME>
+AWS_SECRET_ACCESS_KEY=<REPLACE ME>
+```
+
+Assuming you're already logged in to one of the nodes and have cloned the repo.
+
+```bash
+$ fleetctl start units/misc/logstash-kubernetes.service
+```
+
