@@ -295,6 +295,17 @@ Resources:
                 TimeoutStartSec=300
                 ExecStart=/usr/sbin/update-ca-certificates
           write_files:
+          # Note: the newline post COMMIT is required by iptables-restore
+          - path: /var/lib/iptables/rules-save
+            content: |
+              *filter
+              :INPUT ACCEPT [0:0]
+              :FORWARD ACCEPT [0:0]
+              -A FORWARD -d 169.254.169.254/32 -i docker0 -p tcp -m tcp --dport 80 -j DROP
+              -A FORWARD -i docker0 -p tcp -m tcp --dport 2379 -j DROP
+              :OUTPUT ACCEPT [0:0]
+              COMMIT
+              
           - path: /etc/s3secrets
             content: |
               BUCKET_NAME={{ secrets_bucket_name }}
@@ -305,12 +316,3 @@ Resources:
           - path: /etc/ssl/etcd/platform_ca.pem
             encoding: base64
             content: {{ ca_cert }}
-          - path: /var/lib/iptables/rules-save
-            content: |
-              *filter
-              :INPUT ACCEPT [0:0]
-              :FORWARD ACCEPT [0:0]
-              -A FORWARD -d 169.254.169.254/32 -i docker0 -p tcp -m tcp --dport 80 -j DROP
-              -A FORWARD -i docker0 -p tcp -m tcp --dport 2379 -j DROP
-              :OUTPUT ACCEPT [0:0]
-              COMMIT
