@@ -250,6 +250,10 @@ Resources:
             content: |
               BUCKET_NAME={{ secrets_bucket_name }}
               AWS_REGION={{ region }}
+          - path: /etc/aws-environment
+            content: |
+              ENVIRONMENT={{ env }}
+              AWS_REGION={{ region }}
           - path: /etc/vault.hcl
             content: |
               backend "etcd" {
