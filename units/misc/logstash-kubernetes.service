@@ -1,0 +1,33 @@
+[Unit]
+Description=Logstash Docker and Kubernetes Log Shipper
+Documentation=https://github.com/UKHomeOffice/docker-logstash-kubernetes
+Requires=docker.service
+After=docker.service
+
+[Service]
+RuntimeDirectory=logstash-kubernetes
+RuntimeDirectoryMode=0700
+EnvironmentFile=/etc/aws-environment
+EnvironmentFile=/etc/s3secrets
+Environment="DOCKER_IMAGE_TAG=v0.0.1"
+
+ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/logstash-kubernetes
+ExecStartPre=/usr/bin/docker pull quay.io/ukhomeofficedigital/logstash-kubernetes:${DOCKER_IMAGE_TAG}
+ExecStart=/usr/bin/docker run --rm -t \
+  --name logstash-kubernetes \
+  --env-file=%t/logstash-kubernetes/logstash_kubernetes_aws_key \
+  -e AWS_REGION \
+  -e ENVIRONMENT \
+  -e LOG_GROUP_NAME=${ENVIRONMENT} \
+  -v /var/lib/logstash-kubernetes:/var/lib/logstash \
+  -v /var/lib/docker/containers:/var/lib/docker/containers \
+  -v /var/log/containers:/var/log/containers \
+  quay.io/ukhomeofficedigital/logstash-kubernetes:${DOCKER_IMAGE_TAG}
+ExecStop=-/usr/bin/docker stop logstash-kubernetes
+ExecStopPost=-/usr/bin/bash -c '/usr/bin/docker rm -v -f logstash-kubernetes &> /dev/null'
+Restart=always
+RestartSec=30
+
+[X-Fleet]
+Global=true
+MachineMetadata=role=kubernetes
