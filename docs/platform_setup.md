@@ -69,7 +69,7 @@ $ cfssl gencert -config=../ca/ca-config.json -ca-key=../ca/${ENV}/ca-key.pem \
 ### Generate Kubernetes Secrets and Configs
 
 Make a note of `KUBE_TOKEN` because that's what you will be using to talk to
-kubernetes API for now. 
+kubernetes API for now.
 
 The user attached to the `KUBE_TOKEN` is also used by the kubernetes processes to communicate with the API as such it needs to exist in the auth-policy that is used for your environment
 
@@ -180,6 +180,11 @@ done
 $ cd ..; rm -rf tmp
 ```
 
+## Environment Keypairs
+
+* **Create a default keypair for the environment**
+
+The config.yaml should have a ssh_key_name: [NAME] varaible e.g. dev-defaut or prod-default, ensure you have created the keypair in your AWS account.
 
 ## Launch AWS CloudFormation Stacks
 
@@ -308,4 +313,3 @@ $ fleetctl start kube-*
 
 Give it a couple of minutes and you should have a secure and fully working
 Kubernetes cluster.
-
