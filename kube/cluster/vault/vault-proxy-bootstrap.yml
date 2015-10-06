@@ -1,0 +1,87 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: services
+  name: vault-bootstrap
+data:
+  run.sh: |
+    #!/bin/sh
+
+    VAULT_UPSTREAM=${VAULT_UPSTREAM:-10.101.10.11:8200}
+    NGINX_SERVER_NAME=${NGINX_SERVER_NAME:-vault.homeoffice.gov.uk}
+    NGINX_SERVER_CERT=${NGINX_SERVER_CERT:-vault.homeoffice.gov.uk.crt}
+    NGINX_SERVER_KEY=${NGINX_SERVER_KEY:-vault.homeoffice.gov.uk.key}
+    NGINX_WORKERS=${NGINX_WORKERS:-1024}
+    NGINX_WORKER_PROCESSES=${NGINX_WORKER_PROCESSES:-4}
+
+    echo "Setting the Vault Service upstream to: ${VAULT_UPSTREAM}"
+
+    cat <<-EOF > /etc/nginx/nginx.conf
+    user              nginx;
+    worker_processes  ${NGINX_WORKER_PROCESSES};
+    daemon            off;
+
+    error_log  /var/log/nginx/error.log warn;
+    pid        /var/run/nginx.pid;
+
+    events {
+      worker_connections ${NGINX_WORKERS};
+    }
+
+    http {
+      include       /etc/nginx/mime.types;
+      default_type  application/octet-stream;
+
+      log_format  main  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
+                      '\$status $body_bytes_sent "\$http_referer" '
+                      '"\$http_user_agent" "\$http_x_forwarded_for"';
+
+      access_log /dev/stdout main;
+
+      sendfile            on;
+      keepalive_timeout   65;
+
+      include /etc/nginx/conf.d/*.conf;
+
+      upstream vault_upstream {
+        server ${VAULT_UPSTREAM};
+      }
+
+      server {
+        listen 0.0.0.0:443;
+        server_name ${NGINX_SERVER_NAME};
+
+        ssl                 on;
+        ssl_certificate     /etc/secrets/${NGINX_SERVER_CERT};
+        ssl_certificate_key /etc/secrets/${NGINX_SERVER_KEY};
+        ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers         HIGH:!aNULL:!MD5;
+
+        location / {
+          proxy_pass               https://vault_upstream;
+          proxy_http_version       1.1;
+          proxy_set_header         Connection "";
+          proxy_pass_header        Authorization;
+          proxy_ssl_session_reuse  off;
+          proxy_buffering          off;
+          proxy_set_header         Host            \$host;
+          proxy_set_header         X-Real-IP       \$remote_addr;
+          proxy_set_header         X-Forwarded-For \$proxy_add_x_forwarded_for;
+          proxy_intercept_errors   on;
+          error_page 301 302 307 = @redirect;
+        }
+
+        location @redirect {
+          set \$foo \$upstream_http_location;
+          proxy_pass \$foo;
+        }
+      }
+    }
+
+    EOF
+
+    echo "NGINX Configuration:"
+    cat /etc/nginx/nginx.conf
+
+    exec /usr/sbin/nginx -c /etc/nginx/nginx.conf

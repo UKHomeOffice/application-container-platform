@@ -1,0 +1,13 @@
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  namespace: services
+  name: vault
+subsets:
+- addresses:
+  - IP: 10.50.10.200
+  - IP: 10.50.11.200
+  - IP: 10.50.12.200
+  ports:
+  - port: 8200

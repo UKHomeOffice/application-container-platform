@@ -1,0 +1,12 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: services
+  name: vault
+spec:
+  clusterIP: 10.101.10.11
+  ports:
+  - protocol: TCP
+    port: 8200
+    targetPort: 8200
