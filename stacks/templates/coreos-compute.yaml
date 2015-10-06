@@ -212,7 +212,7 @@ Resources:
                 Type=oneshot
                 RemainAfterExit=yes
                 TimeoutStartSec=30
-                Environment="{{ kubernetes_release_url }}"
+                Environment="URL={{ kubernetes_release_url }}"
                 Environment="OUTPUT_FILE=/opt/bin/hyperkube"
                 Environment="MD5SUM={{ kubernetes_release_md5 }}"
                 ExecStart=/usr/bin/install -d -o root -g root -m 0700 /etc/kubernetes

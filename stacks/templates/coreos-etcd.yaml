@@ -210,10 +210,10 @@ Resources:
                 Type=oneshot
                 RemainAfterExit=yes
                 TimeoutStartSec=300
-                Environment="URL=https://dl.bintray.com/mitchellh/vault/vault_0.2.0_linux_amd64.zip"
+                Environment="URL={{ vault_release_url }}"
                 Environment="OUTPUT_FILE=/opt/bin/vault"
                 Environment="TMP_FILE=/tmp/vault.zip"
-                Environment="MD5SUM=8ca4cb6539441117d77e53bd25854609"
+                Environment="MD5SUM={{ vault_release_md5 }}"
                 ExecStart=/usr/bin/mkdir -p /opt/bin
                 ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${TMP_FILE} ${URL} && unzip ${TMP_FILE} -d /opt/bin; done'
             - name: install-s3secrets.service
@@ -227,9 +227,9 @@ Resources:
                 Type=oneshot
                 RemainAfterExit=yes
                 TimeoutStartSec=30
-                Environment="URL=https://github.com/UKHomeOffice/s3secrets/releases/download/v0.1.0/s3secrets-0.1.0-linux-amd64"
+                Environment="URL={{ s3secrets_release_url }}"
                 Environment="OUTPUT_FILE=/opt/bin/s3secrets"
-                Environment="MD5SUM=07205a23f045906564b13efc6a5b4c68"
+                Environment="MD5SUM={{ s3secrets_release_md5 }}"
                 ExecStart=/usr/bin/mkdir -p /opt/bin
                 ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
             - name: update-ca-certificates.service
