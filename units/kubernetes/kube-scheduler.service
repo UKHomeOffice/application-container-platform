@@ -8,11 +8,10 @@ RuntimeDirectoryMode=0700
 EnvironmentFile=/etc/s3secrets
 ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/kube-scheduler
 ExecStart=/opt/bin/hyperkube scheduler \
-  --master=https://localhost:6443 \
+  --master=http://127.0.0.1:8080 \
   --kubeconfig=%t/kube-scheduler/kubeconfig
 Restart=always
 RestartSec=10
 
 [X-Fleet]
-MachineMetadata=role=kubernetes
-MachineOf=kube-apiserver.service
+MachineMetadata=role=etcd

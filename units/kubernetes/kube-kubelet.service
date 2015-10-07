@@ -9,11 +9,13 @@ RuntimeDirectory=kube-kubelet
 RuntimeDirectoryMode=0700
 EnvironmentFile=/etc/s3secrets
 EnvironmentFile=/etc/environment
+EnvironmentFile=/etc/aws-environment
+
 ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/kube-kubelet
-ExecStart=/opt/bin/hyperkube kubelet \
+ExecStart=/opt/bin/kubelet \
   --address=0.0.0.0 \
+  --api-servers=https://127.0.0.1:6443 \
   --hostname-override=${COREOS_PRIVATE_IPV4} \
-  --api-servers=https://localhost:6443 \
   --cluster-dns=10.200.0.10 \
   --cluster-domain=cluster.local \
   --kubeconfig=%t/kube-kubelet/kubeconfig \

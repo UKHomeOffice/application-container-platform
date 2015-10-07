@@ -215,37 +215,6 @@ Resources:
                 Environment="URL={{ kubernetes_release_url }}"
                 Environment="OUTPUT_FILE=/opt/bin/hyperkube"
                 Environment="MD5SUM={{ kubernetes_release_md5 }}"
-                ExecStart=/usr/bin/install -d -o root -g root -m 0700 /etc/kubernetes
-                ExecStart=/usr/bin/mkdir -p /opt/bin
-                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
-            - name: install-kubectl.service
-              command: start
-              content: |
-                [Unit]
-                Description=Install kubectl binary
-
-                [Service]
-                Type=oneshot
-                RemainAfterExit=yes
-                TimeoutStartSec=30
-                Environment="URL={{ kubectl_release_url }}"
-                Environment="OUTPUT_FILE=/opt/bin/kubectl"
-                Environment="MD5SUM={{ kubectl_release_md5 }}"
-                ExecStart=/usr/bin/mkdir -p /opt/bin
-                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
-            - name: install-kube-apiproxy.service
-              command: start
-              content: |
-                [Unit]
-                Description=Install kube-apiproxy
-
-                [Service]
-                Type=oneshot
-                RemainAfterExit=yes
-                TimeoutStartSec=30
-                Environment="URL={{ kube_apiproxy_release_url }}"
-                Environment="OUTPUT_FILE=/opt/bin/kube-apiproxy"
-                Environment="MD5SUM={{ kube_apiproxy_release_md5 }}"
                 ExecStart=/usr/bin/mkdir -p /opt/bin
                 ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
             - name: install-vault.service
@@ -305,15 +274,18 @@ Resources:
               -A FORWARD -i docker0 -p tcp -m tcp --dport 2379 -j DROP
               :OUTPUT ACCEPT [0:0]
               COMMIT
-              
+
           - path: /etc/s3secrets
             content: |
               BUCKET_NAME={{ secrets_bucket_name }}
               AWS_REGION={{ region }}
           - path: /etc/aws-environment
             content: |
-              ENVIRONMENT={{ env }}
               AWS_REGION={{ region }}
+              DNS_ZONE_NAME={{ dns_zone_name }}
+              ENVIRONMENT={{ env }}
+              ETCD_NODES={% for n in etcd_nodes %}{{ n['ip'] }}:2379{%- if not loop.last %},{% endif %}{%- endfor %}
+              KUBE_API_NODES={% for n in etcd_nodes %}{{ n['ip'] }}:6443{%- if not loop.last %},{% endif %}{%- endfor %}
           - path: /etc/ssl/certs/platform_ca.pem
             encoding: base64
             content: {{ ca_cert }}
