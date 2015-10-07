@@ -2,6 +2,7 @@
   "CN": "*.homeoffice.gov.uk",
   "hosts": [
     "localhost",
+    "vault.services.cluster.local",
     "127.0.0.1",
     "10.50.10.200",
     "10.50.10.201",

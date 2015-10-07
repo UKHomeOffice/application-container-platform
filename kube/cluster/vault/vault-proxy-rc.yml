@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: vault-sidekick
-        image: gambol99/vault-sidekick:0.0.1
+        image: quay.io/ukhomeofficedigital/vault-sidekick
         imagePullPolicy: Always
         args:
           - -logtostderr=true
