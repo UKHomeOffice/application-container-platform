@@ -11,10 +11,10 @@ Documentation=https://github.com/UKHomeOffice/docker-static-haproxy
 EnvironmentFile=/etc/s3secrets
 EnvironmentFile=/etc/aws-environment
 
-ExecStartPre=/usr/bin/docker pull gambol99/static-haproxy
+ExecStartPre=/usr/bin/docker pull gambol99/static-haproxy:v0.0.1
 ExecStartPre=-/usr/bin/docker kill kube-api-proxy
 ExecStartPre=-/usr/bin/docker rm kube-api-proxy
-ExecStart=/usr/bin/docker run --net=host gambol99/static-haproxy -p 127.0.0.1:6443,${KUBE_API_NODES}
+ExecStart=/usr/bin/docker run --net=host gambol99/static-haproxy:v0.0.1 -p 127.0.0.1:6443,${KUBE_API_NODES}
 
 Restart=always
 RestartSec=10
