@@ -12,7 +12,7 @@ EnvironmentFile=/etc/environment
 EnvironmentFile=/etc/aws-environment
 
 ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/kube-kubelet
-ExecStart=/opt/bin/kubelet \
+ExecStart=/opt/bin/hyperkube kubelet \
   --address=0.0.0.0 \
   --api-servers=https://127.0.0.1:6443 \
   --hostname-override=${COREOS_PRIVATE_IPV4} \
