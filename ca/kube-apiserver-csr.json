@@ -3,9 +3,7 @@
   "hosts": [
     "localhost",
     "127.0.0.1",
-    "10.200.0.1",
-    "*.notprod.homeoffice.gov.uk",
-    "*.dsp.digital.homeoffice.gov.uk"
+    "10.200.0.1"
   ],
   "key": {
    "algo": "rsa",
