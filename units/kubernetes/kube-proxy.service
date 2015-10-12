@@ -3,6 +3,8 @@ Description=Kubernetes Proxy
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
+StandardOutput=null
+StandardError=null
 LimitNOFILE=10240
 RuntimeDirectory=kube-proxy
 RuntimeDirectoryMode=0700
