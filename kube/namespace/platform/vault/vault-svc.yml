@@ -4,8 +4,10 @@ apiVersion: v1
 metadata:
   namespace: platform
   name: vault
+  labels:
+    name: vault
 spec:
-  clusterIP: 10.101.10.11
+  clusterIP: 10.200.10.11
   ports:
   - protocol: TCP
     port: 8200

@@ -61,6 +61,7 @@ spec:
         args:
         # command = "/skydns"
         - -machines=http://localhost:4001
+        - -nameservers=10.50.0.2:53
         - -addr=0.0.0.0:53
         - -domain=cluster.local
         ports:
