@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  namespace: services
+  namespace: platform
   name: vault-bootstrap
 data:
   run.sh: |

@@ -5,7 +5,7 @@ metadata:
   labels:
     name: vault-proxy
   name: vault-proxy
-  namespace: services
+  namespace: platform
 spec:
   type: NodePort
   ports:

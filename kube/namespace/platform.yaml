@@ -2,6 +2,6 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: services
+  name: platform
   labels:
-    name: vault
+    name: platform

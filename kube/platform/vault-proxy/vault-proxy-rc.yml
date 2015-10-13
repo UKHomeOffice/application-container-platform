@@ -4,7 +4,7 @@ kind: ReplicationController
 metadata:
   labels:
     name: vault-proxy
-  namespace: services
+  namespace: platform
   name: vault-proxy
 spec:
   replicas: 1

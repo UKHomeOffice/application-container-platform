@@ -2,7 +2,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  namespace: services
+  namespace: platform
   name: vault
 spec:
   clusterIP: 10.101.10.11

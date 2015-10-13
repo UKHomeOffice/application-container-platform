@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ReplicationController
 metadata:
   name: kube-dns-v9
+  namespace: platform
   labels:
     k8s-app: kube-dns
     version: v9
@@ -102,4 +103,3 @@ spec:
         secret:
           secretName: skydns-secrets
       dnsPolicy: Default  # Don't use cluster DNS.
-
