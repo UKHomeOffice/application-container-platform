@@ -313,7 +313,7 @@ To start the Sky DNS service you will first need to update the sky-dns-secrets.y
 - Base64 encode the secret. You should end up with line 7 saying "kubeconfig: mybase64encodedconfig"
 - Create the services as follows
 ``` bash
-$ cd kube/cluster/skydns/
+$ cd kube/namespace/platform/skydns/
 $ kubectl --namespace=services create -f skydns-secrets.yaml
 $ kubectl --namespace=services create -f skydns-rc.yaml
 $ kubectl --namespace=services create -f skydns-service.yaml
@@ -353,5 +353,3 @@ Assuming you're already logged in to one of the nodes and have cloned the repo.
 ```bash
 $ fleetctl start units/misc/logstash-kubernetes.service
 ```
-
- 
