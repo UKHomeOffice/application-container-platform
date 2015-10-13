@@ -1,0 +1,63 @@
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: vault-proxy
+  namespace: platform
+  name: vault-proxy
+spec:
+  replicas: 1
+  selector:
+    name: vault-proxy
+  template:
+    metadata:
+      labels:
+        name: vault-proxy
+    spec:
+      containers:
+      - name: vault-sidekick
+        image: quay.io/ukhomeofficedigital/vault-sidekick
+        imagePullPolicy: Always
+        args:
+          - -logtostderr=true
+          - -v=4
+          - -tls-skip-verify=true
+          - -auth=/etc/vault/vault-token.yml
+          - -cn=secret:platform_tls:fmt=cert,fn=wildcard.notprod.homeoffice.gov.uk
+        env:
+          - name: VAULT_ADDR
+            value: https://vault.services.cluster.local:8200
+        volumeMounts:
+        - name: secrets
+          mountPath: /etc/secrets
+        - name: vault
+          mountPath: /etc/vault
+      - name: nginx-proxy
+        image: nginx:1.9.5
+        ports:
+        - containerPort: 443
+        args:
+          - bash
+          - /app/run.sh
+        env:
+          - name: NGINX_SERVER_NAME
+            value: vault-dev-commons.notprod.homeoffice.gov.uk
+          - name: NGINX_SERVER_CERT
+            value: wildcard.notprod.homeoffice.gov.uk.crt
+          - name: NGINX_SERVER_KEY
+            value: wildcard.notprod.homeoffice.gov.uk.key
+        volumeMounts:
+        - name: secrets
+          mountPath: /etc/secrets
+        - name: vault-bootstrap
+          mountPath: /app
+      volumes:
+      - name: vault
+        secret:
+          secretName: vault
+      - name: vault-bootstrap
+        secret:
+          secretName: vault-bootstrap
+      - name: secrets
+        emptyDir: {}

@@ -16,33 +16,33 @@ Resources:
 {%- endfor %}
       SecurityGroupEgress:
         - IpProtocol: tcp
-          FromPort: 8200
-          ToPort: 8200
-          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
+          FromPort: 32701
+          ToPort: 32701
+          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
 
   ELBSGToDefaultSGIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      GroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
+      GroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
       IpProtocol: tcp
       SourceSecurityGroupId: {Ref: ELBSG}
-      FromPort: 8200
-      ToPort: 8200
+      FromPort: 32701
+      ToPort: 32701
 
   ELB:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
     Properties:
       CrossZone: true
       Subnets:
-        - {{ get_stack_output(cf_conn, infra_stack_name, 'SecureSubnet0') }}
-        - {{ get_stack_output(cf_conn, infra_stack_name, 'SecureSubnet1') }}
-        - {{ get_stack_output(cf_conn, infra_stack_name, 'SecureSubnet2') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet0') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet1') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet2') }}
       SecurityGroups:
         - {Ref: ELBSG}
       HealthCheck:
-        Target: 'TCP:8200'
+        Target: 'TCP:37201'
         HealthyThreshold: 2
-        Interval: 30
+        Interval: 10
         Timeout: 5
         UnhealthyThreshold: 2
       ConnectionDrainingPolicy:
@@ -50,16 +50,9 @@ Resources:
         Timeout: 30
       Listeners:
       - LoadBalancerPort: 443
-        Protocol: HTTPS
-        InstancePort: 8200
-        InstanceProtocol: HTTPS
-        SSLCertificateId:
-          'Fn::Join':
-          - ''
-          -
-            - 'arn:aws:iam::'
-            - Ref: AWS::AccountId
-            - ':{{ platform_tls_cert_name }}'
+        Protocol: TCP
+        InstancePort: 32701
+        InstanceProtocol: TCP
       Tags:
       - Key: Name
         Value: {{ env }}-vault-elb

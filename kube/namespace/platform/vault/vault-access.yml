@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vault
+  namespace: platform
+data:
+  vault-token.yml: |
+    method: userpass
+    username: services
+    password: VAULT_PASSWORD
