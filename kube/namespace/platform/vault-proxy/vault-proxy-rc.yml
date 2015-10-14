@@ -42,7 +42,7 @@ spec:
           - /app/run.sh
         env:
           - name: NGINX_SERVER_NAME
-            value: vault-dev-commons.notprod.homeoffice.gov.uk
+            value: vault-dev-dsp.notprod.homeoffice.gov.uk
           - name: NGINX_SERVER_CERT
             value: wildcard.notprod.homeoffice.gov.uk.crt
           - name: NGINX_SERVER_KEY
