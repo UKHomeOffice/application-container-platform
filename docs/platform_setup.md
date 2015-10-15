@@ -304,21 +304,6 @@ High-Availability Enabled: true
   Leader: https://10.50.12.200:8200
 ```
 
-## Setup SkyDNS
-
-The SkyDNS service is required if you are to use the standard configuration for the platform. This is because kubelets are configured to use the Sky DNS service for DNS.
-
-To start the Sky DNS service you will first need to update the sky-dns-secrets.yaml file.
-- Update the kubetoken in the file with the SKY_DNS_KUBE_TOKEN value. DO NOT COMMIT THIS FILE!! The token is sensitive
-- Base64 encode the secret. You should end up with line 7 saying "kubeconfig: mybase64encodedconfig"
-- Create the services as follows
-``` bash
-$ cd kube/namespace/platform/skydns/
-$ kubectl --namespace=services create -f skydns-secrets.yaml
-$ kubectl --namespace=services create -f skydns-rc.yaml
-$ kubectl --namespace=services create -f skydns-service.yaml
-```
-
 ## Start Kubernetes Services
 
 Login to one of the nodes, either etcd or compute, clone this repo and start
@@ -333,6 +318,21 @@ $ fleetctl start kube-*
 
 Give it a couple of minutes and you should have a secure and fully working
 Kubernetes cluster.
+
+## Setup SkyDNS
+
+The SkyDNS service is required if you are to use the standard configuration for the platform. This is because kubelets are configured to use the Sky DNS service for DNS.
+
+To start the Sky DNS service you will first need to update the sky-dns-secrets.yaml file.
+- Update the kubetoken in the file with the SKY_DNS_KUBE_TOKEN value. DO NOT COMMIT THIS FILE!! The token is sensitive
+- Base64 encode the secret. You should end up with line 7 saying "kubeconfig: mybase64encodedconfig"
+- Create the services as follows
+``` bash
+$ cd kube/namespace/platform/skydns/
+$ kubectl --namespace=services create -f skydns-secrets.yaml
+$ kubectl --namespace=services create -f skydns-rc.yaml
+$ kubectl --namespace=services create -f skydns-service.yaml
+```
 
 ## Enable Kubernetes Logging
 
