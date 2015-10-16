@@ -159,7 +159,7 @@ Resources:
               - name: 10-opts.conf
                 content: |
                   [Service]
-                  Environment=DOCKER_OPTS='--iptables="false"'
+                  Environment=DOCKER_OPTS='--iptables="false" --log-opt max-size=100m --log-opt max-file=1'
             - name: etcd2.service
               command: start
               enable: true
