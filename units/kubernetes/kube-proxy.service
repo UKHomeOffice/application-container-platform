@@ -9,9 +9,11 @@ LimitNOFILE=10240
 RuntimeDirectory=kube-proxy
 RuntimeDirectoryMode=0700
 EnvironmentFile=/etc/s3secrets
+EnvironmentFile=/etc/aws-environment
+
 ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/kube-proxy
 ExecStart=/opt/bin/hyperkube proxy \
-  --master=https://localhost:6443 \
+  --master=https://127.0.0.1:6443 \
   --kubeconfig=%t/kube-proxy/kubeconfig \
   --logtostderr=true
 Restart=always

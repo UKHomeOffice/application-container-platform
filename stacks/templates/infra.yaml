@@ -89,6 +89,10 @@ Resources:
           SourceSecurityGroupId: {Ref: ComputeDefaultSG}
           FromPort: 2380
           ToPort: 2380
+        - IpProtocol: tcp
+          SourceSecurityGroupId: {Ref: ComputeDefaultSG}
+          FromPort: 6443
+          ToPort: 6443
         # TODO(vaijab): maybe expose vault via an ELB
         - IpProtocol: tcp
           SourceSecurityGroupId: {Ref: ComputeDefaultSG}

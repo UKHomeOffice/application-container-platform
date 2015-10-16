@@ -56,8 +56,6 @@ prod:
   kube_apiproxy_release_md5: 06d0a0465524f74a682ce1de85f6b662
   kubernetes_release_url: https://storage.googleapis.com/kubernetes-release/release/v1.0.6/bin/linux/amd64/hyperkube
   kubernetes_release_md5: 86f6ec34e71c7d9db5f896bca3a69634
-  kubectl_release_url: https://storage.googleapis.com/kubernetes-release/release/v1.0.6/bin/linux/amd64/kubectl
-  kubectl_release_md5: 3f66cb511dd41e313e0013aab8094244
   s3secrets_release_url: https://github.com/UKHomeOffice/s3secrets/releases/download/v0.1.0/s3secrets-0.1.0-linux-amd64
   s3secrets_release_md5: 07205a23f045906564b13efc6a5b4c68
   vault_release_url: https://dl.bintray.com/mitchellh/vault/vault_0.3.0_linux_amd64.zip
@@ -82,8 +80,6 @@ dev:
   kube_apiproxy_release_md5: 06d0a0465524f74a682ce1de85f6b662
   kubernetes_release_url: https://storage.googleapis.com/kubernetes-release/release/v1.0.6/bin/linux/amd64/hyperkube
   kubernetes_release_md5: 86f6ec34e71c7d9db5f896bca3a69634
-  kubectl_release_url: https://storage.googleapis.com/kubernetes-release/release/v1.0.6/bin/linux/amd64/kubectl
-  kubectl_release_md5: 3f66cb511dd41e313e0013aab8094244
   s3secrets_release_url: https://github.com/UKHomeOffice/s3secrets/releases/download/v0.1.0/s3secrets-0.1.0-linux-amd64
   s3secrets_release_md5: 07205a23f045906564b13efc6a5b4c68
   vault_release_url: https://dl.bintray.com/mitchellh/vault/vault_0.3.0_linux_amd64.zip

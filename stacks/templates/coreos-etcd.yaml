@@ -30,6 +30,16 @@ Resources:
         - {{ get_stack_output(cf_conn, infra_stack_name, 'EtcdCoreOSRole') }}
       PolicyDocument:
         Statement:
+        - Resource: '*'
+          Effect: Allow
+          Action:
+            - ec2:DescribeInstances
+            - ec2:DescribeTags
+            - ec2:DescribeRouteTables
+            - ec2:DescribeVpcs
+            - elasticloadbalancing:DescribeLoadBalancers
+            - elasticloadbalancing:RegisterInstancesWithLoadBalancer
+            - elasticloadbalancing:DeregisterInstancesFromLoadBalancer
         - Resource: 'arn:aws:kms:{{ region }}:*:key/{{ kms_master_key_id }}'
           Effect: Allow
           Action:
@@ -232,6 +242,21 @@ Resources:
                 Environment="MD5SUM={{ s3secrets_release_md5 }}"
                 ExecStart=/usr/bin/mkdir -p /opt/bin
                 ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
+            - name: install-kubernetes.service
+              command: start
+              content: |
+                [Unit]
+                Description=Install kubernetes
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=30
+                Environment="URL={{ kubernetes_release_url }}"
+                Environment="OUTPUT_FILE=/opt/bin/hyperkube"
+                Environment="MD5SUM={{ kubernetes_release_md5 }}"
+                ExecStart=/usr/bin/mkdir -p /opt/bin
+                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
             - name: update-ca-certificates.service
               command: start
               enable: true
@@ -252,8 +277,11 @@ Resources:
               AWS_REGION={{ region }}
           - path: /etc/aws-environment
             content: |
-              ENVIRONMENT={{ env }}
               AWS_REGION={{ region }}
+              DNS_ZONE_NAME={{ dns_zone_name }}
+              ENVIRONMENT={{ env }}
+              ETCD_NODES={% for n in etcd_nodes %}{{ n['ip'] }}:2379{%- if not loop.last %},{% endif %}{%- endfor %}
+              KUBE_API_NODES={% for n in etcd_nodes %}{{ n['ip'] }}:6443{%- if not loop.last %},{% endif %}{%- endfor %}
           - path: /etc/vault.hcl
             content: |
               backend "etcd" {
