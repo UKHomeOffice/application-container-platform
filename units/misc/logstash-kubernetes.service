@@ -32,4 +32,3 @@ RestartSec=30
 
 [X-Fleet]
 Global=true
-MachineMetadata=role=kubernetes
