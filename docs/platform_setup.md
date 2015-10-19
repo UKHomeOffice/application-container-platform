@@ -329,9 +329,9 @@ To start the Sky DNS service you will first need to update the sky-dns-secrets.y
 - Create the services as follows
 ``` bash
 $ cd kube/namespace/platform/skydns/
-$ kubectl --namespace=services create -f skydns-secrets.yaml
-$ kubectl --namespace=services create -f skydns-rc.yaml
-$ kubectl --namespace=services create -f skydns-service.yaml
+$ kubectl create -f skydns-secrets.yaml
+$ kubectl create -f skydns-rc.yaml
+$ kubectl create -f skydns-service.yaml
 ```
 
 ## Enable Kubernetes Logging
