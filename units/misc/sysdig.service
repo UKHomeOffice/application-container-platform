@@ -1,0 +1,39 @@
+[Unit]
+Description=Sysdig Cloud Agent
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/aws-environment
+EnvironmentFile=/etc/s3secrets
+Environment="DOCKER_IMAGE_TAG=alpha"
+Environment="COLLECTOR=collector-staging2.sysdigcloud.com"
+Environment="ACCESS_KEY=db25971c-5059-44ba-855f-50c672ec3d4e"
+Environment="TAGS=platform:dsp,region=eu-west-1"
+
+ExecStartPre=-/usr/bin/docker kill sysdig-agent
+ExecStartPre=-/usr/bin/docker rm sysdig-agent
+ExecStartPre=/usr/bin/docker pull sysdig/agent:${DOCKER_IMAGE_TAG}
+ExecStart=/usr/bin/docker run \
+  --name sysdig-agent \
+  --privileged=true \
+  --net=host \
+  --pid host \
+  -e ACCESS_KEY \
+  -e COLLECTOR \
+  -e TAGS \
+  -e env=${ENVIRONMENT} \
+  -v /var/run/docker.sock:/host/var/run/docker.sock \
+  -v /dev:/host/dev \
+  -v /proc:/host/proc:ro \
+  -v /boot:/host/boot:ro \
+  -v /lib/modules:/host/lib/modules:ro \
+  -v /usr:/host/usr:ro \
+  sysdig/agent:${DOCKER_IMAGE_TAG}
+
+ExecStop=/usr/bin/docker stop sysdig-agent
+ExecStop=/usr/bin/docker rm sysdig-agent
+
+[X-Fleet]
+Global=true
