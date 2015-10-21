@@ -9,7 +9,7 @@ RuntimeDirectory=logstash-kubernetes
 RuntimeDirectoryMode=0700
 EnvironmentFile=/etc/aws-environment
 EnvironmentFile=/etc/s3secrets
-Environment="DOCKER_IMAGE_TAG=v0.0.3"
+Environment="DOCKER_IMAGE_TAG=v0.0.4"
 
 ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/logstash-kubernetes
 ExecStartPre=/usr/bin/docker pull quay.io/ukhomeofficedigital/logstash-kubernetes:${DOCKER_IMAGE_TAG}
