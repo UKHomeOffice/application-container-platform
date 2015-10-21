@@ -21,17 +21,14 @@ Examples work best to showcase Vault. Please see the use cases.
 
 #### **DSP Setup**
 ---
-Vault is presently running in high-availability mode on the etcd cluster boxes and using etcd as it's storage backend backend.  You can review the setup and installation notes in [platform_setup](https://github.com/UKHomeOffice/dsp/blob/master/docs/platform_setup.md#vault).  Internally the service is exposed via a internal load balancer, provided by a [headless service](https://github.com/UKHomeOffice/dsp/tree/master/kube/namespace/platform/vault) in kubernetes.  Externally, although not officially required, the service is exposed via a [ELB service](https://github.com/UKHomeOffice/dsp/blob/master/stacks/templates/vault-elb.yaml). Due to the manner in which Vault handles standby nodes (only one node is master at any one time) a proxy [Vault Proxy](#vault-proxy) is placed in front.
+Vault is presently running in high-availability mode on the etcd cluster boxes and using etcd as it's storage backend.  You can review the setup and installation notes in [platform_setup](https://github.com/UKHomeOffice/dsp/blob/master/docs/platform_setup.md#vault).  Internally the service is exposed via a internal load balancer, provided by a [headless service](https://github.com/UKHomeOffice/dsp/tree/master/kube/namespace/platform/vault) in kubernetes.  Externally, although not officially required, the service is exposed via a [ELB service](https://github.com/UKHomeOffice/dsp/blob/master/stacks/templates/vault-elb.yaml). Due to the manner in which Vault handles standby nodes (only one node is master at any one time) a proxy [Vault Proxy](#vault-proxy) is placed in front.
 
 #### **[Vault Proxy](#vault-proxy)**
 
 Note, is you don't intend to expose the Vault Service externally you can skip over this section. Seated behind an ELB the vault service standby nodes do not proxy traffic onto the master, instead the issue a 307 HTTP redirect to the advertised address of the master, which in this case is a non-routable address. The [vault proxy](https://github.com/UKHomeOffice/dsp/tree/master/kube/namespace/platform/vault-proxy) is a nginx service is configured to handle the redirect for you.
 
 ### **Vaults Paths**
-Before delving into setting up backends and policies we need to speak about Vault paths. So by
-default path of a backend is the same as the backend provide i.e. aws secret backend is aws/, mysql
-is mysql/ etc etc. In order to support multiple background, Vault provides the notion of a path and
-allows you to 'mount' logical backends to paths.
+Before delving into setting up backends and policies we need to speak about Vault paths. The default path of a backend is the same as the backend provider name i.e. aws secret backend is aws/, mysql is mysql/ etc etc. In order to support multiple backends, Vault provides the notion of a mount path.
 
 Lets say we have two mysql backends
 
@@ -56,7 +53,7 @@ Or you have two projects which have different CA's
 $ vault mount -path=certs/myproduct pki
 
 $ vault mount -path=certs/myproduct pki
-Successfully mounted 'pki' at 'certs/myproductmyproduct'!
+Successfully mounted 'pki' at 'certs/myproduct'!
 
 $ vault mounts
 Path              Type       Default TTL  Max TTL  Description
@@ -68,7 +65,6 @@ pki/              pki        system       system
 secret/           generic    system       system   generic secret storage
 sys/              system     n/a          n/a      system endpoints used for control, policy and debugging
 ```
-
 
 #### **Vault Policies**
 
@@ -112,7 +108,7 @@ path "myproduct/mysql/*" {
 
 #### **Project Example**
 -----
-Note, the layout given here is not an absolute; depending on the setup and requirements you might decide using paths isn't warranted and place everything within their respective cubbyhole's. Also note, policies / acl's are applied to the logical path, thus you can still write policies to users which move across multiple mount points.
+Note, the layout given here is not an absolute; depending on the setup and requirements you might decide using additional mount points isn't warranted and place everything within their respective cubbyhole's.
 
  - **Adding the MyProduct user and policy**
 
@@ -209,51 +205,51 @@ mysql> select User from mysql.user;
 
 Early in the decision over using Vault, the consensus was to use a [generic container](https://github.com/UKHomeOffice/vault-sidekick) rather than hard-coding vault into our applications. This has numerous benefits
 
-* It free the application from having to handle an implementation of accessing, renewing, revoking Vault.
-* It keeps the application generic, all they care about is files, how those are delivered it irrelevant.
-*  To vault or not to vault? the eco-system of container is a fast moving thing, things that are cool today are crap tomorrow and next month no doubt there be something event better. The approach that Vault brings, short-term access to resources is more important than the implementation.
+* It free's the application from having to handle an implementation of accessing, renewing, revoking Vault.
+* It keep's the application generic, all they care about is files, how those are delivered is irrelevant; easier for testing.
+* To vault or not to vault? the eco-system of container is a fast moving thing, things that are cool today are crap tomorrow and next month no doubt there be something event better. The approach that Vault brings, short-term access to resources is more important than the implementation.
 * There's a lot of cross-over from proposal's thrown around in Kubernetes; dynamic secrets, config api, encryptiona dn key rotation all have proposal's and as Kubernetes becomes more plugin friendly, chances are will be implemented via a plugin is a secrets delivery mechanism
-* And indeed, some of the application will be outside of scope, third-party and simple open-source components which would make integration forks.
+* And indeed, some of the application will be outside of scope; third-party and simple open-source components which would make diverge's.
 
 Integration with Kubernetes requires a vault-side pod to access and delivery the resource the project app. Below is a snippet from a replication controller file.
 
 ````YAML
 - name: vault-sidekick
-        image: quay.io/ukhomeofficedigital/vault-sidekick:latest
-        imagePullPolicy: Always
-        args:
-          - -logtostderr=true
-          - -v=4
-          - -tls-skip-verify=true
-          - -auth=/etc/vault/vault.yml
-          - -output=/etc/secrets
-          - -cn=secret:secret/platform/platform_tls:fmt=cert,up=12h,file=platform_tls
-          - -cn=aws:myproduct/aws/creds/myproduct_s3_backup_access:update=6h,fmt=yaml,file=s3access.yaml
-          - -cn=mysql:myproduct/mysql/creds/readonly:renew=true,update=30m,fmt=yaml,file=db.yaml
-        env:
-          - name: VAULT_ADDR
-            value: https://vault.platform.cluster.local:8200
-        volumeMounts:
-          - name: vault
-            mountPath: /etc/vault
-          - name: secrets
-            mountPath: /etc/secrets
-      - name: nginx-tls-sidekick
-        image: quay.io/ukhomeofficedigital/nginx-tls-sidekick
-        imagePullPolicy: Always
-        args:
-          - ./run.sh
-          - -p
-          - 443:127.0.0.1:4180:platform_tls
-        volumeMounts:
-          - name: secrets
-            mountPath: /etc/secrets
-          - name: vault
-            mountPath: /etc/vault
-      volumes:
-        - name: secrets
-          emptyDir: {}
-        - name: vault
-          secret:
-            secretName: vault
+  image: quay.io/ukhomeofficedigital/vault-sidekick:latest
+  imagePullPolicy: Always
+  args:
+    - -logtostderr=true
+    - -v=4
+    - -tls-skip-verify=true
+    - -auth=/etc/vault/vault.yml
+    - -output=/etc/secrets
+    - -cn=secret:secret/platform/platform_tls:fmt=cert,up=12h,file=platform_tls
+    - -cn=aws:myproduct/aws/creds/myproduct_s3_backup_access:update=6h,fmt=yaml,file=s3access.yaml
+    - -cn=mysql:myproduct/mysql/creds/readonly:renew=true,update=30m,fmt=yaml,file=db.yaml
+  env:
+    - name: VAULT_ADDR
+      value: https://vault.platform.cluster.local:8200
+  volumeMounts:
+    - name: vault
+      mountPath: /etc/vault
+    - name: secrets
+      mountPath: /etc/secrets
+- name: nginx-tls-sidekick
+  image: quay.io/ukhomeofficedigital/nginx-tls-sidekick
+  imagePullPolicy: Always
+  args:
+    - ./run.sh
+    - -p
+    - 443:127.0.0.1:4180:platform_tls
+  volumeMounts:
+    - name: secrets
+      mountPath: /etc/secrets
+    - name: vault
+      mountPath: /etc/vault
+volumes:
+  - name: secrets
+    emptyDir: {}
+  - name: vault
+    secret:
+      secretName: vault
 ````
