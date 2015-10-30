@@ -6,7 +6,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 RuntimeDirectory=kube-controller-manager
 RuntimeDirectoryMode=0700
 EnvironmentFile=/etc/s3secrets
-ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/kube-controller-manager
+ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -output-dir=%t/kube-controller-manager -path=kube-controller-manager/
 ExecStart=/opt/bin/hyperkube controller-manager \
   --cloud-provider=aws \
   --master=https://127.0.0.1:6443 \
