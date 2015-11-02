@@ -25,6 +25,7 @@ Technical documentation can be found at [docs](docs/).
 * [Backups](docs/backups.md)
 * [Disaster Recovery](docs/dr.md)
 * [Logging and Monitoring](docs/logging_monitoring.md)
+* [Vault](docs/vault.md)
 
 ### Applications and Services
 
