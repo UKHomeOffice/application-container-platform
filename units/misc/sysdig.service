@@ -7,7 +7,7 @@ Requires=docker.service
 TimeoutStartSec=0
 EnvironmentFile=/etc/aws-environment
 EnvironmentFile=/etc/s3secrets
-Environment="DOCKER_IMAGE_TAG=0.3.0"
+Environment="DOCKER_IMAGE_TAG=latest"
 Environment="COLLECTOR=collector-staging2.sysdigcloud.com"
 Environment="ACCESS_KEY=db25971c-5059-44ba-855f-50c672ec3d4e"
 Environment="TAGS=platform:dsp,region=eu-west-1"
