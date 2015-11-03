@@ -6,7 +6,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 RuntimeDirectory=kube-scheduler
 RuntimeDirectoryMode=0700
 EnvironmentFile=/etc/s3secrets
-ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/kube-scheduler
+ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -output-dir=%t/kube-scheduler -path=kube-scheduler/
 ExecStart=/opt/bin/hyperkube scheduler \
   --master=https://127.0.0.1:6443 \
   --kubeconfig=%t/kube-scheduler/kubeconfig

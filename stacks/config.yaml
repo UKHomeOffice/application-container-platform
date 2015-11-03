@@ -52,12 +52,10 @@ prod:
   access_log_bucket_name: prod-elb-access-logs-eu-west-1
   secrets_bucket_name: prod-platform-secrets-eu-west-1
   # releases and versions
-  kube_apiproxy_release_url: https://github.com/vaijab/kube-apiproxy/releases/download/v0.0.2/kube-apiproxy-0.0.2-linux-amd64
-  kube_apiproxy_release_md5: 06d0a0465524f74a682ce1de85f6b662
   kubernetes_release_url: https://storage.googleapis.com/kubernetes-release/release/v1.0.6/bin/linux/amd64/hyperkube
   kubernetes_release_md5: 86f6ec34e71c7d9db5f896bca3a69634
-  s3secrets_release_url: https://github.com/UKHomeOffice/s3secrets/releases/download/v0.1.0/s3secrets-0.1.0-linux-amd64
-  s3secrets_release_md5: 07205a23f045906564b13efc6a5b4c68
+  s3secrets_release_url: https://github.com/UKHomeOffice/s3secrets/releases/download/v0.1.1/s3secrets_0.1.1_linux_x86_64
+  s3secrets_release_md5: fb7d1fd0586d0db4189f8d9cf643a172
   vault_release_url: https://dl.bintray.com/mitchellh/vault/vault_0.3.0_linux_amd64.zip
   vault_release_md5: 98cba2e861d59c44948cc61857a68389
   # base64 encoded
@@ -76,12 +74,10 @@ dev:
   secrets_bucket_name: dev-platform-secrets-eu-west-1
   access_log_bucket_name: dev-elb-access-logs-eu-west-1
   # releases and versions
-  kube_apiproxy_release_url: https://github.com/vaijab/kube-apiproxy/releases/download/v0.0.2/kube-apiproxy-0.0.2-linux-amd64
-  kube_apiproxy_release_md5: 06d0a0465524f74a682ce1de85f6b662
   kubernetes_release_url: https://storage.googleapis.com/kubernetes-release/release/v1.0.6/bin/linux/amd64/hyperkube
   kubernetes_release_md5: 86f6ec34e71c7d9db5f896bca3a69634
-  s3secrets_release_url: https://github.com/UKHomeOffice/s3secrets/releases/download/v0.1.0/s3secrets-0.1.0-linux-amd64
-  s3secrets_release_md5: 07205a23f045906564b13efc6a5b4c68
+  s3secrets_release_url: https://github.com/UKHomeOffice/s3secrets/releases/download/v0.1.1/s3secrets_0.1.1_linux_x86_64
+  s3secrets_release_md5: fb7d1fd0586d0db4189f8d9cf643a172
   vault_release_url: https://dl.bintray.com/mitchellh/vault/vault_0.3.0_linux_amd64.zip
   vault_release_md5: 98cba2e861d59c44948cc61857a68389
   # base64 encoded

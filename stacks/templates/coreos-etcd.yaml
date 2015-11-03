@@ -198,18 +198,18 @@ Resources:
               command: start
               enable: true
               drop-ins:
-              - name: 10-dependencies.conf
+              -- name: 10-dependencies.conf
                 content: |
                   [Unit]
-                  Requires=update-ca-certificates.service install-s3secrets.service
-                  After=update-ca-certificates.service install-s3secrets.service etcd2-datadir.service
+                  Requires=update-ca-certificates.service
+                  After=update-ca-certificates.service etcd2-datadir.service
               - name: 15-s3secrets.conf
                 content: |
                   [Service]
                   RuntimeDirectory=etcd2
                   RuntimeDirectoryMode=0700
                   EnvironmentFile=/etc/s3secrets
-                  ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/etcd2
+                  ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -output-dir=%t/etcd2 -path=etcd/
             - name: install-vault.service
               command: start
               content: |
@@ -226,22 +226,6 @@ Resources:
                 Environment="MD5SUM={{ vault_release_md5 }}"
                 ExecStart=/usr/bin/mkdir -p /opt/bin
                 ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${TMP_FILE} ${URL} && unzip ${TMP_FILE} -d /opt/bin; done'
-            - name: install-s3secrets.service
-              command: start
-              content: |
-                [Unit]
-                Description=Install s3secrets
-                Documentation=https://github.com/UKHomeOffice/s3secrets
-
-                [Service]
-                Type=oneshot
-                RemainAfterExit=yes
-                TimeoutStartSec=30
-                Environment="URL={{ s3secrets_release_url }}"
-                Environment="OUTPUT_FILE=/opt/bin/s3secrets"
-                Environment="MD5SUM={{ s3secrets_release_md5 }}"
-                ExecStart=/usr/bin/mkdir -p /opt/bin
-                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
             - name: install-kubernetes.service
               command: start
               content: |
@@ -257,19 +241,47 @@ Resources:
                 Environment="MD5SUM={{ kubernetes_release_md5 }}"
                 ExecStart=/usr/bin/mkdir -p /opt/bin
                 ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
+            - name: install-s3secrets.service
+              command: start
+              content: |
+                [Unit]
+                Description=Install s3secrets
+                Documentation=https://github.com/UKHomeOffice/s3secrets
+                Before=etcd2.service
+
+                [Service]
+                Type=notify
+                NotifyAccess=all
+                RemainAfterExit=yes
+                TimeoutStartSec=30
+                Environment="URL={{ s3secrets_release_url }}"
+                Environment="OUTPUT_FILE=/opt/bin/s3secrets"
+                Environment="MD5SUM={{ s3secrets_release_md5 }}"
+                ExecStartPre=/usr/bin/mkdir -p /opt/bin
+                ExecStartPre=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
+                ExecStart=/usr/bin/systemd-notify --ready --status="succussfully downloaded the s3secrets"
             - name: update-ca-certificates.service
               command: start
               enable: true
               content: |
                 [Unit]
                 Description=Update CA Certificates
+                Requires=install-s3secrets.service
+                After=install-s3secrets.service
                 Before=etcd2.service
 
                 [Service]
-                Type=oneshot
+                Type=notify
+                NotifyAccess=all
+                EnvironmentFile=/etc/environment
+                EnvironmentFile=/etc/s3secrets
                 RemainAfterExit=yes
                 TimeoutStartSec=300
-                ExecStart=/usr/sbin/update-ca-certificates
+                ExecStartPre=/usr/bin/mkdir -p /etc/ssl/etcd
+                ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -path=platform/platform_ca.pem -output-dir=/etc/ssl/certs
+                ExecStartPre=/usr/bin/cp -f /etc/ssl/certs/platform_ca.pem /etc/ssl/etcd/platform_ca.pem
+                ExecStartPre=/usr/sbin/update-ca-certificates
+                ExecStart=/usr/bin/systemd-notify --ready --status="succussfully updated the ca root certificates"
           write_files:
           - path: /etc/s3secrets
             content: |
@@ -297,10 +309,6 @@ Resources:
 
               # TODO(vaijab): give CAP_IPC_LOCK via systemd service instead
               disable_mlock = true
-          - path: /etc/ssl/certs/platform_ca.pem
-            encoding: base64
-            content: {{ ca_cert }}
-
 {%- endfor %}
 
 Outputs:

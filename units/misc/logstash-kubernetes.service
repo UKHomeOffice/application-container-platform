@@ -11,7 +11,7 @@ EnvironmentFile=/etc/aws-environment
 EnvironmentFile=/etc/s3secrets
 Environment="DOCKER_IMAGE_TAG=v0.0.4"
 
-ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/logstash-kubernetes
+ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -output-dir=%t/logstash-kubernetes -path=logstash-kubernetes
 ExecStartPre=/usr/bin/docker pull quay.io/ukhomeofficedigital/logstash-kubernetes:${DOCKER_IMAGE_TAG}
 ExecStart=/usr/bin/docker run --rm -t \
   --name logstash-kubernetes \
