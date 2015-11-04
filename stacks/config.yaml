@@ -1,6 +1,6 @@
 ---
 common:
-  coreos_ami_name: CoreOS-alpha-815.0.0-hvm
+  coreos_ami_name: CoreOS-alpha-845.0.0-hvm
   compute_min_instances: 5
   compute_pause_time: PT5M
   vpc_cidr: 10.50.0.0/16
