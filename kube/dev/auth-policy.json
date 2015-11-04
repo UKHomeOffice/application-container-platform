@@ -14,4 +14,6 @@
 {"user":"joe.flintham"}
 {"user":"daniel.martin"}
 {"user":"paul.miles"}
+{"user":"pentest1", "namespace": "pentest1" }
+{"user":"pentest2", "namespace": "pentest2" }
 
