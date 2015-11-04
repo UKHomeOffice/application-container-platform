@@ -198,7 +198,7 @@ Resources:
               command: start
               enable: true
               drop-ins:
-              -- name: 10-dependencies.conf
+              - name: 10-dependencies.conf
                 content: |
                   [Unit]
                   Requires=update-ca-certificates.service
