@@ -10,7 +10,7 @@ RuntimeDirectory=vault
 RuntimeDirectoryMode=0700
 EnvironmentFile=/etc/s3secrets
 Environment="HOME=%t/vault"
-ExecStartPre=/opt/bin/s3secrets --region ${AWS_REGION} --bucket ${BUCKET_NAME} --output-dir %t/vault
+ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -output-dir=%t/vault -path=vault/
 ExecStart=/opt/bin/vault server -config=/etc/vault.hcl
 ExecStartPost=/usr/bin/bash -c 'sleep 5; /opt/bin/vault status; if [[ $? == 1 ]]; then /opt/bin/vault unseal $(cat %t/vault/vault-unseal.key); fi'
 Restart=always
