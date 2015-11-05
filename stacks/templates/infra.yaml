@@ -57,11 +57,6 @@ Resources:
           FromPort: 22
           ToPort: 22
 {%- endfor %}
-        # The kube-api requires access to the kubelet on this port to handle exec and logs kubectl commands
-        - IpProtocol: tcp
-          SourceSecurityGroupId: {Ref: SecureDefaultSG}
-          FromPort: 10250
-          ToPort: 10250
       Tags:
         - Key: Name
           Value: {{ env }}-compute-default
@@ -78,6 +73,11 @@ Resources:
           CidrIp: 0.0.0.0/0
           FromPort: -1
           ToPort: -1
+        # The kube-api requires access to the kubelet on this port to handle exec and logs kubectl commands
+        - IpProtocol: tcp
+          DestinationSecurityGroupId: {Ref: ComputeDefaultSG}
+          FromPort: 10250
+          ToPort: 10250
       SecurityGroupIngress:
 {% for subnet in ssh_access_subnets %}
         - IpProtocol: tcp
