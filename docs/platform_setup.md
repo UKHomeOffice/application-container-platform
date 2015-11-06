@@ -175,24 +175,9 @@ $ aws s3 mb s3://${ENV}-platform-secrets-eu-west-1
 ```
 
 ```bash
-
-aws s3 cp ./ca/${ENV}/ca.pem s3://${ENV}-platform-secrets-eu-west-1/platform/platform_ca.pem
-
-aws s3 cp etcd-key.pem.encrypted s3://${ENV}-platform-secrets-eu-west-1/etcd/etcd-key.pem.encrypted
-aws s3 cp etcd-crt.pem.encrypted s3://${ENV}-platform-secrets-eu-west-1/etcd/etcd-crt.pem.encrypted
-
-aws s3 cp vault-key.pem.encrypted s3://${ENV}-platform-secrets-eu-west-1/vault/vault-key.pem.encrypted
-aws s3 cp vault-crt.pem.encrypted s3://${ENV}-platform-secrets-eu-west-1/vault/vault-crt.pem.encrypted
-
-aws s3 cp kube-apiserver-key.pem.encrypted s3://${ENV}-platform-secrets-eu-west-1/kube-apiserver/kube-apiserver-key.pem.encrypted
-aws s3 cp kube-apiserver-crt.pem.encrypted s3://${ENV}-platform-secrets-eu-west-1/kube-apiserver/kube-apiserver-crt.pem.encrypted
-aws s3 cp auth-policy.json.encrypted s3://${ENV}-platform-secrets-eu-west-1/kube-apiserver/auth-policy.json.encrypted
-aws s3 cp tokens.csv.encrypted s3://${ENV}-platform-secrets-eu-west-1/kube-apiserver/tokens.csv.encrypted
-
-aws s3 cp kubeconfig.encrypted s3://${ENV}-platform-secrets-eu-west-1/kube-controller-manager/kubeconfig.encrypted
-aws s3 cp kubeconfig.encrypted s3://${ENV}-platform-secrets-eu-west-1/kube-kubelet/kubeconfig.encrypted
-aws s3 cp kubeconfig.encrypted s3://${ENV}-platform-secrets-eu-west-1/kube-proxy/kubeconfig.encrypted
-aws s3 cp kubeconfig.encrypted s3://${ENV}-platform-secrets-eu-west-1/kube-scheduler/kubeconfig.encrypted
+for n in $(ls -1 *.encrypted); do
+  aws s3 cp ${n} s3://${ENV}-platform-secrets-eu-west-1
+done
 ```
 
 ### Cleanup
