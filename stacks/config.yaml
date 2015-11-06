@@ -39,6 +39,7 @@ common:
   vault_access_subnets:
   - 80.193.85.91/32
   - 80.169.158.34/32
+  cloudtrail_log_group_name: 'CloudTrail/DefaultLogGroup'
 
 prod:
   vpc_name: prod-vpc
