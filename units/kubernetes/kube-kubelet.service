@@ -13,15 +13,20 @@ EnvironmentFile=/etc/aws-environment
 
 ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -output-dir=%t/kube-kubelet -path=kube-kubelet/
 ExecStart=/opt/bin/hyperkube kubelet \
+  --cloud-provider=aws \
   --address=0.0.0.0 \
   --api-servers=https://127.0.0.1:6443 \
-  --hostname-override=${COREOS_PRIVATE_IPV4} \
   --cluster-dns=10.200.0.10 \
   --cluster-domain=cluster.local \
   --kubeconfig=%t/kube-kubelet/kubeconfig \
   --logtostderr=true
 Restart=always
 RestartSec=10
+ExecStartPost=/usr/bin/bash -c 'export PATCH_JSON="{\\"metadata\\": {\\"labels\\": { \\"aws_az\\": \\"$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)\\"}}}" ; \
+  export FULL_HOSTNAME=$(hostname -f) ; \
+  sleep 5 ; \
+  until kubectl -s https://127.0.0.1:6443 --kubeconfig=/run/kube-kubelet/kubeconfig patch nodes $FULL_HOSTNAME -p "$PATCH_JSON" ; \
+  do sleep 5 ; done'
 
 [X-Fleet]
 Global=true
