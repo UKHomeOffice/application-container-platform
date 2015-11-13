@@ -4,6 +4,8 @@ After=docker.service
 Requires=docker.service
 
 [Service]
+Restart=always
+RestartSec=10
 TimeoutStartSec=0
 EnvironmentFile=/etc/aws-environment
 EnvironmentFile=/etc/s3secrets
