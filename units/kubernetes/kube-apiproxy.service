@@ -1,23 +1,24 @@
-#
-# Notes: we can stick with the kube-apiproxy go with a haproxy implementation, the kube-apiserver
-# no longer moves to the need to chase it is mitigated
-#
-
 [Unit]
 Description=Kubernetes API Proxy Service
 Documentation=https://github.com/UKHomeOffice/docker-static-haproxy
 
 [Service]
+Restart=always
+RestartSec=10
 EnvironmentFile=/etc/s3secrets
 EnvironmentFile=/etc/aws-environment
 
-ExecStartPre=/usr/bin/docker pull gambol99/static-haproxy:v0.0.1
-ExecStartPre=-/usr/bin/docker kill kube-api-proxy
-ExecStartPre=-/usr/bin/docker rm kube-api-proxy
-ExecStart=/usr/bin/docker run --net=host gambol99/static-haproxy:v0.0.1 -p 127.0.0.1:6443,${KUBE_API_NODES}
+ExecStartPre=/usr/bin/docker pull quay.io/ukhomeofficedigital/static-haproxy:v0.0.1
+ExecStartPre=-/usr/bin/docker kill kube-apiproxy
+ExecStartPre=-/usr/bin/docker rm kube-apiproxy
+ExecStart=/usr/bin/docker run \
+  --name=kube-apiproxy \
+  --net=host \
+  quay.io/ukhomeofficedigital/static-haproxy:v0.0.1 \
+  -p 127.0.0.1:6443,${KUBE_API_NODES}
 
-Restart=always
-RestartSec=10
+ExecStop=/usr/bin/docker stop kube-apiproxy
+ExecStop=/usr/bin/docker rm kube-apiproxy
 
 [X-Fleet]
 Global=true
