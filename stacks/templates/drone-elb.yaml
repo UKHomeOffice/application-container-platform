@@ -1,0 +1,71 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Drone CI ELB stack in {{ env }} environment
+Resources:
+  ELBSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Drone CI ELB SG
+      VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+          FromPort: 443
+          ToPort: 443
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 32600
+          ToPort: 32600
+          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
+
+  ELBSGToDefaultSGIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
+      IpProtocol: tcp
+      SourceSecurityGroupId: {Ref: ELBSG}
+      FromPort: 32600
+      ToPort: 32600
+
+  ELB:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      CrossZone: true
+      Subnets:
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet0') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet1') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet2') }}
+      SecurityGroups:
+        - {Ref: ELBSG}
+      ConnectionDrainingPolicy:
+        Enabled: true
+        Timeout: 30
+      Listeners:
+      - LoadBalancerPort: 443
+        Protocol: TCP
+        InstancePort: 32600
+        InstanceProtocol: TCP
+      Tags:
+      - Key: Name
+        Value: {{ env }}-drone-elb
+      - Key: Env
+        Value: {{ env }}
+      - Key: Service
+        Value: drone
+
+  ELBDNS:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: {{ dns_zone_name }}.
+      RecordSets:
+        - Name: drone{% if env != 'prod' %}-{{ env }}{% endif %}.{{ dns_zone_name }}
+          Type: A
+          AliasTarget:
+            HostedZoneId:
+              'Fn::GetAtt':
+                - ELB
+                - CanonicalHostedZoneNameID
+            DNSName:
+              'Fn::GetAtt':
+                - ELB
+                - CanonicalHostedZoneName

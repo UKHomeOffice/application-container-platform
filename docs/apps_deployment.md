@@ -32,17 +32,18 @@ moment.
 
 ### Node Ports
 
-These ELBs map to NodePorts on the node. As a limited resource please state what 
-range you want to be assigned to your application. The currently assigned ranges 
+These ELBs map to NodePorts on the node. As a limited resource please state what
+range you want to be assigned to your application. The currently assigned ranges
 are
 
  Application  | Ports
 --------------|------------
-BRP           | 30000-30099 
+BRP           | 30000-30099
 BRP Mock API  | 30100-30199
-API Catalogue | 30300-30399   
+API Catalogue | 30300-30399
 OTM           | 30400-30499
 SRRS          | 30500-30599
+CI            | 32600-32699
 PLATFORM      | 32700-32799
 
 Please create a new pull request to request a range.
