@@ -1,0 +1,5 @@
+
+path "platform/*" {
+  policy = "read"
+}
+
