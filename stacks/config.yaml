@@ -2,6 +2,7 @@
 common:
   coreos_ami_name: CoreOS-alpha-845.0.0-hvm
   compute_min_instances: 5
+  vpn_min_instances: 1
   compute_pause_time: PT5M
   vpc_cidr: 10.50.0.0/16
   compute_subnets:
@@ -33,6 +34,10 @@ common:
   ssh_access_subnets:
   - 80.193.85.91/32
   - 80.169.158.34/32
+  vpn_access_subnets:
+    - 10.50.100.0/24
+    - 10.50.101.0/24
+    - 10.50.102.0/24
   kube_access_subnets:
   - 80.193.85.91/32
   - 80.169.158.34/32
@@ -44,6 +49,7 @@ prod:
   vpc_name: prod-vpc
   ssh_key_name: prod-default
   infra_stack_name: prod-infra
+  vpn_stack_name: prod-vpn
   etcd_volumes_stack_name: prod-coreos-etcd-volumes
   instance_type: t2.large
   dns_zone_name: dsp.digital.homeoffice.gov.uk
@@ -51,6 +57,7 @@ prod:
   kms_master_key_id: 52933029-773a-49ba-af66-b8920d198175
   access_log_bucket_name: prod-elb-access-logs-eu-west-1
   secrets_bucket_name: prod-platform-secrets-eu-west-1
+  secrets_vpn_bucket_name: dsp-prod-vpn-secrets-eu-west-1
   # releases and versions
   kubernetes_release_url: https://storage.googleapis.com/kubernetes-release/release/v1.0.6/bin/linux/amd64/hyperkube
   kubernetes_release_md5: 86f6ec34e71c7d9db5f896bca3a69634
@@ -65,6 +72,7 @@ dev:
   vpc_name: dev-vpc
   ssh_key_name: dev-default
   infra_stack_name: dev-infra
+  vpn_stack_name: dev-vpn
   compute_pause_time: PT30S
   etcd_volumes_stack_name: dev-coreos-etcd-volumes
   instance_type: m4.2xlarge
@@ -72,6 +80,7 @@ dev:
   platform_tls_cert_name: 'server-certificate/wildcard.notprod.homeoffice.gov.uk'
   kms_master_key_id: 448a33c3-694b-46fe-9635-4cfecff6877a
   secrets_bucket_name: dev-platform-secrets-eu-west-1
+  secrets_vpn_bucket_name: dsp-dev-vpn-secrets-eu-west-1
   access_log_bucket_name: dev-elb-access-logs-eu-west-1
   # releases and versions
   kubernetes_release_url: https://storage.googleapis.com/kubernetes-release/release/v1.0.6/bin/linux/amd64/hyperkube

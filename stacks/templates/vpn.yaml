@@ -1,0 +1,88 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Infrastructure VPN
+Outputs:
+  VPNSubnet0:
+    Value: {Ref: VPNSubnet0}
+  VPNSubnet1:
+    Value: {Ref: VPNSubnet1}
+  VPNSubnet2:
+    Value: {Ref: VPNSubnet2}
+  VPNDefaultSG:
+    Value: {Ref: VPNDefaultSG}
+Resources:
+{% for n in vpn_access_subnets %}
+  VPNSubnet{{ loop.index0 }}:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - '{{ loop.index0 }}'
+          - Fn::GetAZs: ''
+      VpcId: {{ get_stack_output(cf_conn, infra_stack_name, 'VpcId') }}
+      CidrBlock: {{ n }}
+      Tags:
+        - Key: Name
+          Value: {{ env }}-vpn-az{{ loop.index0 }}
+        - Key: Env
+          Value: {{ env }}
+
+  SubnetRouteTableAssociation{{ loop.index0 }}:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: VPNSubnet{{ loop.index0 }}
+      RouteTableId: {{ get_stack_output(cf_conn, infra_stack_name, 'RouteTableID') }}
+{%- endfor %}
+
+  # The security group for the vpn subnet
+  VPNDefaultSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: {{ get_stack_output(cf_conn, infra_stack_name, 'VpcId') }}
+      GroupDescription: {{ env }} vpn default sg
+      SecurityGroupEgress:
+        - IpProtocol: UDP
+          CidrIp: 0.0.0.0/0
+          FromPort: 53
+          ToPort: 53
+        - IpProtocol: TCP
+          CidrIp: 0.0.0.0/0
+          FromPort: 80
+          ToPort: 80
+        - IpProtocol: TCP
+          CidrIp: 0.0.0.0/0
+          FromPort: 443
+          ToPort: 443
+        - IpProtocol: TCP
+          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, env+"-kubeapi-elb", 'ELBSG') }}
+          FromPort: 6443
+          ToPort: 6443
+        - IpProtocol: TCP
+          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, env+"-vault-elb", 'ELBSG') }}
+          FromPort: 8200
+          ToPort: 8200
+      SecurityGroupIngress:
+{% for subnet in ssh_access_subnets %}
+        - IpProtocol: tcp
+          CidrIp: {{ subnet }}
+          FromPort: 22
+          ToPort: 22
+{%- endfor %}
+      Tags:
+        - Key: Name
+          Value: {{ env }}-vpn-default
+        - Key: Env
+          Value: {{ env }}
+        - Key: Service
+          Value: openvpn
+
+  # Allow traffic within store subnets
+  VPNAllTrafficSGIn:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: {Ref: VPNDefaultSG}
+      IpProtocol: -1
+      SourceSecurityGroupId: {Ref: VPNDefaultSG}
+      FromPort: -1
+      ToPort: -1

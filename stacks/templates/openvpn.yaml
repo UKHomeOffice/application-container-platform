@@ -1,0 +1,247 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: OpenVPN Cluster
+Outputs:
+  VPNRole:
+    Value: {Ref: Role}
+Resources:
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Principal:
+              Service:
+                - ec2.amazonaws.com
+            Effect: Allow
+            Action:
+              - sts:AssumeRole
+      Path: /
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+      - { Ref: Role }
+      Path: /
+
+  RolePolicies:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: {{ env }}-vpn
+      Roles:
+      - { Ref: Role }
+      PolicyDocument:
+        # @TODO perhaps we should place ths into a seperate
+        Statement:
+        - Resource: 'arn:aws:kms:{{ region }}:*:key/{{ kms_master_key_id }}'
+          Effect: Allow
+          Action:
+            - 'kms:Decrypt'
+        - Resource: 'arn:aws:s3:::{{ secrets_vpn_bucket_name }}/*'
+          Effect: Allow
+          Action:
+            - 's3:Get*'
+        - Resource: 'arn:aws:s3:::{{ secrets_vpn_bucket_name }}'
+          Effect: Allow
+          Action:
+            - 's3:List*'
+        - Resource: "arn:aws:iam::*"
+          Effect: "Allow"
+          Action:
+            - "iam:GetGroup"
+            - "iam:GetSSHPublicKey"
+            - "iam:GetUser"
+            - "iam:ListSSHPublicKeys"
+
+  ScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AvailabilityZones:
+        - Fn::Select:
+          - '0'
+          - Fn::GetAZs: ''
+        - Fn::Select:
+          - '1'
+          - Fn::GetAZs: ''
+        - Fn::Select:
+          - '2'
+          - Fn::GetAZs: ''
+      LaunchConfigurationName: {Ref: LaunchConfig}
+      VPCZoneIdentifier:
+        - {{ get_stack_output(cf_conn, vpn_stack_name, 'VPNSubnet0') }}
+        - {{ get_stack_output(cf_conn, vpn_stack_name, 'VPNSubnet1') }}
+        - {{ get_stack_output(cf_conn, vpn_stack_name, 'VPNSubnet2') }}
+      TerminationPolicies:
+        - 'OldestInstance'
+        - 'Default'
+      MaxSize: 3
+      MinSize: {{ vpn_min_instances }}
+      Tags:
+        - Key: Name
+          Value: {{ env }}-vpn
+          PropagateAtLaunch: true
+        - Key: Env
+          Value: {{ env }}
+          PropagateAtLaunch: true
+        - Key: Role
+          Value: vpn
+          PropagateAtLaunch: true
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: {{ vpn_min_instances }}
+        PauseTime: PT10S
+
+  LaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      AssociatePublicIpAddress: true
+      IamInstanceProfile:
+        Ref: InstanceProfile
+      ImageId: {{ get_ami_id(ec2_conn, coreos_ami_name) }}
+      InstanceMonitoring: false
+      InstanceType: t2.small
+      KeyName: {{ ssh_key_name }}
+      SecurityGroups:
+        - {{ get_stack_output(cf_conn, vpn_stack_name, 'VPNDefaultSG') }}
+      BlockDeviceMappings:
+        - DeviceName: "/dev/xvda"
+          Ebs:
+            VolumeSize: "{{ coreos_root_volume_size }}"
+            DeleteOnTermination: true
+            VolumeType: "gp2"
+      UserData:
+        'Fn::Base64': |
+          #cloud-config
+
+          coreos:
+            update:
+              reboot-strategy: 'off'
+            units:
+            - name: install-kubernetes.service
+              command: start
+              content: |
+                [Unit]
+                Description=Install kubernetes
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=30
+                Environment="URL={{ kubernetes_release_url }}"
+                Environment="OUTPUT_FILE=/opt/bin/hyperkube"
+                Environment="MD5SUM={{ kubernetes_release_md5 }}"
+                ExecStart=/usr/bin/mkdir -p /opt/bin /etc/kubernetes/manifests
+                ExecStart=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
+            - name: install-s3secrets.service
+              command: start
+              content: |
+                [Unit]
+                Description=Install s3secrets
+                Documentation=https://github.com/UKHomeOffice/s3secrets
+
+                [Service]
+                Type=notify
+                NotifyAccess=all
+                RemainAfterExit=yes
+                TimeoutStartSec=30
+                Environment="URL={{ s3secrets_release_url }}"
+                Environment="OUTPUT_FILE=/opt/bin/s3secrets"
+                Environment="MD5SUM={{ s3secrets_release_md5 }}"
+                ExecStartPre=/usr/bin/mkdir -p /opt/bin
+                ExecStartPre=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do wget -q -O ${OUTPUT_FILE} ${URL} && chmod +x ${OUTPUT_FILE}; done'
+                ExecStart=/usr/bin/systemd-notify --ready --status="succussfully downloaded the s3secrets"
+            - name: update-ca-certificates.service
+              command: start
+              enable: true
+              content: |
+                [Unit]
+                Description=Update CA Certificates
+                Requires=install-s3secrets.service
+                After=install-s3secrets.service
+
+                [Service]
+                Type=notify
+                NotifyAccess=all
+                EnvironmentFile=/etc/environment
+                EnvironmentFile=/etc/s3secrets
+                RemainAfterExit=yes
+                TimeoutStartSec=300
+
+                ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -path=platform/platform_ca.pem -output-dir=/etc/ssl/certs
+                ExecStartPre=/usr/sbin/update-ca-certificates
+                ExecStart=/usr/bin/systemd-notify --ready --status="succussfully updated the ca root certificates"
+            - name: kube-kubelet.service
+              command: start
+              enable: true
+              content: |
+                [Unit]
+                Description=Kubernetes Kubelet Service
+                Requires=install-kubernetes.service
+                Requires=install-s3secrets.service
+                After=install-kubernetes.service
+                After=install-s3secrets.service
+
+                [Service]
+                Restart=always
+                RestartSec=10
+                EnvironmentFile=/etc/environment
+                EnvironmentFile=/etc/s3secrets
+                RemainAfterExit=yes
+                TimeoutStartSec=300
+
+                ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
+                ExecStart=/opt/bin/hyperkube kubelet \
+                  --address=0.0.0.0 \
+                  --hostname-override=${COREOS_PRIVATE_IPV4} \
+                  --allow-privileged=true \
+                  --host-network-sources=* \
+                  --config=/etc/kubernetes/manifests \
+                  --logtostderr=true
+            - name: openvpn.service
+              command: start
+              enable: true
+              content: |
+                [Unit]
+                Description=OpenVPN Service
+                Requires=install-s3secrets.service
+                Requires=install-kubernetes.service
+                After=install-s3secrets.service
+                After=install-kubernetes.service
+
+                [Service]
+                Type=oneshot
+                RemainAfterExit=yes
+                TimeoutStartSec=120
+                EnvironmentFile=/etc/environment
+                EnvironmentFile=/etc/s3secrets
+
+                ExecStartPre=/usr/bin/mkdir -p /etc/openvpn
+                ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -path=vault/ -output-dir=/etc/vault
+                ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -path=openvpn/openvpn.conf -output-dir=/etc/openvpn
+                ExecStartPre=/opt/bin/generate-openvpn-subnet.sh /etc/openvpn/openvpn.conf
+                ExecStart=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -path=openvpn/openvpn.manifest -output-dir=/etc/kubernetes/manifests
+          write_files:
+          - path: /etc/s3secrets
+            content: |
+              BUCKET_NAME={{ secrets_vpn_bucket_name }}
+              AWS_REGION={{ region }}
+          - path: /etc/aws-environment
+            content: |
+              AWS_REGION={{ region }}
+              DNS_ZONE_NAME={{ dns_zone_name }}
+              ENVIRONMENT={{ env }}
+          - path: /opt/bin/generate-openvpn-subnet.sh
+            permissions: 0555
+            content: |
+              #!/usr/bin/bash
+
+              CONFIG_FILE="${1:-/etc/openvpn/openvpn.conf}"
+              SUBNET_ID=$(hostname -i | cut -d'.' -f3)
+              SUBNET="10.101.${SUBNET_ID}.0"
+              echo "Setting the OpenVPN Subnet to ${SUBNET}"
+              /usr/bin/sed -i s/OPENVPN_SUBNET/${SUBNET}/ ${CONFIG_FILE}
+              if [ $? -ne 0 ]; then
+                echo "failed to update the openvpn subnet"
+                exit 1
+              fi

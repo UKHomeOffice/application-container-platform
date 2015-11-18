@@ -242,3 +242,5 @@ Outputs:
     Value: {Ref: SecureSubnet1}
   SecureSubnet2:
     Value: {Ref: SecureSubnet2}
+  RouteTableID:
+    Value: {Ref: RouteTable}

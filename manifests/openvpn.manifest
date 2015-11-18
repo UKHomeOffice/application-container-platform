@@ -1,0 +1,57 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: openvpn
+  labels:
+    name: openvpn
+spec:
+  containers:
+  - name: vault-sidekick
+    image: quay.io/ukhomeofficedigital/vault-sidekick:v0.0.3
+    args:
+      - -logtostderr=true
+      - -v=4
+      - -tls-skip-verify=true
+      - -auth=/etc/vault/vault-token.yml
+      - -output=/etc/secrets
+      - -cn=secret:openvpn/openvpn:fmt=txt,file=vpn
+    env:
+      - name: VAULT_ADDR
+        value: https://**VAULT_HOSTNAME**.notprod.homeoffice.gov.uk:8200
+    volumeMounts:
+      - name: vault
+        mountPath: /etc/vault
+      - name: secrets
+        mountPath: /etc/secrets
+  - name: openvpn
+    image: quay.io/ukhomeofficedigital/openvpn:ee1cd58
+    env:
+      - name: OPENVPN_CONFIG
+        value: /etc/config/openvpn.conf
+      - name: OVPN_SERVER
+        value: 10.101.0.0/16
+    ports:
+    - containerPort: 1194
+      hostPort: 1194
+    securityContext:
+      capabilities:
+        add:
+          - SYS_ADMIN
+          - NET_ADMIN
+          - MKNOD
+    volumeMounts:
+    - name: secrets
+      mountPath: /etc/secrets
+    - name: openvpn
+      mountPath: /etc/config
+  volumes:
+    - name: vault
+      hostPath:
+        path: /etc/vault
+    - name: secrets
+      source:
+        emptyDir: {}
+    - name: openvpn
+      hostPath:
+        path: /etc/openvpn
