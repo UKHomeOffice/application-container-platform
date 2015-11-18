@@ -7,5 +7,5 @@ metadata:
 data:
   vault-token.yml: |
     method: userpass
-    username: services
-    password: VAULT_PASSWORD
+    username: platform
+    password: TOKEN

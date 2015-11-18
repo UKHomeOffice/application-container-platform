@@ -1,0 +1,82 @@
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: keycloak
+  namespace: platform
+  labels:
+    name: keycloak
+spec:
+  replicas: 1
+  selector:
+    name: keycloak
+  template:
+    metadata:
+      labels:
+        name: keycloak
+    spec:
+      containers:
+      - name: vault-sidekick
+        image: quay.io/ukhomeofficedigital/vault-sidekick:v0.0.3
+        args:
+          - -logtostderr=true
+          - -v=4
+          - -tls-skip-verify=true
+          - -auth=/etc/vault/vault-token.yml
+          - -output=/etc/secrets
+          - -cn=secret:platform/platform_tls:fmt=cert,file=platform_tls
+        env:
+          - name: VAULT_ADDR
+            value: https://vault.platform.cluster.local:8200
+        volumeMounts:
+        - name: secrets
+          mountPath: /etc/secrets
+        - name: vault
+          mountPath: /etc/vault
+      - name: nginx-proxy
+        image: quay.io/ukhomeofficedigital/nginx-proxy:v1.0.0
+        env:
+        - name: PROXY_SERVICE_HOST
+          value: 127.0.0.1
+        - name: PROXY_SERVICE_PORT
+          value: "8080"
+        - name: SERVER_CERT
+          value: /etc/secrets/platform_tls.crt
+        - name: SERVER_KEY
+          value: /etc/secrets/platform_tls.key
+        - name: ENABLE_UUID_PARAM
+          value: "FALSE"
+        - name: NAXSI_USE_DEFAULT_RULES
+          value: "FALSE"
+        - name: PORT_IN_HOST_HEADER
+          value: "FALSE"
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        volumeMounts:
+        - name: secrets
+          mountPath: /etc/secrets
+      - name: keycloak
+        image: gambol99/keycloak-mysql:1.6.1-Final
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: TERM
+          value: linux
+        - name: MYSQL_PORT_3306_TCP_ADDR
+          value: **RDS_HOSTNAME**
+        - name: MYSQL_PORT_3306_TCP_PORT
+          value: "3306"
+        - name: MYSQL_DATABASE
+          value: keycloak
+        - name: MYSQL_USERNAME
+          value: keycloak
+        - name: MYSQL_PASSWORD
+          value: 
+      volumes:
+      - name: vault
+        secret:
+          secretName: vault
+      - name: secrets
+        emptyDir: {}
