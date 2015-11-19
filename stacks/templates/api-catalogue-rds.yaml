@@ -12,8 +12,8 @@ Resources:
       StorageType: gp2
       MasterUsername: root
       MasterUserPassword: changeme
-      Engine: mysql
-      EngineVersion: "5.6.23"
+      Engine: postgres
+      EngineVersion: "9.4.5"
       DBSubnetGroupName: { Ref: DBSubnetGroup }
       VPCSecurityGroups:
       - { Ref: DBSG }
@@ -39,8 +39,8 @@ Resources:
       VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: 3306
-        ToPort: 3306
+        FromPort: 5432
+        ToPort: 5432
         SourceSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
 
   DBDNS:
