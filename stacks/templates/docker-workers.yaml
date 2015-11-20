@@ -44,6 +44,8 @@ Resources:
         Interval: 30
         Timeout: 5
         UnhealthyThreshold: 2
+      ConnectionSettings:
+        IdleTimeout: 1800
       ConnectionDrainingPolicy:
         Enabled: true
         Timeout: 30
