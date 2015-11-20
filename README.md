@@ -31,6 +31,8 @@ Technical documentation can be found at [docs](docs/).
 
 * [Application Deployment](docs/apps_deployment.md)
 
+### Developer Guides
+* [Developer getting started guide](docs/dev_setup.md)
 
 ## Contributing
 
