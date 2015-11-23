@@ -12,6 +12,11 @@ this platform.
 
 Technical documentation can be found at [docs](docs/).
 
+### Developer Guides
+
+* [Developer getting started guide](docs/dev_setup.md)
+* [Developer application deployment guide](docs/dev_app_deployment.md)
+
 ### Platform
 
 * [Platform Overview](docs/overview.md)
@@ -30,7 +35,6 @@ Technical documentation can be found at [docs](docs/).
 ### Applications and Services
 
 * [Application Deployment](docs/apps_deployment.md)
-
 
 ## Contributing
 
