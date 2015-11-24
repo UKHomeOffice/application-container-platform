@@ -1,0 +1,63 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Keyclock RDS Instance
+Resources:
+  DB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: 32
+      AllowMajorVersionUpgrade: "false"
+      AutoMinorVersionUpgrade: "true"
+      # db.m3.medium is required for encryption
+      DBInstanceClass: db.m3.medium
+      StorageType: gp2
+      StorageEncrypted: true
+      KmsKeyId: {{ kms_master_key_id }}
+      MasterUsername: root
+      MasterUserPassword: changeme
+      MultiAZ: true
+      Engine: mysql
+      EngineVersion: "5.6.23"
+      DBSubnetGroupName: { Ref: DBSubnetGroup }
+      VPCSecurityGroups:
+      - { Ref: DBSG }
+      Tags:
+        - Key: Name
+          Value: keycloak
+        - Key: Env
+          Value: {{ env }}
+        - Key: Service 
+          Value: keycloak
+
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: "Keycloak RDS DB Subnet Group"
+      SubnetIds:
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet0') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet1') }}
+        - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet2') }}
+
+  DBSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Keycloak RDS DB SG
+      VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 3306
+        ToPort: 3306
+        SourceSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeDefaultSG') }}
+
+  DBDNS:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: {{ dns_zone_name }}.
+      RecordSets:
+      - Name: keycloakdb{% if env != 'prod' %}-{{ env }}{% endif %}.{{ dns_zone_name }}
+        Type: CNAME
+        TTL: 60
+        ResourceRecords:
+        - 'Fn::GetAtt':
+          - DB
+          - Endpoint.Address
