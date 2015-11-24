@@ -1,0 +1,32 @@
+[Unit]
+Description=Kubernetes Security Policy
+Documentation=https://github.com/UKHomeOffice/kube-cover
+
+[Service]
+Restart=always
+RestartSec=10
+
+RuntimeDirectory=kube-policy
+RuntimeDirectoryMode=0700
+EnvironmentFile=/etc/s3secrets
+Environment="URL=https://github.com/UKHomeOffice/kube-cover/releases/download/v0.0.2/kube-cover_0.0.2_linux_x86_64.gz"
+Environment="OUTPUT_FILE=/opt/bin/kube-cover"
+Environment="OUTPUT_FILE_GZ=/opt/bin/kube-cover.gz"
+Environment="MD5SUM=ccb363017cc0d91a274d6aee48406199"
+
+ExecStartPre=/usr/bin/mkdir -p /opt/bin
+ExecStartPre=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do \
+  wget -O ${OUTPUT_FILE_GZ} ${URL} && gunzip ${OUTPUT_FILE_GZ} && chmod +x ${OUTPUT_FILE}; done'
+
+ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -output-dir=%t/kube-policy -path=kube-policy/
+ExecStart=/opt/bin/kube-cover \
+  -logtostderr=true -v=10 \
+  -bind=:6443 \
+  -tls-cert=%t/kubeapi.pem \
+  -tls-key=%t/kubeapi-key.pem \
+  -policy-file=%t/api-policy.json \
+  -url=https://127.0.0.1:6444
+
+[X-Fleet]
+Global=true
+MachineMetadata=role=etcd
