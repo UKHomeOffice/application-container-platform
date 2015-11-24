@@ -16,6 +16,9 @@
 {"user":"daniel.martin"}
 {"user":"paul.miles"}
 {"user":"tgent"}
+{"user":"lmarshall"}
+{"user":"srrs", "namespace": "srrs-ci"}
+{"user":"srrs", "namespace": "srrs-acceptance"}
 {"user":"brendan.butler","namespace":"sso"}
 {"user":"benjamin.diggle","namespace":"sso"}
 {"user":"geoff.martin","namespace":"sso"}

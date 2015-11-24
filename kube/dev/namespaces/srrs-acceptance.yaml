@@ -1,0 +1,6 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: srrs-acceptance
+  labels:
+    name: srrs-acceptance
