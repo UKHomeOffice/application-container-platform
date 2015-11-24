@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Vault Service {{ env }} ELB
+Description: OpenVPN ELB
 Outputs:
   ELBSG:
     Value: {Ref: ELBSG}
@@ -10,69 +10,76 @@ Resources:
   ELBSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Vault API ELB SG
+      GroupDescription: VPN ELB SG
       VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
       SecurityGroupIngress:
+{% for subnet in kube_access_subnets %}
         - IpProtocol: tcp
-          CidrIp: 0.0.0.0/0
-          FromPort: 8200
-          ToPort: 8200
+          CidrIp: {{ subnet }}
+          FromPort: 80
+          ToPort: 80
+        - IpProtocol: tcp
+          CidrIp: {{ subnet }}
+          FromPort: 1194
+          ToPort: 1194
+{%- endfor %}
       SecurityGroupEgress:
         - IpProtocol: tcp
-          FromPort: 8200
-          ToPort: 8200
-          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
+          FromPort: 1194
+          ToPort: 1194
+          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, vpn_stack_name, 'VPNDefaultSG') }}
 
   DefaultSGIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      GroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
+      GroupId: {{ get_stack_output(cf_conn, vpn_stack_name, 'VPNDefaultSG') }}
       IpProtocol: tcp
       SourceSecurityGroupId: {Ref: ELBSG}
-      FromPort: 8200
-      ToPort: 8200
+      FromPort: 1194
+      ToPort: 1194
 
   ELB:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
     Properties:
       CrossZone: true
-      Scheme: Internal
       Subnets:
-        - {{ get_stack_output(cf_conn, infra_stack_name, 'SecureSubnet0') }}
-        - {{ get_stack_output(cf_conn, infra_stack_name, 'SecureSubnet1') }}
-        - {{ get_stack_output(cf_conn, infra_stack_name, 'SecureSubnet2') }}
+        - {{ get_stack_output(cf_conn, vpn_stack_name, 'VPNSubnet0') }}
+        - {{ get_stack_output(cf_conn, vpn_stack_name, 'VPNSubnet1') }}
+        - {{ get_stack_output(cf_conn, vpn_stack_name, 'VPNSubnet2') }}
       SecurityGroups:
         - {Ref: ELBSG}
       HealthCheck:
-        Target: 'TCP:8200'
+        Target: 'TCP:1194'
         HealthyThreshold: 2
-        Interval: 30
+        Interval: 10
         Timeout: 5
         UnhealthyThreshold: 2
       ConnectionDrainingPolicy:
         Enabled: true
         Timeout: 30
       Listeners:
-      - LoadBalancerPort: 8200
+      - LoadBalancerPort: 1194
         Protocol: TCP
-        InstancePort: 8200
+        InstancePort: 1194
+        InstanceProtocol: TCP
+      - LoadBalancerPort: 80
+        Protocol: TCP
+        InstancePort: 1194
         InstanceProtocol: TCP
       Tags:
       - Key: Name
-        Value: {{ dev }}-vault-elb
+        Value: vpn
       - Key: Env
         Value: {{ env }}
       - Key: Service
-        Value: vault
-      - Key: Scheme
-        Value: internal
+        Value: vpn
 
   ELBDNS:
     Type: AWS::Route53::RecordSetGroup
     Properties:
       HostedZoneName: {{ dns_zone_name }}.
       RecordSets:
-        - Name: vault{% if env != 'prod' %}-{{ env }}{% endif %}.{{ dns_zone_name }}
+        - Name: vpn{% if env != 'prod' %}-{{ env }}{% endif %}.{{ dns_zone_name }}
           Type: A
           AliasTarget:
             HostedZoneId:
@@ -82,4 +89,4 @@ Resources:
             DNSName:
               'Fn::GetAtt':
                 - ELB
-                - DNSName
+                - CanonicalHostedZoneName

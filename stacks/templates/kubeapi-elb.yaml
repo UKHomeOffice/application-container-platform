@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Vault Service {{ env }} ELB
+Description: Kubernetes API Internal ELB
 Outputs:
   ELBSG:
     Value: {Ref: ELBSG}
@@ -10,17 +10,17 @@ Resources:
   ELBSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Vault API ELB SG
+      GroupDescription: Kubernetes API Internal ELB SG
       VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
       SecurityGroupIngress:
         - IpProtocol: tcp
           CidrIp: 0.0.0.0/0
-          FromPort: 8200
-          ToPort: 8200
+          FromPort: 6443
+          ToPort: 6443
       SecurityGroupEgress:
         - IpProtocol: tcp
-          FromPort: 8200
-          ToPort: 8200
+          FromPort: 6443
+          ToPort: 6443
           DestinationSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
 
   DefaultSGIngress:
@@ -29,8 +29,8 @@ Resources:
       GroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
       IpProtocol: tcp
       SourceSecurityGroupId: {Ref: ELBSG}
-      FromPort: 8200
-      ToPort: 8200
+      FromPort: 6443
+      ToPort: 6443
 
   ELB:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
@@ -44,7 +44,7 @@ Resources:
       SecurityGroups:
         - {Ref: ELBSG}
       HealthCheck:
-        Target: 'TCP:8200'
+        Target: 'TCP:6443'
         HealthyThreshold: 2
         Interval: 30
         Timeout: 5
@@ -53,13 +53,13 @@ Resources:
         Enabled: true
         Timeout: 30
       Listeners:
-      - LoadBalancerPort: 8200
+      - LoadBalancerPort: 6443
         Protocol: TCP
-        InstancePort: 8200
+        InstancePort: 6443
         InstanceProtocol: TCP
       Tags:
       - Key: Name
-        Value: {{ dev }}-vault-elb
+        Value: {{ dev }}-kubernetes-elb
       - Key: Env
         Value: {{ env }}
       - Key: Service
@@ -72,7 +72,7 @@ Resources:
     Properties:
       HostedZoneName: {{ dns_zone_name }}.
       RecordSets:
-        - Name: vault{% if env != 'prod' %}-{{ env }}{% endif %}.{{ dns_zone_name }}
+        - Name: kubeapi{% if env != 'prod' %}-{{ env }}{% endif %}.{{ dns_zone_name }}
           Type: A
           AliasTarget:
             HostedZoneId:

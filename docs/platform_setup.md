@@ -221,9 +221,14 @@ stacks -p $AWS_PROFILE create -e ${ENV} -t templates/coreos-etcd.yaml ${ENV}-cor
 stacks -p $AWS_PROFILE create -e ${ENV} -t templates/coreos-compute.yaml ${ENV}-coreos-compute
 ```
 
-* **Create an ELB for Kubernetes API**
+* **Create an internal ELB for Kubernetes API**
 ```
-stacks -p $AWS_PROFILE create -e ${ENV} -t templates/kubernetes-elb.yaml ${ENV}-kubernetes-elb
+stacks -p $AWS_PROFILE create -e ${ENV} -t templates/kubeapi-elb.yaml ${ENV}-kubeapi-elb
+```
+
+* **Create an internal ELB for Vault**
+```
+stacks -p $AWS_PROFILE create -e ${ENV} -t templates/vault-elb.yaml ${ENV}-vault-elb
 ```
 
 You will need to attach the ELB to the compute auto scaling group. See

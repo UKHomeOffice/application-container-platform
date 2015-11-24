@@ -44,7 +44,8 @@ API Catalogue | 30300-30399
 OTM           | 30400-30499
 SRRS          | 30500-30599
 CI            | 32600-32699
-PLATFORM      | 32700-32799
+PLATFORM      | 32700-32720
+KUBEACCESS    | 32721-32730
 
 Please create a new pull request to request a range.
 
