@@ -11,7 +11,6 @@ EnvironmentFile=/etc/aws-environment
 EnvironmentFile=/etc/s3secrets
 Environment="DOCKER_IMAGE_TAG=latest"
 Environment="ACCESS_KEY=be7a7081-adc3-4556-aeea-816c48c8b79d"
-#Environment="COLLECTOR=collector-staging2.sysdigcloud.com"
 Environment="TAGS=platform:dsp,region=eu-west-1"
 
 ExecStartPre=-/usr/bin/docker kill sysdig-agent
