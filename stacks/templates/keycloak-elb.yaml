@@ -59,6 +59,15 @@ Resources:
         - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet0') }}
         - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet1') }}
         - {{ get_stack_output(cf_conn, infra_stack_name, 'ComputeSubnet2') }}
+      Policies:
+        - PolicyName: EnableProxyProtocol
+          PolicyType: ProxyProtocolPolicyType
+          Attributes:
+            - Name: ProxyProtocol
+              Value: true
+          InstancePorts:
+            - 80
+            - 443
       SecurityGroups:
         - {Ref : ELBSG}
       HealthCheck:
