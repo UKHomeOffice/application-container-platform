@@ -12,7 +12,8 @@ EnvironmentFile=/etc/s3secrets
 Environment="URL=https://github.com/UKHomeOffice/kube-cover/releases/download/v0.0.2/kube-cover_0.0.2_linux_x86_64.gz"
 Environment="OUTPUT_FILE=/opt/bin/kube-cover"
 Environment="OUTPUT_FILE_GZ=/opt/bin/kube-cover.gz"
-Environment="MD5SUM=ccb363017cc0d91a274d6aee48406199"
+Environment="MD5SUM=93b2aa201991566bdb66586df51af70c"
+Environment="GIN_MODE=release"
 
 ExecStartPre=/usr/bin/mkdir -p /opt/bin
 ExecStartPre=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OUTPUT_FILE} | cut -f1 -d" ") == ${MD5SUM} ]]; do \
@@ -20,11 +21,11 @@ ExecStartPre=/usr/bin/bash -c 'until [[ -x ${OUTPUT_FILE} ]] && [[ $(md5sum ${OU
 
 ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -output-dir=%t/kube-policy -path=kube-policy/
 ExecStart=/opt/bin/kube-cover \
-  -logtostderr=true -v=10 \
+  -logtostderr=true -v=3 \
   -bind=:6443 \
-  -tls-cert=%t/kubeapi.pem \
-  -tls-key=%t/kubeapi-key.pem \
-  -policy-file=%t/api-policy.json \
+  -tls-cert=%t/kube-policy/kube-apiserver-crt.pem \
+  -tls-key=%t/kube-policy/kube-apiserver-key.pem \
+  -policy-file=%t/kube-policy/api-policy.json \
   -url=https://127.0.0.1:6444
 
 [X-Fleet]
