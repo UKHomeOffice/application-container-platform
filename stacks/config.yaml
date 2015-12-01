@@ -75,7 +75,8 @@ dev:
   vpn_stack_name: dev-vpn
   compute_pause_time: PT30S
   etcd_volumes_stack_name: dev-coreos-etcd-volumes
-  instance_type: m4.2xlarge
+  compute_min_instances: 3
+  instance_type: m4.xlarge
   dns_zone_name: dsp.notprod.homeoffice.gov.uk
   platform_tls_cert_name: 'server-certificate/wildcard.notprod.homeoffice.gov.uk'
   kms_master_key_id: 448a33c3-694b-46fe-9635-4cfecff6877a
