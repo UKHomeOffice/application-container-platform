@@ -13,16 +13,14 @@ Resources:
       GroupDescription: VPN ELB SG
       VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
       SecurityGroupIngress:
-{% for subnet in kube_access_subnets %}
         - IpProtocol: tcp
-          CidrIp: {{ subnet }}
+          CidrIp: 0.0.0.0/0
           FromPort: 80
           ToPort: 80
         - IpProtocol: tcp
-          CidrIp: {{ subnet }}
+          CidrIp: 0.0.0.0/0
           FromPort: 1194
           ToPort: 1194
-{%- endfor %}
       SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: 1194
