@@ -46,6 +46,7 @@ SRRS          | 30500-30599
 CI            | 32600-32699
 PLATFORM      | 32700-32720
 KUBEACCESS    | 32721-32730
+LEV           | 32731-32740
 
 Please create a new pull request to request a range.
 
