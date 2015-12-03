@@ -19,8 +19,8 @@ Resources:
           ToPort: 6443
       SecurityGroupEgress:
         - IpProtocol: tcp
-          FromPort: 6443
-          ToPort: 6443
+          FromPort: 6444
+          ToPort: 6444
           DestinationSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
 
   DefaultSGIngress:
@@ -29,8 +29,8 @@ Resources:
       GroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
       IpProtocol: tcp
       SourceSecurityGroupId: {Ref: ELBSG}
-      FromPort: 6443
-      ToPort: 6443
+      FromPort: 6444
+      ToPort: 6444
 
   ELB:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
@@ -55,7 +55,7 @@ Resources:
       Listeners:
       - LoadBalancerPort: 6443
         Protocol: TCP
-        InstancePort: 6443
+        InstancePort: 6444
         InstanceProtocol: TCP
       Tags:
       - Key: Name

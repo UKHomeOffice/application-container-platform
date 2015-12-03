@@ -16,8 +16,8 @@ Resources:
 {%- endfor %}
       SecurityGroupEgress:
         - IpProtocol: tcp
-          FromPort: 6443
-          ToPort: 6443
+          FromPort: 6444
+          ToPort: 6444
           DestinationSecurityGroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
 
   ELBSGToDefaultSGIngress:
@@ -26,8 +26,8 @@ Resources:
       GroupId: {{ get_stack_output(cf_conn, infra_stack_name, 'SecureDefaultSG') }}
       IpProtocol: tcp
       SourceSecurityGroupId: {Ref: ELBSG}
-      FromPort: 6443
-      ToPort: 6443
+      FromPort: 6444
+      ToPort: 6444
 
   ELB:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
@@ -40,7 +40,7 @@ Resources:
       SecurityGroups:
         - {Ref: ELBSG}
       HealthCheck:
-        Target: 'TCP:6443'
+        Target: 'TCP:6444'
         HealthyThreshold: 2
         Interval: 10
         Timeout: 5
