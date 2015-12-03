@@ -44,9 +44,9 @@ Resources:
       SecurityGroups:
         - {Ref: ELBSG}
       HealthCheck:
-        Target: 'TCP:6443'
+        Target: 'TCP:6444'
         HealthyThreshold: 2
-        Interval: 30
+        Interval: 10
         Timeout: 5
         UnhealthyThreshold: 2
       ConnectionDrainingPolicy:
