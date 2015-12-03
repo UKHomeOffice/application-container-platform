@@ -52,6 +52,9 @@ spec:
           value: "FALSE"
         - name: PORT_IN_HOST_HEADER
           value: "FALSE"
+        # i dont want nginx to capture any errors
+        - name: ERROR_REDIRECT_CODES
+          value: "599"
         ports:
         - containerPort: 80
         - containerPort: 443
@@ -59,15 +62,14 @@ spec:
         - name: secrets
           mountPath: /etc/secrets
       - name: keycloak
-        image: gambol99/keycloak-mysql:1.6.1-Final
-        imagePullPolicy: Always
+        image: gambol99/keycloak-mysql:1.7.0-CR1
         ports:
         - containerPort: 8080
         env:
         - name: TERM
           value: linux
         - name: MYSQL_PORT_3306_TCP_ADDR
-          value: **RDS_HOSTNAME**
+          value: keycloakdb-<ENV>.dsp.notprod.homeoffice.gov.uk
         - name: MYSQL_PORT_3306_TCP_PORT
           value: "3306"
         - name: MYSQL_DATABASE
@@ -75,7 +77,7 @@ spec:
         - name: MYSQL_USERNAME
           value: keycloak
         - name: MYSQL_PASSWORD
-          value: 
+          value: <MYSQL_PASSWORD>
       volumes:
       - name: vault
         secret:
