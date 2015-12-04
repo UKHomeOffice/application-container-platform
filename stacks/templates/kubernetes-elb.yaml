@@ -51,7 +51,7 @@ Resources:
       Listeners:
       - LoadBalancerPort: 443
         Protocol: TCP
-        InstancePort: 6443
+        InstancePort: 6444
         InstanceProtocol: TCP
       Tags:
       - Key: Name

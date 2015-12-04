@@ -8,10 +8,12 @@ Resources:
       GroupDescription: LEV Web
       VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
       SecurityGroupIngress:
+{% for subnet in kube_access_subnets %}
         - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
+          CidrIp: {{ subnet }}
+          FromPort: 80
+          ToPort: 80
+{%- endfor %}
       SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: 30200
