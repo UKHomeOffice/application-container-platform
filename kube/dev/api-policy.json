@@ -58,7 +58,11 @@
           "gitRepo": true,
           "persistentVolumeClaim": true,
           "rbd": true,
-          "secret": true
+          "secret": true,
+          "hostPath": true,
+          "hostPathAllowed": [
+            "/var/lib/data"
+          ]
         }
       }
     }
