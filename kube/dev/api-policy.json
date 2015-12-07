@@ -47,6 +47,30 @@
       "kind": "PodSecurityPolicy",
       "version": "v1",
       "namespaces": [
+        "srrs-ci"
+      ],
+      "spec": {
+        "volumes": {
+          "awsElasticBlockStore": true,
+          "cephfs": true,
+          "downwardAPI": true,
+          "emptyDir": true,
+          "gitRepo": true,
+          "persistentVolumeClaim": true,
+          "rbd": true,
+          "secret": true,
+          "hostPath": true,
+          "hostPathAllowed": [
+            "/var/lib/data",
+            "/var/run/docker.sock"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "PodSecurityPolicy",
+      "version": "v1",
+      "namespaces": [
         "*"
       ],
       "spec": {
