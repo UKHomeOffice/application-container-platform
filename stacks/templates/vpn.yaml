@@ -85,7 +85,7 @@ Resources:
         Fn::Select:
           - '{{ loop.index0 }}'
           - Fn::GetAZs: ''
-      VpcId: {{ get_stack_output(cf_conn, vpn_stack, 'VpcId') }}
+      VpcId: {{ get_stack_output(cf_conn, vpn_stack_name, 'VpcId') }}
       CidrBlock: {{ n }}
       Tags:
         - Key: Name
@@ -98,14 +98,14 @@ Resources:
     Properties:
       SubnetId:
         Ref: VPNSubnet{{ loop.index0 }}
-      RouteTableId: {{ get_stack_output(cf_conn, vpn_stack, 'RouteTableID') }}
+      RouteTableId: {{ get_stack_output(cf_conn, vpn_stack_name, 'RouteTableID') }}
 {%- endfor %}
 
   # The security group for the vpn subnet
   VPNDefaultSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: {{ get_stack_output(cf_conn, vpn_stack, 'VpcId') }}
+      VpcId: {{ get_stack_output(cf_conn, vpn_stack_name, 'VpcId') }}
       GroupDescription: {{ env }} vpn default sg
       SecurityGroupEgress:
         - IpProtocol: UDP
