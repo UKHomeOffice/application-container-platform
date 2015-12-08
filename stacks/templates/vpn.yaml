@@ -1,7 +1,9 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Infrastructure VPN
+Description: Infrastructure VPN VPC
 Outputs:
+  VpcId:
+    Value: {Ref: VPC}
   VPNSubnet0:
     Value: {Ref: VPNSubnet0}
   VPNSubnet1:
@@ -10,7 +12,71 @@ Outputs:
     Value: {Ref: VPNSubnet2}
   VPNDefaultSG:
     Value: {Ref: VPNDefaultSG}
+  RouteTableID:
+    Value: {Ref: RouteTable}
+Parameters:
+  KeyName:
+    Description: Existing key pair to access instances
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: {{ ssh_key_name }}
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
 Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: {{ vpn_cidr }}
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+      - Key: Name
+        Value: {{ env }}-vpc
+      - Key: Env
+        Value: {{ env }}
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: {{ env }}-igw
+      - Key: Env
+        Value: {{ env }}
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: VPC
+      InternetGatewayId:
+        Ref: InternetGateway
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: VPC
+      Tags:
+        - Key: Name
+          Value: {{ env }}-default-routetable
+        - Key: Env
+          Value: {{ env }}
+
+  Route:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId:
+        Ref: RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: InternetGateway
+
+  VPCPeeringConnection:
+    Type: AWS::EC2::VPCPeeringConnection
+    Properties:
+      VpcId: { Ref: VPC }
+      PeerVpcId": {{ get_stack_output(cf_conn, env+"-vpc", 'VpcId') }}
+
 {% for n in vpn_access_subnets %}
   VPNSubnet{{ loop.index0 }}:
     Type: AWS::EC2::Subnet
@@ -19,7 +85,7 @@ Resources:
         Fn::Select:
           - '{{ loop.index0 }}'
           - Fn::GetAZs: ''
-      VpcId: {{ get_stack_output(cf_conn, infra_stack_name, 'VpcId') }}
+      VpcId: {{ get_stack_output(cf_conn, vpn_stack, 'VpcId') }}
       CidrBlock: {{ n }}
       Tags:
         - Key: Name
@@ -32,14 +98,14 @@ Resources:
     Properties:
       SubnetId:
         Ref: VPNSubnet{{ loop.index0 }}
-      RouteTableId: {{ get_stack_output(cf_conn, infra_stack_name, 'RouteTableID') }}
+      RouteTableId: {{ get_stack_output(cf_conn, vpn_stack, 'RouteTableID') }}
 {%- endfor %}
 
   # The security group for the vpn subnet
   VPNDefaultSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: {{ get_stack_output(cf_conn, infra_stack_name, 'VpcId') }}
+      VpcId: {{ get_stack_output(cf_conn, vpn_stack, 'VpcId') }}
       GroupDescription: {{ env }} vpn default sg
       SecurityGroupEgress:
         - IpProtocol: UDP
@@ -54,28 +120,25 @@ Resources:
           CidrIp: 0.0.0.0/0
           FromPort: 443
           ToPort: 443
+{% for subnet in secure_subnets %}
         - IpProtocol: TCP
-          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, env+"-kubeapi-elb", 'ELBSG') }}
+          CidrIp: {{ subnet }}
           FromPort: 6443
           ToPort: 6443
         - IpProtocol: TCP
-          DestinationSecurityGroupId: {{ get_stack_output(cf_conn, env+"-vault-elb", 'ELBSG') }}
+          CidrIp: {{ subnet }}
           FromPort: 8200
           ToPort: 8200
-      SecurityGroupIngress:
-{% for subnet in ssh_access_subnets %}
-        - IpProtocol: tcp
-          CidrIp: {{ subnet }}
+{%- endfor %}
+        - IpProtocol: TCP
+          CidrIp: {{ vpc_cidr }}
           FromPort: 22
           ToPort: 22
-{%- endfor %}
       Tags:
         - Key: Name
           Value: {{ env }}-vpn-default
         - Key: Env
           Value: {{ env }}
-        - Key: Service
-          Value: openvpn
 
   # Allow traffic within store subnets
   VPNAllTrafficSGIn:
