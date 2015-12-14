@@ -51,7 +51,7 @@ Resources:
           FromPort: -1
           ToPort: -1
       SecurityGroupIngress:
-{% for subnet in ssh_access_subnets %}
+{% for subnet in ssh_access_subnets+vpn_access_subnets %}
         - IpProtocol: tcp
           CidrIp: {{ subnet }}
           FromPort: 22
@@ -79,7 +79,7 @@ Resources:
           FromPort: 10250
           ToPort: 10250
       SecurityGroupIngress:
-{% for subnet in ssh_access_subnets %}
+{% for subnet in ssh_access_subnets+vpn_access_subnets %}
         - IpProtocol: tcp
           CidrIp: {{ subnet }}
           FromPort: 22
