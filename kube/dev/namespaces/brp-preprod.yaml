@@ -1,6 +1,6 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: brp
+  name: brp-preprod
   labels:
-    name: brp
+    name: brp-preprod
