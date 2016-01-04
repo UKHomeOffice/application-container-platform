@@ -1,6 +1,6 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: levapi
+  name: lev-web-dev
   labels:
-    name: levapi
+    name: lev-web-dev
