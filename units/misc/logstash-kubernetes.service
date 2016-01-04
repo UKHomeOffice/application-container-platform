@@ -15,7 +15,6 @@ ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -ou
 ExecStartPre=/usr/bin/docker pull quay.io/ukhomeofficedigital/logstash-kubernetes:${DOCKER_IMAGE_TAG}
 ExecStart=/usr/bin/docker run --rm -t \
   --name logstash-kubernetes \
-  --env-file=%t/logstash-kubernetes/logstash_kubernetes_aws_key \
   -e AWS_REGION \
   -e ENVIRONMENT \
   -e LOG_GROUP_NAME=${ENVIRONMENT} \
