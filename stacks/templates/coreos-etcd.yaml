@@ -59,6 +59,13 @@ Resources:
             - "iam:GetSSHPublicKey"
             - "iam:GetUser"
             - "iam:ListSSHPublicKeys"
+        - Resource: "arn:aws:logs:*:*:*"
+          Effect: "Allow"
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            - logs:DescribeLogStreams
 
 {%- for node in etcd_nodes %}
   # This resource can be replaced by just changing node name in the config file

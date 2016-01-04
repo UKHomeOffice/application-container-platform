@@ -46,6 +46,13 @@ Resources:
             - "iam:GetSSHPublicKey"
             - "iam:GetUser"
             - "iam:ListSSHPublicKeys"
+        - Resource: "arn:aws:logs:*:*:*"
+          Effect: "Allow"
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            - logs:DescribeLogStreams
 
   CoreOSComputeScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
