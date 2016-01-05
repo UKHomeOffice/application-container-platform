@@ -31,7 +31,7 @@ Resources:
           Effect: Allow
           Action:
             - 'kms:Decrypt'
-        - Resource: 'arn:aws:s3:::{{ secrets_bucket_name }}/*'
+        - Resource: 'arn:aws:s3:::{{ secrets_bucket_name }}/compute/*'
           Effect: Allow
           Action:
             - 's3:Get*'

@@ -6,7 +6,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 RuntimeDirectory=kube-apiserver
 RuntimeDirectoryMode=0700
 EnvironmentFile=/etc/s3secrets
-ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -output-dir=%t/kube-apiserver -path=kube-apiserver/
+ExecStartPre=/opt/bin/s3secrets -region=${AWS_REGION} -bucket=${BUCKET_NAME} -output-dir=%t/kube-apiserver -path=secure/kube-apiserver/
 ExecStart=/opt/bin/hyperkube apiserver \
   --admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ResourceQuota \
   --cloud-provider=aws \
