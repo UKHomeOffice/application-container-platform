@@ -31,9 +31,11 @@ $ export ENV=dev
 $ export KUBE_TOKEN=$(uuidgen)
 $ export SKY_DNS_KUBE_TOKEN=$(uuidgen)
 $ export KMS_KEY_ID=<replace me>
+$ export AWS_KEY=ID=$KMS_KEY_ID
 $ export AWS_PROFILE=<replace me>
+$ export AWS_DEFAULT_PROFILE=<aws credentials profile>
+$ export AWS_DEFAULT_REGION=<region>
 ```
-
 
 ## Create TLS Keys and Secrets
 
@@ -66,40 +68,43 @@ $ cfssl gencert -config=../ca/ca-config.json -ca-key=../ca/${ENV}/ca-key.pem \
   -profile=server ../ca/kube-apiserver-csr.json | cfssljson -bare kube-apiserver
 ```
 
-
 ### Generate Kubernetes Secrets and Configs
 
-Make a note of `KUBE_TOKEN` because that's what you will be using to talk to
-kubernetes API for now.
+We try to use a separate kubeconfig per component or at the very least use tailored tokens per layer (secure and compute at present)
 
-The user attached to the `KUBE_TOKEN` is also used by the kubernetes processes to communicate with the API as such it needs to exist in the auth-policy that is used for your environment.
-The user attached to the `SKY_DNS_KUBE_TOKEN` is required to enable the sky dns service to talk to kubernetes
-
-```bash
-$ aws kms encrypt --key-id ${KMS_KEY_ID} \
-  --plaintext "$(echo -e "${KUBE_TOKEN},kube,kube\n${SKY_DNS_KUBE_TOKEN},skydns,skydns")" \
-  --query CiphertextBlob \
-  --output text | base64 --decode > tokens.csv.encrypted
+```json
+# Example
+{"user":"kube"}
+{"user":"kubelet","namespace": "*", "resource": "pods","readonly": true }
+{"user":"kubelet","namespace": "*", "resource": "services","readonly": true }
+{"user":"kubelet","namespace": "*", "resource": "endpoints","readonly": true }
+{"user":"kubelet","namespace": "*", "resource": "events"}
 ```
 
+At present we use 'kube' as the admin account, used by the scheduler and controller and 'kubelet' user used by the kubelet and kube-proxy services. Create
+the two kubeconfig's and upload via s3secrets.
 
-```bash
-$ cat <<EOF > kubeconfig
-apiVersion: v1
-kind: Config
-preferences: {}
-contexts:
-- context:
-    user: kube
-  name: default
-current-context: default
-users:
-- name: kube
-  user:
-    token: ${KUBE_TOKEN}
+```shell
+  TOKEN=$(uuidgen)  
+  cat <<EOF > kubeconfig
+  apiVersion: v1
+  kind: Config
+  preferences: {}
+  contexts:
+  - context:
+      user: kube
+    name: default
+  current-context: default
+  users:
+  - name: kube
+    user:
+      token: ${TOKEN}
 EOF
-```
+  # upload the kubeconfug
+  s3secrets s3 put -p kube-kubeapi/ kubeconfig
 
+  # repeat the process for the 'kubelet' user and upload to path -p kube-kubelet/
+```
 
 ### Encrypt Keys, Secrets and Configs
 

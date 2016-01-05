@@ -1,5 +1,10 @@
-{"user":"adegnan"}
+{"user":"kube"}
+{"user":"kubelet","namespace": "*", "resource": "pods","readonly": true }
+{"user":"kubelet","namespace": "*", "resource": "services","readonly": true }
+{"user":"kubelet","namespace": "*", "resource": "endpoints","readonly": true }
+{"user":"kubelet","namespace": "*", "resource": "events"}
 {"user":"dsp"}
+{"user":"adegnan"}
 {"user":"jenkins"}
 {"user":"jshanks"}
 {"user":"mikeyhu"}
