@@ -1,3 +1,0 @@
----
-- name: platform
-  policies: [ 'common', 'platform', 'platform_tls' ]

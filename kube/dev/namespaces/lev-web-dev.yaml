@@ -1,6 +1,0 @@
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: lev-web-dev
-  labels:
-    name: lev-web-dev
