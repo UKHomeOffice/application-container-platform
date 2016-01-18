@@ -28,7 +28,7 @@ it in to cfssl tool. For example we're going to use an existing
 [etcd-csr.json](../ca/etcd-csr.json) file.
 
 ```
-cfssl gencert -config=ca-config.json -ca-key=ca_key.pem \
+cfssl gencert -config=ca-config.json -ca-key=ca-key.pem \
   -profile=server etcd-csr.json | cfssljson -bare etcd
 ```
 
