@@ -1,5 +1,0 @@
-
-path "platform/*" {
-  policy = "read"
-}
-

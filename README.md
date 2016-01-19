@@ -1,12 +1,7 @@
-# Digital Services Platform
+# Digital Services Project
 
-**WARNING**
-This is an MVP implementation. A lot of the details will
-change and there will be improvements as the platform matures.
-
-No sensitive data should be stored in this repository, including secrets,
-passwords, TLS private keys or anything else that could compromise security of
-this platform.
+This is the Digital Services Project, which is responsible for platform and re-usable services within Home Office Digital.
+The project comprises of the platform itself and then services that will make up the platform
 
 ## Documentation
 
