@@ -11,7 +11,7 @@ The basic steps to start setting up a dev environment are:
  1. Request a namespace be set up on the platform, where everything related to your application can live, and be isolated from other applications on the platform.
  2. Request a kube token that will allow you to access the kubernetes API - the API is what you talk to deploy your application
  3. Install the [kubectl client](http://kubernetes.io/v1.0/docs/getting-started-guides/aws/kubectl.html) on your local machine. 
- 4. Configure your kubectl client
+ 4. Configure your kubectl client - the server is https://kube-dev-dsp.notprod.homeoffice.gov.uk
  5. Add the public certificate to your list of trusted certificates
 
 ### Requesting a namespace
