@@ -75,6 +75,11 @@ wEuacKODT7vSJvJ4a9wYpNDI00ETd2U5pPaZKIWj//W5+30sm/Hvgs06bSPOg00N
 -----END CERTIFICATE-----
 ```
 
+It can be converted into PEM format using the following command:
+```shell
+openssl x509 -outform PEM -in dsp-ca.crt -out dsp-ca.pem -text
+```
+
 ## Testing the setup
 Run:
 ```bash
