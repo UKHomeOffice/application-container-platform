@@ -1,0 +1,6 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: brp-dev
+  labels:
+    name: brp-dev
