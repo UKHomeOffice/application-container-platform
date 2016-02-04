@@ -14,7 +14,7 @@ The basic steps to start setting up a dev environment are:
     * Specify how much compute resources you will require i.e. 8GB / x amount of computational power
     * Specify if you require an ELB / RDS instance
  3. Request a kube token that will allow you to access the kubernetes API - the API is what you talk to deploy your application
- 4. Install the [kubectl client](http://kubernetes.io/v1.0/docs/getting-started-guides/aws/kubectl.html) on your local machine. 
+ 4. Install the [kubectl client](https://github.com/UKHomeOffice/kubernetes/releases/tag/v1.2.0-kubectl)
  5. Configure your kubectl client
  6. Add the public certificate to your list of trusted certificates
 
