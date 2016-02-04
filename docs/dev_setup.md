@@ -4,7 +4,7 @@
 This guide is aimed at developers that want to start using the platform to host their application.
 
 ## Initial Setup
-Before you can host your application on the dsp you need to do some initial setup.
+Before you can host your application on the dsp you need to do some initial setup, the major piece will be that you will require access to OpenVPN: [OpenVPN Endpoint](https://authd.notprod.homeoffice.gov.uk).
 
 The basic steps to start setting up a dev environment are:
 
