@@ -4,15 +4,19 @@
 This guide is aimed at developers that want to start using the platform to host their application.
 
 ## Initial Setup
-Before you can host your application on the dsp you need to do some initial setup, which will require some support from the central dev ops team.
+Before you can host your application on the dsp you need to do some initial setup, the major piece will be that you will require access to OpenVPN: [OpenVPN Endpoint](https://authd.notprod.homeoffice.gov.uk).
 
 The basic steps to start setting up a dev environment are:
 
- 1. Request a namespace be set up on the platform, where everything related to your application can live, and be isolated from other applications on the platform.
- 2. Request a kube token that will allow you to access the kubernetes API - the API is what you talk to deploy your application
- 3. Install the [kubectl client](http://kubernetes.io/v1.0/docs/getting-started-guides/aws/kubectl.html) on your local machine. 
- 4. Configure your kubectl client
- 5. Add the public certificate to your list of trusted certificates
+ 1. Request VPN access: This will require a keycloak dev-vpn / prod-vpn change for your user account to the right group.
+ 2. Request a namespace:
+    * You may want one per environment i.e. PROJECTNAME-DEV, PROJECTNAME-PREPROD
+    * Specify how much compute resources you will require i.e. 8GB / x amount of computational power
+    * Specify if you require an ELB / RDS instance
+ 3. Request a kube token that will allow you to access the kubernetes API - the API is what you talk to deploy your application
+ 4. Install the [kubectl client](https://github.com/UKHomeOffice/kubernetes/releases/tag/v1.2.0-kubectl)
+ 5. Configure your kubectl client
+ 6. Add the public certificate to your list of trusted certificates
 
 ### Requesting a namespace
 Many of our applications will be running on the same cluster of machines. In order to still provide separation between these applications we namespace our applications. You will need to request a namespace from the central dev ops team to get started.
