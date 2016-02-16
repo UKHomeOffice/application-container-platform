@@ -12,6 +12,10 @@ Technical documentation can be found at [docs](docs/).
 * [Developer getting started guide](docs/dev_setup.md)
 * [Developer application deployment guide](docs/dev_app_deployment.md)
 
+### Estate Documentation
+
+* [Peering](docs/estate/peering.md)
+
 ### Platform
 
 * [Platform Overview](docs/overview.md)
