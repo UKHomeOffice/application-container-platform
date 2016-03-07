@@ -1,7 +1,6 @@
-# Digital Services Project
+# Digital Hosting Platform
 
-This is the Digital Services Project, which is responsible for platform and re-usable services within Home Office Digital.
-The project comprises of the platform itself and then services that will make up the platform
+This is the Digital Hosting Platform, which is responsible for hosting digital services in a central platform, to leverage required features of applications, such as Monitoring, Logging, Metrics etc.
 
 ## Documentation
 
