@@ -34,22 +34,9 @@ moment.
 
 These ELBs map to NodePorts on the node. As a limited resource please state what
 range you want to be assigned to your application. The currently assigned ranges
-are
+are documented.
 
- Application  | Ports
---------------|------------
-BRP           | 30000-30099
-BRP Mock API  | 30100-30199
-LEV           | 30200-30210
-API Catalogue | 30300-30399
-ROTM          | 30400-30419
-GRO Enquiries | 30420-30439
-SRRS          | 30500-30599
-CI            | 32600-32699
-PLATFORM      | 32700-32720
-KUBEACCESS    | 32721-32730
-
-Please create a new pull request to request a range.
+Please update the [Nodeports](https://gitlab.digital.homeoffice.gov.uk/Devops/hod-platform/blob/master/docs/nodeports.md) document to request a range.
 
 ## Example Deployment
 
