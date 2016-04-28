@@ -28,7 +28,7 @@ In order to have access to deploy applications on the platform you will need a t
 
 The central dev ops team will contact you to give you your token. It cannot be sent over normal chat channels due to the sensitivity of the tokens. You will need to set up [cryptocat](https://crypto.cat/) on your machine in order for your token to be sent.
 
-### Install the [kubectl client](http://kubernetes.io/v1.0/docs/getting-started-guides/aws/kubectl.html) on your local machine
+### Install the [kubectl client](https://github.com/UKHomeOffice/kubernetes/releases/tag/v1.2.0-kubectl) on your local machine
 The kubectl client is required to enable you to communicate with the API server. Typically it is installed in /usr/local/bin/kubectl
 
 ### Configure the kubectl client
