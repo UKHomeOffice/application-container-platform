@@ -2,6 +2,9 @@
 
 This is the Digital Hosting Platform, which is responsible for hosting digital services in a central platform, to leverage required features of applications, such as Monitoring, Logging, Metrics etc.
 
+## Useful Links / Services
+* [Logging - Kibana Interface](http://kibana.ops.digital.homeoffice.gov.uk/)
+
 ## Documentation
 
 Technical documentation can be found at [docs](docs/).
