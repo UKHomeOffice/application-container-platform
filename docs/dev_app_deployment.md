@@ -53,7 +53,7 @@ To request a node port simply log an issue [here](https://github.com/UKHomeOffic
 
 ## Define kubernetes replication controllers for your application
 TODO: Look at what the port restrictions are and what the process is for this.
-Now that you have docker images being stored for your application in quay.io you need a file to tell kubernetes which images to deploy, how many images you want, and several other parameters they may need to know about (for oexample environment variables)
+Now that you have docker images being stored for your application in quay.io you need a file to tell kubernetes which images to deploy, how many images you want, and several other parameters they may need to know about (for example environment variables)
 
 ## Define kubernetes services for your application
 You will also need a services file that tells Kubernetes how to expose your application to the outside world. You  must use the node port you have been assigned.
