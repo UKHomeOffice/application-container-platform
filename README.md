@@ -16,6 +16,7 @@ Technical documentation can be found at [docs](docs/).
 
 ### Estate Documentation
 
+* [HOD CA](docs/hod_ca.md)
 * [Peering](docs/estate/peering.md)
 
 ### Platform
