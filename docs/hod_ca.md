@@ -30,3 +30,7 @@ GFir51BW1je+i4gTkL7FqmhhOqD1vtGxIC1osjlO8fUfKEliK0f8slD/2zd/kuzt
 k64B
 -----END CERTIFICATE-----
 ```
+
+### Trusting the CA on Fedora
+1. Place the above certificate into a text file in `/etc/pki/ca-trust/source/anchors/`. e.g. `hod-ca.pem`.
+2. `$ sudo update-ca-trust`
