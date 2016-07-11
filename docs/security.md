@@ -39,7 +39,7 @@ restarted or stopped.
 ### Internal
 
 Currently the biggest internal attack surface is etcd, because it does not have
-authentication (see known issues below). It an attacker gains access to either
+authentication (see known issues below). If an attacker gains access to either
 compute of secure subnets, they will be able to reach etcd and cause damage, by
 potentially executing arbitrary code.
 
