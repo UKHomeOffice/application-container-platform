@@ -34,3 +34,8 @@ k64B
 ### Trusting the CA on Fedora
 1. Place the above certificate into a text file in `/etc/pki/ca-trust/source/anchors/`. e.g. `hod-ca.pem`.
 2. `$ sudo update-ca-trust`
+
+### Trusting the CA on Archlinux
+1. Place the above certificate into a text file in `/etc/ca-certificates/trust-source/anchors/`. e.g. `hod-ca.pem`.
+2. `sudo trust extract-compat`
+3. Verify it has been trusted with `sudo trust list | less`
