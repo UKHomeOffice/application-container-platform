@@ -21,7 +21,7 @@ The basic steps to start setting up a dev environment are:
 ### Requesting a namespace
 Many of our applications will be running on the same cluster of machines. In order to still provide separation between these applications we namespace our applications. You will need to request a namespace from the central dev ops team to get started.
 
-To do this simply raise an issue [here](https://github.com/UKHomeOffice/dsp/issues)
+To do this simply raise a pull request [here](https://gitlab.digital.homeoffice.gov.uk/Devops/kube-hod-platform)
 
 ### Request a token(s)
 In order to have access to deploy applications on the platform you will need a token. As above this can be done by raising a github issue (preferably using the same issue for everyone in your team that needs a token). As part of this request you must specify which namespaces you need access to.
