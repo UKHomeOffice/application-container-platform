@@ -13,6 +13,7 @@ Technical documentation can be found at [docs](docs/).
 
 * [Developer getting started guide](docs/dev_setup.md)
 * [Developer application deployment guide](docs/dev_app_deployment.md)
+* [How to setup a build monitor](docs/build_monitors.md)
 
 ### Estate Documentation
 
