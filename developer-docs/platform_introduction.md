@@ -83,7 +83,7 @@ kubectl get pods
 There is a troubleshooting section further on about how to debug any issues you may encounter.
 
 ## Expose your application
-To expose your application externall you will need to create a service and an ingress controller for it.
+To expose your application externally you will need to create a service and an ingress controller for it.
 The service will expose your application within the kubernetes cluster and the ingress controller will expose your service to the outside world.
 
 ### Define a service for your application
@@ -108,6 +108,15 @@ kubectl get services
 ### Exposing your service externally
 For external facing services you will then need to create an ingress controller. This instructs kubernetes how to expose a service to the outside world.
 An example ingress file is given [here](./resources/example-ingress.yaml). Please use this as a basis for your own ingress controller, but replacing any names with one unique to you.
+
+The ingress file specifies 2 annotations which are worth understanding:
+
+* *kubernetes.io/tls-acme: "true"* - This annotation tells the platform to automatically generate TLS certificates (for HTTPS) if they don't already exist. 
+If you don't have this setting you will need to create your own kubernetes secret with TLS certificates in your namespace. 
+Note the secretName at the bottom must be unique
+* *ingress.kubernetes.io/secure-backends: "true"* - This annotation tells the platform that your service is serving HTTPS. 
+This is typically the case as it means traffic between nodes in the kubernetes cluster is all encrypted, which helps it to be more secure 
+
 Call your ingress file *my-ingress.yaml* and save it to your current directory.
 
 You can then deploy your ingress to kubernetes by running:
@@ -116,13 +125,13 @@ You can then deploy your ingress to kubernetes by running:
 kubectl create -f my-ingress.yaml
 ```
 
-You can verify that your ingress controller has been created by running:
+You can verify that your ingress resource has been created by running:
 
 ```bash
 kubectl get ingress
 ```
 
-You should also now be able to go to the unique url specified in your ingress controller and see your application running.
+You should also now be able to go to the unique url specified in your ingress resource and see your application running.
 
 More documentation on ingress is available from kubernetes [here](http://kubernetes.io/docs/user-guide/ingress/)
 

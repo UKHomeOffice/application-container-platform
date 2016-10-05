@@ -15,7 +15,7 @@ For new projects you will need to put a PR into the hosting platform to create n
 Instructions are available here:  
 https://gitlab.digital.homeoffice.gov.uk/Devops/kube-hod-platform
 
-We recommend you have one per environment, and each namespace is prefixed with the project name. 
+We recommend you have one per environment, with each namespace prefixed with the project name. 
 For example if the project name were boomba the namespaces might be boomba-dev, boomba-uat, boomba-preprod.
 
 You will also need to ask for your team to be granted access to the new namespaces, which you can do by making a request here:  
