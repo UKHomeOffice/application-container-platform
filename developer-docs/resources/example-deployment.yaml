@@ -1,0 +1,33 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: induction-hello-world
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: induction-hello-world
+    spec:
+      containers:
+      - name: hello-world-nodejs
+        image: quay.io/ukhomeofficedigital/induction-hello-world:tim
+        ports:
+          - containerPort: 4000
+      - name: proxy
+        image: quay.io/ukhomeofficedigital/nginx-proxy:v1.6.1
+        env:
+          - name: PROXY_SERVICE_HOST
+            value: '127.0.0.1'
+          - name: PROXY_SERVICE_PORT
+            value: '4000'
+          - name: LOG_FORMAT_NAME
+            value: json
+        ports:
+          - name: https
+            containerPort: 443
+        resources:
+          limits:
+            cpu: 250m
+            memory: 256Mi

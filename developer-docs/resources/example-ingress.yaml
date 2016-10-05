@@ -1,0 +1,22 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    ingress.kubernetes.io/secure-backends: "true"
+  name: hello-world-ingress
+spec:
+  rules:
+  - host: induction-hello-world.notprod.homeoffice.gov.uk
+    http:
+      paths:
+      - backend:
+          serviceName: hello-world-service
+          servicePort: 443
+        path: /
+  tls:
+  - hosts:
+    - induction-hello-world.notprod.homeoffice.gov.uk
+    - www.induction-hello-world.notprod.homeoffice.gov.uk
+    secretName: letsencrypt-induction-hello-world
