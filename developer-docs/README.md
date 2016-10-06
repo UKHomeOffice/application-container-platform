@@ -13,6 +13,12 @@ Kubernetes resources (including your applications!) are always deployed into a p
 These namespaces provide separation between the different projects hosted on the platform.
 We also recommend that each project has one namespace per environment (e.g. for dev, preprod, prod)
 
+## Developer getting started guide
+[This guide](dev_setup.md) shows you how to:
+
+* Get access to the VPN that allows you to connect to the platform
+* Get setup with the kubectl client that lets you deploy applications to kubernetes
+
 ## Project getting started guide
 For new projects you will need to put a PR into the hosting platform to create new namespaces.
 Instructions are available here:  
@@ -26,12 +32,6 @@ https://github.com/UKHomeOffice/hosting-platform-bau/projects/1
 
 ## Project getting to production guide
 Content to follow soon! In the meantime please ask for help in the Devops channel on the [HOD DSP Slack](https://hod-dsp.slack.com)
-
-## Developer getting started guide
-[This guide](dev_setup.md) shows you how to:
-
-* Get access to the VPN that allows you to connect to the platform
-* Get setup with the kubectl client that lets you deploy applications to kubernetes
 
 ## Developer application deployment guide
 [This guide](platform_introduction.md) takes you through deploying a demo application to the platform, and explains some basic steps you can take to debug applications on the platform
