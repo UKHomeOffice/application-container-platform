@@ -1,6 +1,6 @@
 # Onboarding a New User
 
-To allow a new user onto the platform you need a few things from them, their username, gpg key, office365 account.
+To allow a new user onto the dev platform you need a few things from them, their username, gpg key and office365 account.
 
 ## Creating a Kubernetes Token
 Firstly import their gpg key.
@@ -28,7 +28,7 @@ Make sure you git pull before doing any of the following steps!
 ```
 This will ensure everything is up to date.
 
-Now you can add the user by editing secrets/tokens.csv
+Now you can add the user by editing `secrets/tokens.csv`
 At the end of the file add the uid you used to as part of the gpg process, their username, another uid and any additional groups in the following format.
 ```
 <their-uid>,<their-username>,<another-uid>,"<groups>"
@@ -37,11 +37,11 @@ Now you can push these changes, make sure to notify people you are doing this to
 ```
 ./scripts/upload_secrets.sh
 ```
-Finally you must ssh to one of the CoreOS nodes and restart the Kubernetes api fleet service.
+Finally you must ssh to one of the CoreOS nodes and restart the Kubernetes api fleet service. Stop the service and then check that all instances of it have stopped before starting it again.
 ```
-fleetctl stop kubernetes-api.service
-wait 30
-fleetctl start kubernetes-api.service
+fleetctl stop kube-api.service
+fleetctl list-units
+fleetctl start kube-api.service
 ```
 ## Allowing them to access the VPN
-To get through to the servers they will need vpn access granted to them, you can give them this by going to http://something.homeoffice.gov.uk.
+To get through to the servers they will need vpn access granted to them, you can give them this by going to https://keycloak.digital.homeoffice.gov.uk and going on to the administration console.
