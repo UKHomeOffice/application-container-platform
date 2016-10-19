@@ -31,7 +31,9 @@ Please can I have VPN access for DSP Platform Dev, CI, Ops, and a kubernetes tok
 Email: xxx.xxx@digital.homeoffice.gov.uk  
 Name: xxx xxx  
 Team: My Project Team  
+Public GPG Key: xxxxxxxxx
 ```
+You need to provide your public gpg key as the kube token you recieve back will be encrypted using it.
 
 ## Configure the kubectl client
 You will need to configure the kubectl client with the appropriate details.
