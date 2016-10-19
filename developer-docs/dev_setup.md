@@ -33,7 +33,7 @@ Name: xxx xxx
 Team: My Project Team  
 Public GPG Key: xxxxxxxxx
 ```
-You need to provide your public gpg key as the kube token you recieve back will be encyrpted using it.
+You need to provide your public gpg key as the kube token you recieve back will be encrypted using it.
 
 ## Configure the kubectl client
 You will need to configure the kubectl client with the appropriate details.
