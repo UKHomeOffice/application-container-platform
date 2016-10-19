@@ -1,6 +1,6 @@
 # Onboarding a New User
 
-To allow a new user onto the dev platform you need a few things from them, their username, gpg key and office365 account.
+To allow a new user onto the dev platform you need a few things from them: their gpg key, office365 account and the namespaces that they need access to.
 
 ## Creating a Kubernetes Token
 Firstly import their gpg key.
@@ -44,4 +44,4 @@ fleetctl list-units
 fleetctl start kube-api.service
 ```
 ## Allowing them to access the VPN
-To get through to the servers they will need vpn access granted to them, you can give them this by going to https://keycloak.digital.homeoffice.gov.uk and going on to the administration console.
+To get through to the servers they will need vpn access granted to them, you can give them this by going to https://sso.digital.homeoffice.gov.uk and going on to the administration console.
