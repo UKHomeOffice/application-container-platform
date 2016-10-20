@@ -11,12 +11,14 @@ You should already have access to:
 This guide is aimed at developers that want to start using the platform to host their application.
 You will need to:
 
-1. [Request Access to the VPN and kubernetes](#requesting-access)
-2. [Install the kubectl client](http://kubernetes.io/docs/user-guide/prereqs/)
+1. [Request Access to the VPN, kubernetes, quay, and artifactory](#requesting-access)
+2. [Install the kubectl client](https://coreos.com/kubernetes/docs/latest/configure-kubectl.html)
 3. [Configure your kubectl client](#configure-the-kubectl-client)
 4. [Test your setup](#testing-the-setup)
 
 ## Requesting Access
+
+### Platform access
 To connect to the platform you will need 2 accounts:
 
 1. VPN access via Office 365
@@ -34,7 +36,39 @@ Team: My Project Team
 Public GPG Key: xxxxxxxxx
 Namespace: dev-induction
 ```
-You need to provide your public gpg key as the kube token you receive back will be encrypted using it. If you need to, you can [generate a gpg key](https://help.github.com/articles/generating-a-new-gpg-key/)
+You need to provide your public gpg key as the kube token you receive back will be encrypted using it. 
+If you need to, you can [generate a gpg key](https://help.github.com/articles/generating-a-new-gpg-key/)
+
+### Quay access
+We use [quay](https://www.quay.io) for storing public docker images. Please login to quay with your Github account. 
+As all of our repositories are public you can then pull any of them. 
+Pushes to quay should all be done with your CI system.
+
+[Here are our Home Office quay repos](https://quay.io/organization/ukhomeofficedigital).
+
+### Artifactory access
+[Our private Artifactory is available here](https://artifactory.digital.homeoffice.gov.uk/artifactory/webapp/#/login).
+We use this for storing private docker images and other private artefacts (e.g. JARs, node modules, etc).
+
+When logging in please use the **HOD SSO** sign in option. To pull images from Artifactory you will need to do a docker login.
+Your username will be your digital email address and you can 
+[generate an API key to use as your password here](https://artifactory.digital.homeoffice.gov.uk/artifactory/webapp/#/profile). 
+
+```
+docker login docker.digital.homeoffice.gov.uk
+```
+
+Images can be pulled by for example running:
+
+```
+docker pull docker.digital.homeoffice.gov.uk/aws-dsp:v0.1.3-rc1
+```
+
+Note that if you get an error message when pulling stating the following then it could be because you haven't logged in successfully.
+ 
+```
+Error: Status 400 trying to pull repository aws-dsp: "{\n  \"errors\" : [ {\n    \"status\" : 400,\n    \"message\" : \"Unsupported docker v1 repository request for 'docker'\"\n  } ]\n}"
+```
 
 ## Configure the kubectl client
 You will need to configure the kubectl client with the appropriate details.
