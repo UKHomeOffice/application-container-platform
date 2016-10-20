@@ -32,6 +32,7 @@ Content to follow soon! In the meantime please ask for help in the Devops channe
 
 * Get access to the VPN that allows you to connect to the platform
 * Get setup with the kubectl client that lets you deploy applications to kubernetes
+* Get access to Quay and Artifactory
 
 ## Developer application deployment guide
 [This guide](platform_introduction.md) takes you through deploying a demo application to the platform, and explains some basic steps you can take to debug applications on the platform
