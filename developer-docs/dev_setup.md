@@ -32,8 +32,9 @@ Email: xxx.xxx@digital.homeoffice.gov.uk
 Name: xxx xxx  
 Team: My Project Team  
 Public GPG Key: xxxxxxxxx
+Namespace: dev-induction
 ```
-You need to provide your public gpg key as the kube token you recieve back will be encrypted using it.
+You need to provide your public gpg key as the kube token you receive back will be encrypted using it. If you need to, you can [generate a gpg key](https://help.github.com/articles/generating-a-new-gpg-key/)
 
 ## Configure the kubectl client
 You will need to configure the kubectl client with the appropriate details.
