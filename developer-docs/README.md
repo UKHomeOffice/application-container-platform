@@ -6,7 +6,7 @@ We strongly recommend getting to know Docker and Kubernetes - the 2 core technol
 [Kubernetes](http://kubernetes.io/docs/whatisk8s/) is an open-source platform for automating deployment, scaling,
 and operations of application containers across clusters of hosts, providing container-centric infrastructure.
 
-Some more recommended resources are available [here](./recommended_reading.md)
+Some [recommended resources for Docker and Kubernetes are available here](./recommended-reading.md)
 
 ## Projects and namespaces
 Kubernetes resources (including your applications!) are always deployed into a particular namespace. 
