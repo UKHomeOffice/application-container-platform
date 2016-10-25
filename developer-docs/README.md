@@ -41,3 +41,17 @@ Content to follow soon! In the meantime please ask for help in the Devops channe
 
 ## How to setup a build monitor
 [This guide](build_monitors.md) covers how to set up a build monitor.
+
+## Quay
+
+Is a software repository we use to store our public images 
+
+To publish these images you will need [register for a free Quay account](https://quay.io) using your Github account linked to the Home Office organisation.
+
+Once you've logged into Quay check that you have ukhomeofficedigital under Users and Organisations.
+If you do not, [raise an issue to be added to the ukhomeofficedigital Quay account] (https://github.com/UKHomeOffice/hosting-platform-bau/projects/1)
+
+## Artifactory
+
+Is a software repository we use to store our private images. To [access the Home Office Artifactory](https://artifactory.digital.homeoffice.gov.uk/artifactory/webapp/#/artifacts/browse/tree/General/docker), you will need to be connected to [the Home Office VPN](https://github.com/UKHomeOffice/hosting-platform/blob/master/developer-docs/dev_setup.md).  You will also need to login with your Office365 account. 
+
