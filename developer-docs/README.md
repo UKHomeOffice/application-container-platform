@@ -53,5 +53,5 @@ If you do not, [raise an issue to be added to the ukhomeofficedigital Quay accou
 
 ## Artifactory
 
-Is a software repository we use to store our private images. To [access the Home Office Artifactory](https://artifactory.digital.homeoffice.gov.uk/artifactory/webapp/#/artifacts/browse/tree/General/docker), you will need to be connected to [the Home Office VPN](https://github.com/UKHomeOffice/hosting-platform/blob/master/developer-docs/dev_setup.md).  You will also need to login with your Office365 account. 
+Is a software repository we use to store our private images. To [access the Home Office Artifactory](https://artifactory.digital.homeoffice.gov.uk/artifactory/webapp/#/artifacts/browse/tree/General/docker), you will need to login with your Office365 account. 
 
