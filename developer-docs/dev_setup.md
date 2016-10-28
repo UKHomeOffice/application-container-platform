@@ -45,7 +45,7 @@ The only change you will need to make is to replace "XXXXXXXXXX" with your kuber
 ## Connect to the VPN
 Once you've been given access to the DSP Platform VPN you can now navigate to https://authd.digital.homeoffice.gov.uk and login with your Office 365 account by clicking on the 365 link on the right.
 
-Once you're logged in please download the VPN profile called 'DSP Platform Dev, CI, Ops' from under the VPN Profiles.
+Once you're logged in please download the VPN profile called 'DSP Platform Dev, CI, Ops' from under VPN Profiles.
 
 If you're using a Mac you can download and install [Tunnelblick](https://tunnelblick.net/) and you should be able to double click the VPN profile you've downloaded and it will automatically be added to TunnelBlick, you should now be able to connect to the VPN using the UI.
 If you're not on a Mac you can use the command
