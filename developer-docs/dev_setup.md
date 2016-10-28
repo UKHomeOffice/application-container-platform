@@ -47,7 +47,7 @@ Once you've been given access to the DSP Platform VPN you can now navigate to ht
 
 Once you're logged in please download the VPN profile called 'DSP Platform Dev, CI, Ops' from under VPN Profiles.
 
-If you're using a Mac you can download and install [Tunnelblick](https://tunnelblick.net/) and you should be able to double click the VPN profile you've downloaded and it will automatically be added to TunnelBlick, you should now be able to connect to the VPN using the UI.
+If you're using a Mac you can download and install [Tunnelblick](https://tunnelblick.net/) and you should be able to double click the VPN profile you've downloaded and it will automatically be added to Tunnelblick, and you should then be able to connect to the VPN using the UI.
 If you're not on a Mac you can use the command
 ```bash
 sudo openvpn <vpn_profile_file>
