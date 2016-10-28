@@ -42,6 +42,18 @@ We recommend copying the [example kubectl config](resources/kubeconfig) to ~/.ku
 
 The only change you will need to make is to replace "XXXXXXXXXX" with your kubernetes token.
 
+## Connect to the VPN
+Once you've been given access to the DSP Platform VPN you can now navigate to https://authd.digital.homeoffice.gov.uk and login with your Office 365 account by clicking on the 365 link on the right.
+
+Once you're logged in please download the VPN profile called 'DSP Platform Dev, CI, Ops' from under VPN Profiles.
+
+If you're using a Mac you can download and install [Tunnelblick](https://tunnelblick.net/) and you should be able to double click the VPN profile you've downloaded and it will automatically be added to Tunnelblick, and you should then be able to connect to the VPN using the UI.
+If you're not on a Mac you can use the command
+```bash
+sudo openvpn <vpn_profile_file>
+```
+You'll need to download and connect to a new VPN Profile every 12 hours.
+
 ## Testing the setup
 Run:
 ```bash
