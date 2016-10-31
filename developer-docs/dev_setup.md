@@ -22,7 +22,7 @@ To connect to the platform you will need 2 accounts:
 1. VPN access via Office 365
 2. Kubernetes access token
 
-Please request access by adding an issue to the Platform Access column [here](https://github.com/UKHomeOffice/hosting-platform-bau/projects/1).
+Please request access by adding an issue to the Platform Access column [here](https://github.com/UKHomeOffice/hosting-platform-bau/issues).
 
 Please use the below template for your request
 
