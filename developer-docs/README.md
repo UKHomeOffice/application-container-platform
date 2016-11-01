@@ -42,36 +42,3 @@ Content to follow soon! In the meantime please ask for help in the Devops channe
 
 ## How to setup a build monitor
 [This guide](build_monitors.md) covers how to set up a build monitor.
-
-## Quay
-
-Is a software repository we use to store our public images 
-
-To publish these images you will need [register for a free Quay account](https://quay.io) using your Github account linked to the Home Office organisation.
-
-Once you've logged into Quay check that you have ukhomeofficedigital under Users and Organisations.
-If you do not, [raise an issue to be added to the ukhomeofficedigital Quay account] (https://github.com/UKHomeOffice/hosting-platform-bau/projects/1)
-
-## Artifactory
-
-### Access
-
-Artifactory is a software repository we use to store our private images. To [access the Home Office Artifactory](https://artifactory.digital.homeoffice.gov.uk/artifactory/webapp/#/artifacts/browse/tree/General/docker), you will need to login with your Office365 account. 
-
-### Logging in locally on the command line
-
-On the terminal run 
-```
-docker login docker.digital.homeoffice.gov.uk -u firstname.surname@digital.homeoffice.gov.uk -p <API_TOKEN>
-```
-
-The API TOKEN can be retrieved from https://artifactory.digital.homeoffice.gov.uk/artifactory/webapp/#/profile where you generate API Key
-
-### Pulling from Artifactory
-
-You need to do 
-
-```
-docker pull docker.digital.homeoffice.gov.uk/project_name:commitsha
-e.g. docker pull docker.digital.homeoffice.gov.uk/ukhomeofficedigital/node-hello-world:1a194b2b0884e58eac47eb12521c7bbbf786375b
-```
