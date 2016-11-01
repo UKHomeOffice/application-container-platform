@@ -28,6 +28,7 @@ The stages involved in deploying an application are:
 5. [Expose your application externally](#expose-your-application)
     1. Define a service which exposes your application inside the platform
     2. Use an ingress controller which exposes your service externally
+6. [Delete all your hard work](#deleting-deployed-resources)
 
 ## Dockerise your application
 The demo application is already dockerised. If you are dockerising a different application please follow the Home Office guidance [here](./writing_dockerfiles.md)
@@ -52,6 +53,8 @@ docker push quay.io/ukhomeofficedigital/induction-hello-world:tim
 
 ## Tell Kubernetes to deploy your docker image
 
+Before using the kubernetes cluster you will need to be on the [VPN](https://sso.digital.homeoffice.gov.uk/auth/realms/hod-vpn/protocol/openid-connect/auth?client_id=broker&redirect_uri=https%3A%2F%2Fauthd.digital.homeoffice.gov.uk%2Foauth%2Fcallback&response_type=code&scope=vpn-user+openid+email+profile&state=%2F).
+
 You can deploy a number of different types of resource to kubernetes using the kubectl client.
 
 For each resource type you will first need to define a yaml file detailing the resource to deploy, you can then deploy it.
@@ -61,7 +64,12 @@ A deployment defines what application you want to run (which can consist of mult
 
 An example deployment file is given [here](./resources/example-deployment.yaml).
 It includes a hello-world container and an nginx container terminating TLS - a very common pattern that we recommend. 
-Please use this as a basis for your own deployment, but replacing any names with one unique to you.
+Please use this as a basis for your own deployment, but **replacing any names with one unique to you**. These include:
+
+- metadata.name
+- spec.template.metadata.labels.name
+- the image tag to deploy
+
 Call your deployment file *my-deployment.yaml* and save it to your current directory.
 
 You can then deploy your deployment to kubernetes by running:
@@ -90,7 +98,13 @@ The service will expose your application within the kubernetes cluster and the i
 Your application is now running, but nothing can talk to it! For it to be exposed you first need to create a service.
 This exposes your service to the rest of the kubernetes cluster.
 
-An example service file is given [here](./resources/example-service.yaml). Please use this as a basis for your own service, but replacing any names with one unique to you.
+An example service file is given [here](./resources/example-service.yaml). Please use this as a basis for your own service, 
+but **replacing any names with one unique to you**. 
+These include:
+
+- metadata.name
+- spec.selector.name
+
 Call your service file *my-service.yaml* and save it to your current directory.
 
 You can then deploy your service to kubernetes by running:
@@ -107,7 +121,13 @@ kubectl get services
 
 ### Exposing your service externally
 For external facing services you will then need to create an ingress controller. This instructs kubernetes how to expose a service to the outside world.
-An example ingress file is given [here](./resources/example-ingress.yaml). Please use this as a basis for your own ingress controller, but replacing any names with one unique to you.
+An example ingress file is given [here](./resources/example-ingress.yaml). Please use this as a basis for your own ingress controller, 
+but **replacing any names with one unique to you**. These include:
+
+- spec.rules.http.paths.backend.serviceName
+- spec.rules.host
+- spec.tls.hosts
+- spec.tls.secretName
 
 The ingress file specifies 2 annotations which are worth understanding:
 
@@ -134,6 +154,15 @@ kubectl get ingress
 You should also now be able to go to the unique url specified in your ingress resource and see your application running.
 
 More documentation on ingress is available from kubernetes [here](http://kubernetes.io/docs/user-guide/ingress/)
+
+## Deleting deployed resources
+After the induction please delete everything you have deployed so as to not clutter up the platform.
+
+The best way to delete any deployed resources is to first get them to check the names, then delete. e.g.
+```bash
+kubectl get deployments
+kubectl delete deployment my-deployment
+```
 
 ## Debugging issues with your deployments to the platform
 If you get to the end of the above guide but can't access your application there are a number of places something could be going wrong.

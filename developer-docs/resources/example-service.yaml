@@ -2,8 +2,6 @@
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    name: hello-world-service
   name: hello-world-service
 spec:
   ports:
