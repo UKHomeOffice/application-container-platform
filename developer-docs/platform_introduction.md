@@ -33,6 +33,7 @@ The stages involved in deploying an application are:
     1. [Store some db credentials](#store-some-db-credentials)
     1. [See the stored secrets](#See-the-stored-secrets)
     1. [Use the secrets](#use-the-secrets)
+    1. [Debug with secrets](#debug-with-secrets)
 1. [Delete all your hard work](#deleting-deployed-resources)
 
 ### Dockerise your application
@@ -194,6 +195,22 @@ kubectl describe secrets/db-secrets
 Then make your deployment.yaml look something like [example-deployment-with-secrets.yaml](./resources/example-deployment-with-secrets.yaml)
 
 You will find **only** the `induction-hello-world` container comes up with a read only volume mounted at `/secrets` with a `certificate.pem` in it and also the `DBHOST`, `DBUSER`, `DBPASS` environment variables will all be set.
+
+#### Debug with secrets
+Sometimes your app doesn't want to talk to an API or a DB and you've stored the credentials or just the details of that in secret. 
+
+```bash
+kubectl exec -ti my-pod -c my-container -- mysql -h\$DBHOST -u\$DBUSER -p\$DBPASS
+## or
+kubectl exec -ti my-pod -c my-container -- openssl verify /secrets/certificate.pem
+## or
+kubectl exec -ti my-pod -c my-container bash
+## and you'll naturally have all the environment variables set and volumes mounted.
+## however we recommend against outputing them to the console e.g. echo $DBHOST
+## instead if you want to assert a variable is set correctly use
+[[ -z $DBHOST ]]; echo $?
+## if it returns 1 then the variable is set.
+```
 
 ### Deleting deployed resources
 After the induction please delete everything you have deployed so as to not clutter up the platform.
