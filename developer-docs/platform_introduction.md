@@ -164,15 +164,18 @@ More documentation on ingress is available from kubernetes [here](http://kuberne
 
 ### Secrets
 
+Your application is likely to have some parameters that are essential to the security of the application - for example API tokens and DB passwords. These should be stored as Kubernetes secrets to enable your application to read them. This process is described in the following guide.
+
 See [official docs](http://kubernetes.io/docs/user-guide/secrets/#creating-a-secret-using-kubectl-create-secret) for more complete documentation; what follows is a very abridged version.
 
 #### Generate a strong secret
+When generating passwords you should use the following code to ensure you are generating strong passwords.
 ```bash
 openssl rand -base64 32
 ```
 
 #### Store some db credentials
-
+The following command will create a kubernetes secret called db-secrets that contains all the pieces of information listed below. You'll then be able to mount this information into your applications
 ```bash
 kubectl create secret generic db-secrets \
   --from-literal=dbhost=my-rds.example.com \
