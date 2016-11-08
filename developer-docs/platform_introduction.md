@@ -5,7 +5,7 @@ This guide is aimed at developers that have already completed the [initial setup
 It covers how to manually deploy an application to the platform, and some advice for debugging applications on the platform.
 
 1. [Deploying an application to the platform](#deploying-an-application-to-the-platform)
-2. [Debugging issues with your application](#debugging-issues-with-your-deployments-to-the-platform)
+1. [Debugging issues with your application](#debugging-issues-with-your-deployments-to-the-platform)
 
 ## Deploying an application to the platform
 For this demo we will use a simple nodejs application:  
@@ -20,20 +20,26 @@ git clone https://github.com/UKHomeOffice/docker-node-hello-world
 The stages involved in deploying an application are:
 
 1. [Dockerise your application](#dockerise-your-application) (the example above is already Dockerised)
-2. [Build and tag your docker image](#build-and-tag-your-docker-image)
-3. [Push the docker image to a docker repository](#push-the-docker-image-to-a-repository)
-4. [Tell Kubernetes to deploy your docker image](#tell-Kubernetes-to-deploy-your-docker-image)
-    1. Define a deployment for your application
-    2. Run the deployment
-5. [Expose your application externally](#expose-your-application)
-    1. Define a service which exposes your application inside the platform
-    2. Use an ingress controller which exposes your service externally
-6. [Delete all your hard work](#deleting-deployed-resources)
+1. [Build and tag your docker image](#build-and-tag-your-docker-image)
+1. [Push the docker image to a docker repository](#push-the-docker-image-to-a-repository)
+1. [Tell Kubernetes to deploy your docker image](#tell-kubernetes-to-deploy-your-docker-image)
+    1. [Define a deployment for your application](#define-a-deployment-for-your-application)
+    1. [Run the deployment](#run-the-deployment)
+1. [Expose your application externally](#expose-your-application)
+    1. [Define a service which exposes your application inside the platform](#define-a-service-for-your-application)
+    1. [Use an ingress controller which exposes your service externally](#exposing-your-service-externally)
+1. [Store and manage secrets](#secrets)
+    1. [Generate a strong secret](#generate-a-strong-secret)
+    1. [Store some db credentials](#store-some-db-credentials)
+    1. [See the stored secrets](#See-the-stored-secrets)
+    1. [Use the secrets](#use-the-secrets)
+    1. [Debug with secrets](#debug-with-secrets)
+1. [Delete all your hard work](#deleting-deployed-resources)
 
-## Dockerise your application
+### Dockerise your application
 The demo application is already dockerised. If you are dockerising a different application please follow the Home Office guidance [here](./writing_dockerfiles.md)
 
-## Build and tag your docker image
+### Build and tag your docker image
 To build and tag your docker image use the standard docker commands:
 
 ```bash
@@ -43,7 +49,7 @@ docker build -t quay.io/ukhomeofficedigital/induction-hello-world:tim .
 
 *IMPORTANT NOTE:* Please give your image a unique tag (e.g. using your name) so we don't get lots of clashes!
 
-## Push the docker image to a repository
+### Push the docker image to a repository
 Before deploying the docker image must be stored in either the ukhomeofficedigital quay or on our internal artifactory.
 The tag used when building your docker image must match the repository you want to push for. e.g.
 
@@ -51,7 +57,7 @@ The tag used when building your docker image must match the repository you want 
 docker push quay.io/ukhomeofficedigital/induction-hello-world:tim
 ```
 
-## Tell Kubernetes to deploy your docker image
+### Tell Kubernetes to deploy your docker image
 
 Before using the kubernetes cluster you will need to be on the [VPN](https://sso.digital.homeoffice.gov.uk/auth/realms/hod-vpn/protocol/openid-connect/auth?client_id=broker&redirect_uri=https%3A%2F%2Fauthd.digital.homeoffice.gov.uk%2Foauth%2Fcallback&response_type=code&scope=vpn-user+openid+email+profile&state=%2F).
 
@@ -69,6 +75,8 @@ Please use this as a basis for your own deployment, but **replacing any names wi
 - metadata.name
 - spec.template.metadata.labels.name
 - the image tag to deploy
+
+### Run the deployment
 
 Call your deployment file *my-deployment.yaml* and save it to your current directory.
 
@@ -90,7 +98,7 @@ kubectl get pods
 
 There is a troubleshooting section further on about how to debug any issues you may encounter.
 
-## Expose your application
+### Expose your application
 To expose your application externally you will need to create a service and an ingress controller for it.
 The service will expose your application within the kubernetes cluster and the ingress controller will expose your service to the outside world.
 
@@ -155,7 +163,56 @@ You should also now be able to go to the unique url specified in your ingress re
 
 More documentation on ingress is available from kubernetes [here](http://kubernetes.io/docs/user-guide/ingress/)
 
-## Deleting deployed resources
+### Secrets
+
+Your application is likely to have some parameters that are essential to the security of the application - for example API tokens and DB passwords. These should be stored as Kubernetes secrets to enable your application to read them. This process is described in the following guide.
+
+See [official docs](http://kubernetes.io/docs/user-guide/secrets/#creating-a-secret-using-kubectl-create-secret) for more complete documentation; what follows is a very abridged version.
+
+#### Generate a strong secret
+When generating passwords you should use the following code to ensure you are generating strong passwords.
+```bash
+LC_CTYPE=C tr -dc "[:print:]" < /dev/urandom | head -c 32
+```
+
+#### Store some db credentials
+The following command will create a kubernetes secret called db-secrets that contains all the pieces of information listed below. You'll then be able to mount this information into your applications
+```bash
+kubectl create secret generic db-secrets \
+  --from-literal=dbhost=my-rds.example.com \
+  --from-literal=dbuser=myusername \
+  --from-literal=dbpass=mypassword \
+  --from-file=./certificate.pem
+# ... repeat for each namespace with relevant permutations
+````
+
+#### See the stored secrets
+```bash
+kubectl describe secrets/db-secrets
+```
+
+#### Use the secrets
+Then make your deployment.yaml look something like [example-deployment-with-secrets.yaml](./resources/example-deployment-with-secrets.yaml)
+
+You will find **only** the `induction-hello-world` container comes up with a read only volume mounted at `/secrets` with a `certificate.pem` in it and also the `DBHOST`, `DBUSER`, `DBPASS` environment variables will all be set.
+
+#### Debug with secrets
+Sometimes your app doesn't want to talk to an API or a DB and you've stored the credentials or just the details of that in secret. 
+
+```bash
+kubectl exec -ti my-pod -c my-container -- mysql -h\$DBHOST -u\$DBUSER -p\$DBPASS
+## or
+kubectl exec -ti my-pod -c my-container -- openssl verify /secrets/certificate.pem
+## or
+kubectl exec -ti my-pod -c my-container bash
+## and you'll naturally have all the environment variables set and volumes mounted.
+## however we recommend against outputing them to the console e.g. echo $DBHOST
+## instead if you want to assert a variable is set correctly use
+[[ -z $DBHOST ]]; echo $?
+## if it returns 1 then the variable is set.
+```
+
+### Deleting deployed resources
 After the induction please delete everything you have deployed so as to not clutter up the platform.
 
 The best way to delete any deployed resources is to first get them to check the names, then delete. e.g.
@@ -186,7 +243,6 @@ You can get further details on why the pods couldn't be deployed by running:
 kubectl describe pods *pods_name_here*
 ```
 
-
 If your pods are running you can check they are operating as expected by execcing into them (this gets you a shell on one of your containers). 
 
 ```bash
@@ -213,5 +269,5 @@ From this container you can then try curling your service. Your service will hav
 curl my-service-name
 ```
 
-### 4. Investigate potential issues with ingress
-At the moment we recommend asking a friendly dev ops for help with these issues!
+#### 4. Investigate potential issues with ingress
+At the moment we recommend asking a friendly [dev ops](https://hod-dsp.slack.com/archives/general) for help with these issues!
