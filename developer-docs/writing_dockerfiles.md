@@ -12,6 +12,7 @@ This document lists all of our docker base images that you can build from:
 * [NodeJS onbuild image - recommended by default](https://github.com/UKHomeOffice/docker-nodejs)
 * [NodeJS base image - if you need more flexibility](https://github.com/UKHomeOffice/docker-nodejs-base)
 * [Scala image](https://github.com/UKHomeOffice/docker-scala-sbt)
+* [JDK image](https://github.com/UKHomeOffice/docker-openjdk8)
 
 ### Home Office CentOS base image
 If none of the technology specific images work for you you can either build on top of them or build from the base centos image:  
