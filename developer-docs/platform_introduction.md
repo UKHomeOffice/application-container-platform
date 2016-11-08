@@ -172,7 +172,7 @@ See [official docs](http://kubernetes.io/docs/user-guide/secrets/#creating-a-sec
 #### Generate a strong secret
 When generating passwords you should use the following code to ensure you are generating strong passwords.
 ```bash
-openssl rand -base64 32
+LC_CTYPE=C tr -dc "[:print:]" < /dev/urandom | head -c 32
 ```
 
 #### Store some db credentials
