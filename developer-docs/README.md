@@ -37,6 +37,10 @@ Content to follow soon! In the meantime please ask for help in the Devops channe
 ## Developer application deployment guide
 [This guide](platform_introduction.md) takes you through deploying a demo application to the platform, and explains some basic steps you can take to debug applications on the platform
 
+## Developer guide to Continuous Integration with Drone
+[The guide to Drone](https://github.com/UKHomeOffice/central-devteam-board/blob/master/drone-how-to.md) covers how to
+use drone to test your PRs, to build and push docker images, and to deploy.
+
 ## Writing Dockerfiles
 [This guide](./writing_dockerfiles.md) covers best practice for building Dockerfiles, and lists our standard base images.
 
