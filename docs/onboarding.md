@@ -37,11 +37,5 @@ Now you can push these changes, make sure to notify people you are doing this to
 ```
 ./scripts/upload_secrets.sh
 ```
-Finally you must ssh to one of the CoreOS nodes and restart the Kubernetes api fleet service. Stop the service and then check that all instances of it have stopped before starting it again.
-```
-fleetctl stop kube-api.service
-fleetctl list-units
-fleetctl start kube-api.service
-```
 ## Allowing them to access the VPN
-To get through to the servers they will need vpn access granted to them, you can give them this by going to https://sso.digital.homeoffice.gov.uk and going on to the administration console.
+All users now get automatic to the Dev VPN, if they need access to additional profiles go to https://sso.digital.homeoffice.gov.uk and go on to the administration console to add them to the relevant groups.
