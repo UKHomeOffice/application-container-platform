@@ -5,8 +5,8 @@ metadata:
   name: hello-world-service
 spec:
   ports:
-  - name: https
-    port: 443
-    targetPort: https
+  - name: http
+    port: 80
+    targetPort: http
   selector:
     name: induction-hello-world
