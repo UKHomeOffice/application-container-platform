@@ -129,19 +129,14 @@ kubectl get services
 
 ### Exposing your service externally
 For external facing services you will then need to create an ingress controller. This instructs kubernetes how to expose a service to the outside world.
-An example ingress file is given [here](./resources/example-ingress.yaml). Please use this as a basis for your own ingress controller, 
+An [example ingress file is given here](./resources/example-ingress.yaml). Please use this as a basis for your own ingress controller, 
 but **replacing any names with one unique to you**. These include:
 
 - spec.rules.http.paths.backend.serviceName
 - spec.rules.host
-- spec.tls.hosts
-- spec.tls.secretName
 
-The ingress file specifies 2 annotations which are worth understanding:
+The ingress file specifies one annotations which is worth understanding:
 
-* *kubernetes.io/tls-acme: "true"* - This annotation tells the platform to automatically generate TLS certificates (for HTTPS) if they don't already exist. 
-If you don't have this setting you will need to create your own kubernetes secret with TLS certificates in your namespace. 
-Note the secretName at the bottom must be unique
 * *ingress.kubernetes.io/secure-backends: "true"* - This annotation tells the platform that your service is serving HTTPS. 
 This is typically the case as it means traffic between nodes in the kubernetes cluster is all encrypted, which helps it to be more secure 
 
