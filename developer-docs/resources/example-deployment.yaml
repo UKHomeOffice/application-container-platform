@@ -14,8 +14,6 @@ spec:
       - name: hello-world-nodejs
         image: quay.io/ukhomeofficedigital/induction-hello-world:tim
         ports:
-          - containerPort: 4000
-        ports:
           - name: http
             containerPort: 4000
         resources:
