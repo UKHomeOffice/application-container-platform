@@ -1,38 +1,26 @@
 # Digital Hosting Platform
 
-This is the Digital Hosting Platform, which is responsible for hosting digital services in a central platform, to leverage required features of applications, such as Monitoring, Logging, Metrics etc.
+This page will give you an overview of HOD DSP, the services it entails and the ways to get access to them. This is a general overview. Developers should check out the [Developer Docs](https://github.com/UKHomeOffice/hosting-platform/tree/master/developer-docs).
 
-## Useful Links / Services
-* [Logging - Kibana Interface](https://kibana.ops.digital.homeoffice.gov.uk/)
+## **Must Read**
+Everyone using our platform **MUST** adhere to [technical service standards](https://github.com/UKHomeOffice/technical-service-requirements/blob/master/docs/ci.md).
+All Services will be under a review process
 
-## Documentation
+## Services
+These are the core services which we provide across our platform.
 
-Technical documentation can be found at [docs](docs/).
+* [Hosting](docs/hosting.md)
+* [VPN](docs/authd.md)
+* [Code Management](docs/code.md)
+* [Artifact Storage](docs/artifacts.md)
+* [CI](docs/ci.md)
+* [Application Composition](docs/application.md)
+* [Platform Composition](docs/platformcomp.md)
+* [Logging](docs/logging.md)
+* [Monitoring](docs/metrics.md)
 
-### Developer Guides
+## Accessing the Services
+When trying to get onto the platform for the first time you will need to get access to a various things that will allow you to get to other things. The full flow for this can be found [here](docs/newuser.md)
 
-* [Documentation for developers getting started on the platform is available here](developer-docs/README.md)
-
-### Estate Documentation
-
-* [HOD CA](docs/hod_ca.md)
-
-### Platform
-
-* [Platform Overview](docs/overview.md)
-* [Security](docs/security.md)
-* [Platform Setup Howto](docs/platform_setup.md)
-* [etcd](docs/etcd.md)
-* [CA and TLS Management](docs/ca_tls.md)
-* [Backups](docs/backups.md)
-* [Disaster Recovery](docs/dr.md)
-* [Logging and Monitoring](docs/logging_monitoring.md)
-* [Vault](docs/vault.md)
-
-### Applications and Services
-
-* [Application Deployment](docs/apps_deployment.md)
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md).
+## Support
+If you require support you can talk to us on our Slack Channel or raise an issue on our [bau board](https://github.com/UKHomeOffice/hosting-platform-bau).
