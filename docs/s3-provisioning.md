@@ -15,10 +15,10 @@ Create an AWS access key, for **only** type _Programmatic access_ as this is a m
 
 Snip the header ```sed -i '1d' credentials.csv```
 
-The ```Access key ID``` & ```Secret access key``` will be presented to the end users as base64 encoded secrets in the relevent kubernetes namespace, the script below will construct one for this example.
+The S3 _Access key ID_ & _Secret access key_ will be presented to the end users as base64 encoded secrets in the relevent kubernetes namespace, the script below will construct a config for this example, the first argument being the kubernetes name.
 
 ```
-./runme.sh myexample-dev < credentials.csv
+./runme.sh myexample < credentials.csv
 ```
 
 ### script
@@ -47,11 +47,14 @@ metadata:
   name: ${SEC_NAME}
 type: Opaque
 EoF
+
 done
 
 cat k8s-secret.yaml
 
 ```
+
+
 
 ## Enabling KMS Encryption
 
@@ -62,35 +65,68 @@ Select the correct region, then create key..
 
 * Create Alias (myexample-dev-s3) and Description  (Just an example), ensure Key Material Origin is KMS 
 * Define Key Administrative Permissions, give yourself permissions to delete this key for now.
-* Define Key Usage Permissions, choose the IAM user in this example.
+* Define Key Usage Permissions, do not add to an  IAM user, click through.
 * Preview Key Policy if you wish.
 
-Choose finish to create the key, and note the uuid for use in the stacks config below. 
+Choose finish to create the key, and **note the KMS uuid presented to you** for use in the stacks config below. 
 
 Docs: http://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html
 
 
+## Configuring Stacks
+
+Retrieve provisioning git repos and create a feature branch for your resource request.
 
 
- unique _kms_ key id, (use uuidgen), add  yourself as key admin, **DO NOT** grant access to this key.
+```
+git clone ssh://git@gitlab.digital.homeoffice.gov.uk:2222/Devops/stacks-hod-platform.git
+cd stacks-hod-platform
+git checkout -b myexample-s3
 
-Create the bucket _**myexample-deveu-west-1**_
-The secrets are avaliable to download as a csv, cache them securely.
-## User name,Password,Access key ID,Secret access key
+```
 
+Most new provisioning requests are similar, copying an existing template in ```stacks/templates/hod-dsp-[env]``` 
 
+For an S3 template, change the KMS key at the top, with the key obtained during the KMS section on console.
 
-
-
-* **Add the S3 Configuration**
-
-
-Most new provisioning requests are similar, try copying an exiating template in stacks/templates/hod-dsp-dev. Change the S3 key edits at the top:
 
 ```
 {% set service_name = 'myexample' %}
 {% set kms_id = '58855abe-2f87-4e61-9ac1-ef29b6254438' %}
 {% set aws_user = service_name.upper() + '_' + env.upper() + '_S3' %}
 {% set service_bucket = service_name + '-' + env + region %}
+
 ```
+
+* Check your edits for errors as there may not be full upstream validation in the CI.
+* git commit your change and include the request ID in the message.
+* git push and follow the CI attempts to run the provisioning continue if build successful 
+* Create merge/pull request in the repo and advertise peer review on slack.
+* Await LGTM and accept the merge request yourself.
+* Follow the drone CI provisioning into the platform.
+* Deploy the kubernetes secrets  eg ```kubectl --namespace=dev-induction create -f k8s-secret.yaml```
+
+Check secrets are visible in the destination namespace.
+
+```
+kubectl --namespace=dev-induction get secrets
+kubectl --namespace=dev-induction get secrets/myexample -o yaml
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
