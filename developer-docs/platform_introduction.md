@@ -5,7 +5,7 @@ This guide is aimed at developers that have already completed the [initial setup
 It covers how to manually deploy an application to the platform, and some advice for debugging applications on the platform.
 
 1. [Deploying an application to the platform](#deploying-an-application-to-the-platform)
-1. [Debugging issues with your application](#debugging-issues-with-your-deployments-to-the-platform)
+2. [Debugging issues with your application](#debugging-issues-with-your-deployments-to-the-platform)
 
 ## Deploying an application to the platform
 For this demo we will use a simple nodejs application:  
@@ -20,21 +20,21 @@ git clone https://github.com/UKHomeOffice/docker-node-hello-world
 The stages involved in deploying an application are:
 
 1. [Dockerise your application](#dockerise-your-application) (the example above is already Dockerised)
-1. [Build and tag your docker image](#build-and-tag-your-docker-image)
-1. [Push the docker image to a docker repository](#push-the-docker-image-to-a-repository)
-1. [Tell Kubernetes to deploy your docker image](#tell-kubernetes-to-deploy-your-docker-image)
+2. [Build and tag your docker image](#build-and-tag-your-docker-image)
+3. [Push the docker image to a docker repository](#push-the-docker-image-to-a-repository)
+4. [Tell Kubernetes to deploy your docker image](#tell-kubernetes-to-deploy-your-docker-image)
     1. [Define a deployment for your application](#define-a-deployment-for-your-application)
-    1. [Run the deployment](#run-the-deployment)
-1. [Expose your application externally](#expose-your-application)
+    2. [Run the deployment](#run-the-deployment)
+5. [Expose your application externally](#expose-your-application)
     1. [Define a service which exposes your application inside the platform](#define-a-service-for-your-application)
-    1. [Use an ingress controller which exposes your service externally](#exposing-your-service-externally)
-1. [Store and manage secrets](#secrets)
+    2. [Use an ingress controller which exposes your service externally](#exposing-your-service-externally)
+6. [Store and manage secrets](#secrets)
     1. [Generate a strong secret](#generate-a-strong-secret)
-    1. [Store some db credentials](#store-some-db-credentials)
-    1. [See the stored secrets](#See-the-stored-secrets)
-    1. [Use the secrets](#use-the-secrets)
-    1. [Debug with secrets](#debug-with-secrets)
-1. [Delete all your hard work](#deleting-deployed-resources)
+    2. [Store some db credentials](#store-some-db-credentials)
+    3. [See the stored secrets](#See-the-stored-secrets)
+    4. [Use the secrets](#use-the-secrets)
+    5. [Debug with secrets](#debug-with-secrets)
+7. [Delete all your hard work](#deleting-deployed-resources)
 
 ### Dockerise your application
 The demo application is already dockerised. If you are dockerising a different application please follow the Home Office guidance [here](./writing_dockerfiles.md)
@@ -138,7 +138,7 @@ but **replacing any names with one unique to you**. These include:
 The ingress file specifies one annotations which is worth understanding:
 
 * *ingress.kubernetes.io/secure-backends: "true"* - This annotation tells the platform that your service is serving HTTPS. 
-This is typically the case as it means traffic between nodes in the kubernetes cluster is all encrypted, which helps it to be more secure 
+  This is typically the case as it means traffic between nodes in the kubernetes cluster is all encrypted, which helps it to be more secure 
 
 Call your ingress file *my-ingress.yaml* and save it to your current directory.
 
@@ -171,25 +171,84 @@ LC_CTYPE=C tr -dc "[:print:]" < /dev/urandom | head -c 32
 ```
 
 #### Store some db credentials
-The following command will create a kubernetes secret called db-secrets that contains all the pieces of information listed below. You'll then be able to mount this information into your applications
+The following file will create a kubernetes secret called `my-secret`:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-secret
+type: Opaque
+data:
+  dbhost: bXktcmRzLmV4YW1wbGUuY29t
+  dbuser: {{.DB_USERNAME}}
+  dbpass: {{.DB_PASSWORD}}
+```
+
+> *Please note* that you shouldn't commit passwords or sensitive information in your
+> repository. We suggest you use environment variables to load secrets into the
+> yaml file.
+
+Secrets are passed to kubernetes as base64 encoded strings. The value for the `host` key is set to _my-rds.example.com_ in base64. You can encode and decode strings in base64 with:
+
 ```bash
-kubectl create secret generic db-secrets \
-  --from-literal=dbhost=my-rds.example.com \
-  --from-literal=dbuser=myusername \
-  --from-literal=dbpass=mypassword \
-  --from-file=./certificate.pem
-# ... repeat for each namespace with relevant permutations
-````
+echo -n my-rds.example.com | base64           # bXktcmRzLmV4YW1wbGUuY29t
+echo bXktcmRzLmV4YW1wbGUuY29t | base64 -D     # my-rds.example.com
+```
+
+You can load secrets with:
+
+```bash
+export DB_USERNAME=$(echo -n my_username | base64)
+export DB_PASSWORD=$(echo -n my_secure_password | base64)
+kubectl create -f example-secrets.yaml
+```
 
 #### See the stored secrets
 ```bash
-kubectl describe secrets/db-secrets
+kubectl describe secrets/my-secret
 ```
 
 #### Use the secrets
-Then make your deployment.yaml look something like [example-deployment-with-secrets.yaml](./resources/example-deployment-with-secrets.yaml)
+You can mount secrets and use them in your application by adding a `volumes`
+section underneath `spec`:
 
-You will find **only** the `induction-hello-world` container comes up with a read only volume mounted at `/secrets` with a `certificate.pem` in it and also the `DBHOST`, `DBUSER`, `DBPASS` environment variables will all be set.
+```yaml
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: induction-hello-world
+spec:
+  volumes:
+    - name: "secretstest"
+      secret:
+        secretName: mysecret
+  containers:
+    - image: nginx:1.9.6
+      name: awebserver
+      volumeMounts:
+        - mountPath: "/tmp/mysec"
+          name: "secretstest"
+      env:
+        - name: PASSWORD
+          valueFrom:
+          secretKeyRef:
+            name: my-secret
+            key: dbpass
+        - name: USERNAME
+          valueFrom:
+          secretKeyRef:
+            name: my-secret
+            key: dbuser
+        - name: HOST
+          valueFrom:
+          secretKeyRef:
+            name: my-secret
+            key: dbhost
+```
+
+You will find the nginx container comes up with a read only volume mounted at `/tmp/mysec` and the environment variable `PASSWORD` is set to `my_secure_password`.
 
 #### Debug with secrets
 Sometimes your app doesn't want to talk to an API or a DB and you've stored the credentials or just the details of that in secret. 
