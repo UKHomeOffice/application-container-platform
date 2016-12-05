@@ -109,7 +109,12 @@ For an S3 template, change the KMS key at the top, with the key obtained during 
 Check secrets are visible in the destination namespace.
 
 ```
+<<<<<<< HEAD
 kubectl --namespace=<namespace> get secrets/myexample -o yaml
+=======
+kubectl --namespace=dev-induction get secrets
+kubectl --namespace=dev-induction get secrets/myexample -o yaml
+>>>>>>> 69a32c468ac168afbf8a2fba0ec0021878e2472a
 ```
 
 
