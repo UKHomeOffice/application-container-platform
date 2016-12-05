@@ -1,4 +1,3 @@
-# WiP
 # Provisioning a AWS S3 Service into the Platform
 
 This requires AWS credentials for hod-dsp-[env] to create the resources and dsp-ci for drone to deploy to the platform. In this example env is _dev_ and the service_name is _myexample_
@@ -51,7 +50,6 @@ EoF
 done
 
 cat k8s-secret.yaml
-
 ```
 
 
@@ -82,7 +80,6 @@ Retrieve provisioning git repos and create a feature branch for your resource re
 git clone ssh://git@gitlab.digital.homeoffice.gov.uk:2222/Devops/stacks-hod-platform.git
 cd stacks-hod-platform
 git checkout -b myexample-s3
-
 ```
 
 Most new provisioning requests are similar, copying an existing template in ```stacks/templates/hod-dsp-[env]``` 
@@ -95,7 +92,6 @@ For an S3 template, change the KMS key at the top, with the key obtained during 
 {% set kms_id = '58855abe-2f87-4e61-9ac1-ef29b6254438' %}
 {% set aws_user = service_name.upper() + '_' + env.upper() + '_S3' %}
 {% set service_bucket = service_name + '-' + env + region %}
-
 ```
 
 * Check your edits for errors as there may not be full upstream validation in the CI.
@@ -109,12 +105,7 @@ For an S3 template, change the KMS key at the top, with the key obtained during 
 Check secrets are visible in the destination namespace.
 
 ```
-<<<<<<< HEAD
 kubectl --namespace=<namespace> get secrets/myexample -o yaml
-=======
-kubectl --namespace=dev-induction get secrets
-kubectl --namespace=dev-induction get secrets/myexample -o yaml
->>>>>>> 69a32c468ac168afbf8a2fba0ec0021878e2472a
 ```
 
 
