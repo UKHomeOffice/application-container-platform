@@ -121,7 +121,7 @@ Kubectl is now configured to use the cluster.
 
 ## Quay access
 
-We use [quay](https://www.quay.io) for storing public docker images. Please login to quay with your Github account. You are not able to publish docker images to the UKHomeOffice organisation unless you request access to it.
+We use [quay](https://www.quay.io) for storing public docker images. Please login to quay with your Github account and create a password for your account (accounts created by signing in with Github don't have a password by default). You are not able to publish docker images to the UKHomeOffice organisation unless you request access to it.
 
 You can submit a request to be part of the UKHomeOffice organisation on quay by adding an issue to the Hosting Platform Bau project on Github [here](https://github.com/UKHomeOffice/hosting-platform-bau/issues).
 
@@ -129,7 +129,7 @@ Please use the below template for your request:
 
 ```
 Please can I be added to the UKHomeOffice organisation in quay.  
-Github username: xxx
+Quay username: xxx
 Name: xxx xxx
 Team: My Project Team  
 ```
@@ -139,6 +139,8 @@ You have to login to be able to push docker images from your local machine to qu
 ```bash
 $ docker login quay.io
 ```
+
+> **Please note** that quay doesn't create a password by default when you log in using Github. You need to create a password in order to log in into quay.
 
 As all of our repositories are public you can then pull any of them. [Here are our Home Office quay repos](https://quay.io/organization/ukhomeofficedigital).
 
