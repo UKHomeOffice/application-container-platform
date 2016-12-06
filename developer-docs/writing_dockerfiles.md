@@ -14,6 +14,7 @@ This document lists all of our docker base images that you can build from:
 * [Scala image](https://github.com/UKHomeOffice/docker-scala-sbt)
 * [JDK image](https://github.com/UKHomeOffice/docker-openjdk8)
 * [Maven image with Java 8](https://github.com/UKHomeOffice/docker-java8-mvn)
+* [Ruby image](https://github.com/UKHomeOffice/docker-ruby)
 
 ### Home Office CentOS base image
 If none of the technology specific images work for you you can either build on top of them or build from the base centos image:  
