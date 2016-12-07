@@ -23,7 +23,7 @@ The S3 _Access key ID_ & _Secret access key_ will be presented to the end users 
 ### script
 ```
 
-!/bin/bash
+#!/bin/bash
 # Create kubernetes secets with S3 credentials
 
 S3_NAME="$(echo -n $1eu-west-1 | base64)"
