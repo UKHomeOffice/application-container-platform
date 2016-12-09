@@ -59,46 +59,55 @@ For an S3 template, change the KMS key at the top, with the key obtained during 
 * Follow the drone CI provisioning into the platform.
 
 
-
 ## Populating the kubernetes secrets
 
-## WiP script needs commiting
-
-Snip the header from the downloaded AWS IAM credentials ```sed -i '1d' credentials.csv```
-
-The S3 _Access key ID_ & _Secret access key_ will be presented to the end users as base64 encoded secrets in the relevent kubernetes namespace. The script uses the S3 bucket name as the Kubernetes secret name.
+This script creates the kubernetes secrets yaml  
 
 ```
-$ mk-s3-secrets.sh s3-bcket-name < credentials.csv
+#!/bin/bash
+# Create kubernetes secets with S3 credentials
+
+S3_BUCKET="$1"
+S3_B64="$(echo -n ${S3_BUCKET} | base64)"
+SECRET_NAME="s3-${S3_BUCKET}"
+
+while IFS=, read USER Password ACCESS SECRET
+do
+  # base64 encode secrets
+  S3_IAM_ACCESS_KEY=$(echo -n ${ACCESS} | base64)
+  S3_IAM_SECRET_KEY=$(echo -n ${SECRET} | base64)
+
+# example kubernetes config file
+cat - > k8s-secret.yaml <<EoF 
+apiVersion: v1
+data:
+  access_key_id: ${S3_IAM_ACCESS_KEY}
+  secret_access_key: ${S3_IAM_SECRET_KEY}
+  bucket_name: ${S3_B64}
+kind: Secret
+metadata:
+  name: ${SECRET_NAME}
+type: Opaque
+EoF
+
+done
+
+cat k8s-secret.yaml
 ```
 
+The S3 _Access key ID_ & _Secret access key_ will be presented to the end users as base64 encoded secrets in the relevent kubernetes namespace. Use the S3 bucket name as the Kubernetes secret name as a good convention.
 
+```
+$ sed -i '1d' credentials.csv # snip the header from the downloaded AWS IAM credentials
+$ mk-s3-secrets.sh myexample-deveu-west-1 < credentials.csv
+```
+Deploy the kubernetes secrets  eg 
 
-
-
-
-Deploy the kubernetes secrets  eg ```kubectl --namespace=dev-induction create -f k8s-secret.yaml```
-
+```
+kubectl --namespace=dev-induction create -f k8s-secret.yaml
+```
 Check secrets are visible in the destination namespace.
 
 ```
 kubectl --namespace=<namespace> get secrets/myexample -o yaml
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
