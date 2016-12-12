@@ -96,39 +96,38 @@ Instructions below:
 
 2. Navigate to the .scripts folder under your home directory:
 
-   ```bash
-   cd ~/.scripts
-   ```
+    ```bash
+    cd ~/.scripts
+    ```
 3. If the above folder does not exist, create the aforementioned directory under your home directory and then navigate to the folder you just created:
 
-   ```bash
-   mkdir ~/.scripts
-   cd ~/.scripts
-   ```
+    ```bash
+    mkdir ~/.scripts
+    cd ~/.scripts
+    ```
 
 4. Create a file containing the following information (**vpn** is recommended as the file name):
 
-   ```bash
-   #!/bin/bash
-   FILE_PATH=$(echo $HOME)
-   VPN_PROFILE_FOLDER_NAME=Downloads
-   FILE_NAME=$(ls ~/Downloads -Art | grep .ovpn | tail -n 1)
-   COMMAND="sudo openvpn --config $FILE_PATH/$VPN_PROFILE_FOLDER_NAME/$FILE_NAME"
-   sudo echo "Connecting to HO VPN with profile" $FILE_NAME
-   nohup $COMMAND &
-   ```
+    ```bash
+    #!/bin/bash
+    FILE_PATH=$(echo $HOME/Downloads)
+    FILE_NAME=$(ls ~/Downloads -Art | grep .ovpn | tail -n 1)
+    COMMAND="sudo openvpn --config $FILE_PATH/$FILE_NAME"
+    sudo echo "Connecting to HO VPN with profile" $FILE_PATH/$FILE_NAME
+    nohup $COMMAND &
+    ```
 
 5. Assuming the file is named **vpn**, add permissions to the file to allow it to be executed by running the following command:
 
-   ```bash
-   chmod +x vpn
-   ```
+    ```bash
+    chmod +x vpn
+    ```
 
 6. Append the following line to ~/.bashrc so that scripts within the folder can be run from anywhere:
 
-   ```bash
-   export PATH=$PATH:~/.scripts
-   ```
+    ```bash
+    export PATH=$PATH:~/.scripts
+    ```
 
 7. Open a new terminal window, and type vpn to run the script and connect to the VPN.
 
