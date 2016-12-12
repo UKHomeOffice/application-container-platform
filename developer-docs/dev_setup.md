@@ -86,7 +86,53 @@ If you're not on a Mac you can use the command
 ```bash
 sudo openvpn <vpn_profile_file>
 ```
-You'll need to download and connect to a new VPN Profile every 12 hours.
+You'll need to download and connect to a new VPN Profile every 12 hours. 
+
+Alternatively, it would be easier if you automate the process of connecting to the new VPN profile. 
+
+Instructions below:
+
+1. A new token must be manually downloaded every time before the automated script can be run to log into VPN with the latest downloaded VPN profile.
+
+2. Navigate to the .scripts folder under your home directory:
+
+   ```bash
+   cd ~/.scripts
+   ```
+3. If the above folder does not exist, create the aforementioned directory under your home directory and then navigate to the folder you just created:
+
+   ```bash
+   mkdir ~/.scripts
+   cd ~/.scripts
+   ```
+
+4. Create a file containing the following information (**vpn** is recommended as the file name):
+
+   ```bash
+   #!/bin/bash
+   FILE_PATH=$(echo $HOME)
+   VPN_PROFILE_FOLDER_NAME=Downloads
+   FILE_NAME=$(ls ~/Downloads -Art | grep .ovpn | tail -n 1)
+   COMMAND="sudo openvpn --config $FILE_PATH/$VPN_PROFILE_FOLDER_NAME/$FILE_NAME"
+   sudo echo "Connecting to HO VPN with profile" $FILE_NAME
+   nohup $COMMAND &
+   ```
+
+5. Assuming the file is named **vpn**, add permissions to the file to allow it to be executed by running the following command:
+
+   ```bash
+   chmod +x vpn
+   ```
+
+6. Append the following line to ~/.bashrc so that scripts within the folder can be run from anywhere:
+
+   ```bash
+   export PATH=$PATH:~/.scripts
+   ```
+
+7. Open a new terminal window, and type vpn to run the script and connect to the VPN.
+
+8. The script runs in the background, see its logs at cat nohup.out which would be listed under your home directory.
 
 ## Testing the setup
 Run:
