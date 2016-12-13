@@ -128,14 +128,13 @@ You should create a default http backend for Ingress. This is necessary so that 
 Create a `default-backend-deployment.yaml` file with the following content:
 
 ```yaml
-apiVersion: v1
-kind: ReplicationController
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
 metadata:
   name: default-http-backend
 spec:
   replicas: 1
-  selector:
-    name: default-http-backend
   template:
     metadata:
       labels:
@@ -145,7 +144,7 @@ spec:
       - name: default-http-backend
         image: gcr.io/google_containers/defaultbackend:1.0
         ports:
-        - containerPort: 8080
+          - containerPort: 8080
 ```
 
 And create a service for the newly created default http backend `default-backend-service.yaml`:
