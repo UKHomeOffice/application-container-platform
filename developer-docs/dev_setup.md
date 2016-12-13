@@ -128,16 +128,18 @@ You should create a default http backend for Ingress. This is necessary so that 
 Create a `default-backend-deployment.yaml` file with the following content:
 
 ```yaml
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: v1
+kind: ReplicationController
 metadata:
   name: default-http-backend
 spec:
   replicas: 1
+  selector:
+    name: default-http-backend
   template:
     metadata:
       labels:
-        app: default-http-backend
+        name: default-http-backend
     spec:
       containers:
       - name: default-http-backend
@@ -158,9 +160,10 @@ metadata:
   name: default-http-backend
 spec:
   ports:
-  - name: exposed-port
-    port: 80
+  - port: 80
     targetPort: 8080
+  selector:
+    name: default-http-backend
 ```
 
 You can deploy both yaml file with:
