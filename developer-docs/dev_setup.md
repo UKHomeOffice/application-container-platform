@@ -83,6 +83,13 @@ Namespace: dev-induction
 You need to provide your public gpg key as the kube token you receive back will be encrypted using it.
 If you need to, you can [generate a gpg key](https://help.github.com/articles/generating-a-new-gpg-key/).
 
+When you received back the token, you can decrypt it with:
+
+```bash
+$ gpg -d encrypted_token
+XXX-XXX-XXXXXXX
+```
+
 ### Use kubectl
 
 You can verify the installation is successful with:
