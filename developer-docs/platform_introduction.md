@@ -1,176 +1,284 @@
 # Developer Introduction to the Platform
 
 ## Introduction
+
 This guide is aimed at developers that have already completed the [initial setup](./dev_setup.md).
 It covers how to manually deploy an application to the platform, and some advice for debugging applications on the platform.
 
-1. [Deploying an application to the platform](#deploying-an-application-to-the-platform)
-2. [Debugging issues with your application](#debugging-issues-with-your-deployments-to-the-platform)
+1. [Deploying an application locally](#deploying-an-application-locally)
+2. [Deploying an application to the platform](#deploying-an-application-to-the-platform)
+3. [Deploying secrets](#deploying-secrets)
+4. [Debugging issues with your application](#debugging-issues-with-your-deployments-to-the-platform)
 
-## Deploying an application to the platform
-For this demo we will use a simple nodejs application:  
-https://github.com/UKHomeOffice/docker-node-hello-world
+**You have to be on the VPN to follow this tutorial.**
 
-Please clone this repo before getting started:
+## Deploying an application locally
 
-```bash
-git clone https://github.com/UKHomeOffice/docker-node-hello-world
-```
+### Starting minikube
 
-The stages involved in deploying an application are:
-
-1. [Dockerise your application](#dockerise-your-application) (the example above is already Dockerised)
-2. [Build and tag your docker image](#build-and-tag-your-docker-image)
-3. [Push the docker image to a docker repository](#push-the-docker-image-to-a-repository)
-4. [Tell Kubernetes to deploy your docker image](#tell-kubernetes-to-deploy-your-docker-image)
-    1. [Define a deployment for your application](#define-a-deployment-for-your-application)
-    2. [Run the deployment](#run-the-deployment)
-5. [Expose your application externally](#expose-your-application)
-    1. [Define a service which exposes your application inside the platform](#define-a-service-for-your-application)
-    2. [Use an ingress controller which exposes your service externally](#exposing-your-service-externally)
-6. [Store and manage secrets](#secrets)
-    1. [Generate a strong secret](#generate-a-strong-secret)
-    2. [Store some db credentials](#store-some-db-credentials)
-    3. [See the stored secrets](#See-the-stored-secrets)
-    4. [Use the secrets](#use-the-secrets)
-    5. [Debug with secrets](#debug-with-secrets)
-7. [Delete all your hard work](#deleting-deployed-resources)
-
-### Dockerise your application
-The demo application is already dockerised. If you are dockerising a different application please follow the Home Office guidance [here](./writing_dockerfiles.md)
-
-### Build and tag your docker image
-To build and tag your docker image use the standard docker commands:
+Start your Kubernetes cluster locally with minikube:
 
 ```bash
-cd docker-node-hello-world
-docker build -t quay.io/ukhomeofficedigital/induction-hello-world:tim .
+$ minikube start
 ```
 
-*IMPORTANT NOTE:* Please give your image a unique tag (e.g. using your name) so we don't get lots of clashes!
+Minikube runs a virtual machine with docker and kubernetes (among other things). To access the docker deamon inside the virtual machine you can run:
 
-### Push the docker image to a repository
-Before deploying the docker image must be stored in either the ukhomeofficedigital quay or on our internal artifactory.
-The tag used when building your docker image must match the repository you want to push for. e.g.
+```
+$ eval $(minikube docker-env)
+```
+
+If the command was successful, you should be able to see few kubernetes containers running inside the virtual machine from your host:
 
 ```bash
-docker push quay.io/ukhomeofficedigital/induction-hello-world:tim
+$ docker ps --format "{{.ID}}: {{.Image}}"
+a6d25657a6e1: gcr.io/google_containers/kube-dnsmasq-amd64:1.4
+994ef2f40aaa: gcr.io/google_containers/kubedns-amd64:1.8
+be2ce6e2422b: gcr.io/google_containers/exechealthz-amd64:1.2
+1716372d439e: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.5.0
+4818ea28904a: gcr.io/google_containers/pause-amd64:3.0
+ee56c7a18942: gcr.io/google_containers/pause-amd64:3.0
+c412afff3115: gcr.io/google-containers/kube-addon-manager:v5.1
+0f0f5cbaa917: gcr.io/google_containers/pause-amd64:3.0
 ```
 
-### Tell Kubernetes to deploy your docker image
+### Dockerise "Hello World"
 
-Before using the kubernetes cluster you will need to be on the [VPN](https://sso.digital.homeoffice.gov.uk/auth/realms/hod-vpn/protocol/openid-connect/auth?client_id=broker&redirect_uri=https%3A%2F%2Fauthd.digital.homeoffice.gov.uk%2Foauth%2Fcallback&response_type=code&scope=vpn-user+openid+email+profile&state=%2F).
+For this demo we will use a simple nodejs application:  [UKHomeOffice/dsp-hello-world](https://github.com/UKHomeOffice/dsp-hello-world)
 
-You can deploy a number of different types of resource to kubernetes using the kubectl client.
+You can clone the repository on your machine with:
 
-For each resource type you will first need to define a yaml file detailing the resource to deploy, you can then deploy it.
+```bash
+$ git clone https://github.com/UKHomeOffice/dsp-hello-world
+```
 
-### Define a deployment for your application
+> **Please note** that this application is already dockerised. If you are dockerising a different application please follow the Home Office guidance [here](./writing_dockerfiles.md).
+
+You can build the application with:
+
+```bash
+$ docker build -t dsp-hello-world:v1 .
+Successfully built 985301b648c5
+```
+
+Since the docker daemon is running in the virtual machine, no image is created on your host. You can verify the image was created successfully with:
+
+```bash
+$ docker images | grep dsp-hello-world
+dsp-hello-world                                       v1                  53bfe98bf88f
+```
+
+### Deploy to Kubernetes
+
 A deployment defines what application you want to run (which can consist of multiple containers) and how many replicas you want.
 
-An example deployment file is given [here](./resources/example-deployment.yaml).
-It includes a hello-world container and an nginx container terminating TLS - a very common pattern that we recommend. 
-Please use this as a basis for your own deployment, but **replacing any names with one unique to you**. These include:
+In this particular case we want to run our Node.js container as a single container.
 
-- metadata.name
-- spec.template.metadata.labels.name
-- the image tag to deploy
-
-### Run the deployment
-
-Call your deployment file *my-deployment.yaml* and save it to your current directory.
-
-You can then deploy your deployment to kubernetes by running:
-
-```bash
-kubectl create -f my-deployment.yaml
+```yaml
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: dsp-hello-world
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: dsp-hello-world
+    spec:
+      containers:
+      - name: hello-world-nodejs
+        image: dsp-hello-world:v1
+        imagePullPolicy: ifNotPresent
+        ports:
+          - containerPort: 4000
 ```
 
-More documentation on deployments is available from kubernetes [here](http://kubernetes.io/docs/user-guide/deployments/)
+This file is already saved as `deployment.yaml` in the `kube` folder.
 
-### What has the deployment done?
-You should now have a deployment in kubernetes. This in turn creates a replica set, which in turn creates pods. You can validate all is working properly by running:
-```bash
-kubectl get deployments
-kubectl get rs
-kubectl get pods
-```
-
-There is a troubleshooting section further on about how to debug any issues you may encounter.
-
-### Expose your application
-To expose your application externally you will need to create a service and an ingress controller for it.
-The service will expose your application within the kubernetes cluster and the ingress controller will expose your service to the outside world.
-
-### Define a service for your application
-Your application is now running, but nothing can talk to it! For it to be exposed you first need to create a service.
-This exposes your service to the rest of the kubernetes cluster.
-
-An example service file is given [here](./resources/example-service.yaml). Please use this as a basis for your own service, 
-but **replacing any names with one unique to you**. 
-These include:
-
-- metadata.name
-- spec.selector.name
-
-Call your service file *my-service.yaml* and save it to your current directory.
-
-You can then deploy your service to kubernetes by running:
+You can deploy the application to minikube with:
 
 ```bash
-kubectl create -f my-service.yaml
+$ kubectl create -f kube/deployment.yaml
+deployment "dsp-hello-world" created
 ```
 
-You can verify your service has been created by running:
+If the deployment was successful, you should see a running container:
 
 ```bash
-kubectl get services
+$ kubectl get pods
+NAME                               READY     STATUS    RESTARTS   AGE
+dsp-hello-world-3757754181-x1kdu   1/1       Running   0          4s
 ```
 
-### Exposing your service externally
-For external facing services you will then need to create an ingress controller. This instructs kubernetes how to expose a service to the outside world.
-An [example ingress file is given here](./resources/example-ingress.yaml). Please use this as a basis for your own ingress controller, 
-but **replacing any names with one unique to you**. These include:
-
-- spec.rules.http.paths.backend.serviceName
-- spec.rules.host
-
-The ingress file specifies one annotations which is worth understanding:
-
-* *ingress.kubernetes.io/secure-backends: "true"* - This annotation tells the platform that your service is serving HTTPS. 
-  This is typically the case as it means traffic between nodes in the kubernetes cluster is all encrypted, which helps it to be more secure 
-
-Call your ingress file *my-ingress.yaml* and save it to your current directory.
-
-You can then deploy your ingress to kubernetes by running:
+If the deployment wasn't successful and the status is `ErrImagePull` you can inspect the deployment logs with:
 
 ```bash
-kubectl create -f my-ingress.yaml
+$ kubectl describe pod <dsp-hello-world-3757754181-x1kdu>
 ```
 
-You can verify that your ingress resource has been created by running:
+### Define a service
+
+The Node.js application is deployed, but it isn't exposed to the outside world. To expose the application you have to deploy a service. A service is similar to a load balancer, requests to the containers are routed through services.
+
+The repository already has a service. You can find it in `kube/service.yaml`.
+
+```yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: dsp-hello-world-service
+  name: dsp-hello-world-service
+spec:
+  ports:
+  - name: exposed-port
+    port: 80
+    targetPort: 4000
+  selector:
+    name: dsp-hello-world
+```
+
+You can deploy the service with:
 
 ```bash
-kubectl get ingress
+$ kubectl create -f kube/service.yaml
+service "dsp-hello-world-service" created
 ```
 
-You should also now be able to go to the unique url specified in your ingress resource and see your application running.
+You can list the services in kubernetes with:
 
-More documentation on ingress is available from kubernetes [here](http://kubernetes.io/docs/user-guide/ingress/)
+```
+$ kubectl get services
+NAME                      CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+dsp-hello-world-service   10.0.0.213   <none>        80/TCP    27s
+kubernetes                10.0.0.1     <none>        443/TCP   5h
+```
 
-### Secrets
+If the deployment was successful, you can login into the cluster and issue an http request:
+
+```bash
+$ minikube ssh
+Boot2Docker version 1.11.1, build master : 901340f - Fri Jul  1 22:52:19 UTC 2016
+Docker version 1.11.1, build 5604cbe
+```
+
+You can verify the application is running with
+
+```bash
+$ curl <10.0.0.213>
+Hello World
+```
+
+If you can read _"Hello World"_ the deployment was successful. 
+
+### Define an ingress
+
+Your application is only available within your cluster, but there isn't an easy way to visit the application from the host. You can expose your application to be consumed by any body using an ingress.
+
+The repository already contains a simple ingress manifest in `kube/ingress.yaml`:
+
+```yaml
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dsp-hello-world-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: dsp-hello-world-service
+          servicePort: 80
+        path: /
+```
+
+You can create an ingress with:
+
+```bash
+$ kubectl create -f ingress.yaml
+ingress "dsp-hello-world-ingress" configured
+```
+
+If the installation was successful, you should be able to visit the virtual machine ip on port 8081 and be greeted by _"Hello World"_.
+
+You can find the ip address of your cluster with:
+
+```bash
+$ minikube ip
+192.168.64.3
+```
+
+Visit http://<192.168.64.3>:8081
+
+## Deploying an application to the platform
+
+The same configuration you just created  can be used to deploy the application to any of the clusters such as CI, Dev and Prod.
+
+> Before you start deploying to a real cluster make sure you have a valid Kubernetes token to create and destroy a namespace(s) in the CI cluster. If you don't ,please follow [this instructions](#todo) to request a valid token.
+
+You can create a partition of the cluster using Kubernetes namespaces. This is so that services, deployments and ingresses don't clash. You can create a namespace with:
+
+```bash
+$ kubectl create namespace <your_namespace>
+```
+
+> TODO: switch context with kubectl
+
+Since the CI cluster supports DNS, you can create an ingress file specific for CI:
+
+```yaml
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dsp-hello-world-ingress
+spec:
+  rules:
+  - host: dsp-hello-world-<day-month-year-random_number>.ci.notprod.homeoffice.gov.uk
+    http:
+      paths:
+      - backend:
+          serviceName: dsp-hello-world-service
+          servicePort: 80
+        path: /
+```
+
+At this point you can deploy the application with:
+
+```bash
+$ kubectl create -f kube/deployment.yaml
+$ kubectl create -f kube/service.yaml
+$ kubectl create -f kube/ingress-ci.yaml
+```
+
+The application is now available at [http://dsp-hello-world-<day-month-year-random_number>.notprod.homeoffice.gov.uk](http://dsp-hello-world-<day-month-year-random_number>.notprod.homeoffice.gov.uk).
+
+You can dispose of your namespace with:
+
+```bash
+$ kubectl delete namespace <your_namespace>
+```
+
+## Deploying secrets
 
 Your application is likely to have some parameters that are essential to the security of the application - for example API tokens and DB passwords. These should be stored as Kubernetes secrets to enable your application to read them. This process is described in the following guide.
 
 See [official docs](http://kubernetes.io/docs/user-guide/secrets/#creating-a-secret-using-kubectl-create-secret) for more complete documentation; what follows is a very abridged version.
 
-#### Generate a strong secret
+### Generate a strong secret
+
 When generating passwords you should use the following code to ensure you are generating strong passwords.
+
 ```bash
 LC_CTYPE=C tr -dc "[:print:]" < /dev/urandom | head -c 32
 ```
 
-#### Store some db credentials
+### Store some db credentials
+
 The following file will create a kubernetes secret called `my-secret`:
 
 ```yaml
@@ -199,17 +307,33 @@ echo bXktcmRzLmV4YW1wbGUuY29t | base64 -D     # my-rds.example.com
 You can load secrets with:
 
 ```bash
+<<<<<<< HEAD
 export DB_USERNAME=$(echo -n my_username | base64)
 export DB_PASSWORD=$(echo -n my_secure_password | base64)
 kubectl create -f example-secrets.yaml
 ```
 
-#### See the stored secrets
+### See the stored secrets
+
 ```bash
 kubectl describe secrets/my-secret
+=======
+kubectl create secret generic db-secrets \
+  --from-literal=dbhost=my-rds.example.com \
+  --from-literal=dbuser=myusername \
+  --from-literal=dbpass=mypassword \
+  --from-file=./certificate.pem
+# ... repeat for each namespace with relevant permutations
+​````
+
+### See the stored secrets
+​```bash
+kubectl describe secrets/db-secrets
+>>>>>>> 5a5c59f... temp: minikube
 ```
 
-#### Use the secrets
+### Use the secrets
+
 You can mount secrets and use them in your application by adding a `volumes`
 section underneath `spec`:
 
@@ -250,7 +374,8 @@ spec:
 
 You will find the nginx container comes up with a read only volume mounted at `/tmp/mysec` and the environment variable `PASSWORD` is set to `my_secure_password`.
 
-#### Debug with secrets
+### Debug with secrets
+
 Sometimes your app doesn't want to talk to an API or a DB and you've stored the credentials or just the details of that in secret. 
 
 ```bash
@@ -266,62 +391,88 @@ kubectl exec -ti my-pod -c my-container bash
 ## if it returns 1 then the variable is set.
 ```
 
-### Deleting deployed resources
-After the induction please delete everything you have deployed so as to not clutter up the platform.
-
-The best way to delete any deployed resources is to first get them to check the names, then delete. e.g.
-```bash
-kubectl get deployments
-kubectl delete deployment my-deployment
-```
-
 ## Debugging issues with your deployments to the platform
+
 If you get to the end of the above guide but can't access your application there are a number of places something could be going wrong.
 This section of the guide aims to give you some basic starting points for how to debug your application.
 
 ### Debugging deployments
+
 We suggest the following steps:
 
 #### 1. Check your deployment, replicaset and pods created proerly
+
 ```bash
-kubectl get deployments
-kubectl get rs
-kubectl get pods
+$ kubectl get deployments
+$ kubectl get rs
+$ kubectl get pods
 ```
 
 #### 2. Investigate potential issues with your pods (this is most likely)
+
 If the get pods command shows that your pods aren't all running then this is likely where the issue is.
 You can get further details on why the pods couldn't be deployed by running:
 
 ```bash
-kubectl describe pods *pods_name_here*
+$ kubectl describe pods *pods_name_here*
 ```
 
-If your pods are running you can check they are operating as expected by execcing into them (this gets you a shell on one of your containers). 
+If your pods are running you can check they are operating as expected by `exec`ing into them (this gets you a shell on one of your containers). 
 
 ```bash
-kubectl exec -ti *pods_name_here* -c *container_name_here* bash
+$ kubectl exec -ti *pods_name_here* -c *container_name_here* bash
 ```
-*NB: The -c argument isn't needed if there is only one container in the pod.*
+
+> **Please note** that the `-c` argument isn't needed if there is only one container in the pod.*
 
 You can then try curling your application to see if it is alive and responding as expected. e.g.
 
 ```bash
-curl localhost:4000
+$ curl localhost:4000
 ```
 
 #### 3. Investigate potential issues with your service
+
 A good way to do this is to run a container in your namespace with a bash terminal:
 
 ```bash
-kubectl run -ti --image quay.io/ukhomeofficedigital/centos-base debugger bash
+$ kubectl run -ti --image quay.io/ukhomeofficedigital/centos-base debugger bash
 ```
 
 From this container you can then try curling your service. Your service will have a nice DNS name by default, so you can for example run:
 
 ```bash
-curl my-service-name
+$ curl my-service-name
 ```
 
 #### 4. Investigate potential issues with ingress
-At the moment we recommend asking a friendly [dev ops](https://hod-dsp.slack.com/archives/general) for help with these issues!
+
+Minikube runs an ingress service using nginx. It's possible to ssh into the nginx container and cat the `nginx.conf` to inspect the configuration for nginx.
+
+In order to attach to the nginx container, you need to know the name of the container:
+
+```shell
+$ kubectl get pods
+NAME                               READY     STATUS    RESTARTS   AGE
+default-http-backend-2kodr         1/1       Running   1          5d
+dsp-hello-world-3757754181-x1kdu   1/1       Running   2          6d
+ingress-3879072234-5f4uq           1/1       Running   2          5d
+```
+
+You can attach to the running container with:
+
+```bash
+$ kubectl exec -ti <ingress-3879072234-5f4uq> bash
+```
+
+You're inside the container. You can cat the `nginx.conf` with:
+
+```bash
+$ cat /etc/nginx/nginx.conf
+```
+
+You can also inspect the logs with:
+
+```bash
+$ kubectl logs <ingress-3879072234-5f4uq>
+```
