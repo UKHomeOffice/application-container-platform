@@ -83,12 +83,31 @@ Namespace: dev-induction
 You need to provide your public gpg key as the kube token you receive back will be encrypted using it.
 If you need to, you can [generate a gpg key](https://help.github.com/articles/generating-a-new-gpg-key/).
 
-When you received back the token, you can decrypt it with:
+When you've received back the token, you will need to decrypt it and use the resulting token string
+as your token in your `~/.kube/config` file.
+
+To do this run the following command with the file you received back.
 
 ```bash
-$ gpg -d encrypted_token
-XXX-XXX-XXXXXXX
+$ gpg -d <your encrypted_token.gpg>
 ```
+
+Then enter the passphrase you entered when creating the initial gpg key that was sent in the issue to the Hosting Platform Bau project.
+
+Following this you should have some information printed to the console that follows this example:
+
+```bash
+You need a passphrase to unlock the secret key for
+user: "John Smith <john.smith@xxxxxxx.xxxxxxxxxx.xxx.xx>"
+4096-bit RSA key, ID AAAAAAAA, created 2000-01-01 (main key ID BBBBBBBB)
+
+gpg: encrypted with 4096-bit RSA key, ID BBBBBBBB, created 2000-01-01
+      "John Smith <john.smith@xxxxxxx.xxxxxxxxxx.xxx.xx>"
+XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+```
+
+The last printed line in the console, below the 2nd iteration of your name and 365 email address,
+is the token you need to include in your kubectl config file. Once you have included it in the relevant place in the config file, you should be all setup! ^_^
 
 ### Use kubectl
 
