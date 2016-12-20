@@ -2,7 +2,7 @@
 
 ## Before you start
 We strongly recommend getting to know Docker and Kubernetes - the 2 core technologies that the platform is based around.
-[Docker] is a tool for building and managing containers
+[Docker](http://docker.io/) is a tool for building and managing containers
 [Kubernetes](http://kubernetes.io/docs/whatisk8s/) is an open-source platform for automating deployment, scaling,
 and operations of application containers across clusters of hosts, providing container-centric infrastructure.
 
