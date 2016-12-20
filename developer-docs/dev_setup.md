@@ -145,9 +145,11 @@ Starting local Kubernetes cluster...
 Kubectl is now configured to use the cluster.
 ```
 
-Minikube doesn't come with an Ingress bundled in [yet](https://github.com/kubernetes/minikube/issues/611). You should deploy an Ingress in minikube to expose your applications outiside of the virtual machine.
+Minikube doesn't come with an Ingress bundled in [yet](https://github.com/kubernetes/minikube/issues/611). You should deploy an Ingress in minikube to expose your applications outiside of the virtual machine. The following sections describe how to do this.
 
-### Deploy default http backend
+### Setting up minikube ingress
+
+#### Deploy default http backend
 
 You should create a default http backend for Ingress. This is necessary so that Ingress can route unknown requests and display a 404 page.
 
@@ -226,7 +228,7 @@ default backend - 404
 
 If the deployments were successful you should be able to read _"default backend - 404"_.
 
-### Deploy ingress controller
+#### Deploy ingress controller
 
 Create a deployment for ingress named `ingress-deployment.yaml` with the following content:
 
