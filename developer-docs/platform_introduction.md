@@ -201,7 +201,7 @@ spec:
 You can create an ingress with:
 
 ```bash
-$ kubectl create -f ingress.yaml
+$ kubectl create -f kube/ingress.yaml
 ingress "dsp-hello-world-ingress" configured
 ```
 
