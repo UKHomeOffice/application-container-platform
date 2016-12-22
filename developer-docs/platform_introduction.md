@@ -22,7 +22,7 @@ Start your Kubernetes cluster locally with minikube:
 $ minikube start
 ```
 
-Minikube runs a virtual machine with docker and kubernetes (among other things). We must tell our local docker client 
+Minikube runs a virtual machine with docker and kubernetes (among other things). We must tell our local docker client
 to talk to the docker daemon running in the minikube VM, rather than our local docker daemon. The following command will set
 your docker host and related variables to make this possible:
 
@@ -174,7 +174,7 @@ $ curl <10.0.0.213>
 Hello World
 ```
 
-If you can read _"Hello World"_ the deployment was successful. 
+If you can read _"Hello World"_ the deployment was successful.
 
 ### Define an ingress
 
@@ -236,10 +236,10 @@ kd --file kube/deployment.yaml --file kube/service.yaml --file kube/ingress.yaml
 
 The same configuration you just created can be used to deploy the application to any of the clusters such as CI, Dev and Prod.
 
-For induction sessions we will be deploying to the **dev-induction** namespace. Typically you would be using one of 
+For induction sessions we will be deploying to the **dev-induction** namespace. Typically you would be using one of
 your project namespace.
 
-You will need to update your kubernetes context - this determines which cluster you are talking to, which token to use, 
+You will need to update your kubernetes context - this determines which cluster you are talking to, which token to use,
 and which namespace you are using. You can view your current contexts with:
 
 ```
@@ -248,7 +248,7 @@ kubectl config view
 
 If you have a context set with the dev cluster (https://kube-dev.dsp.notprod.homeoffice.gov.uk) and the dev-induction namespace
  change to that context with:
- 
+
 ```
 kubectl config set-context <context-name>
 ```
@@ -259,7 +259,7 @@ kubectl config set-context dev-induction --cluster=dsp-dev --user=dsp-dev --name
 ```
 
 To ensure people on the induction don't have name clashes with their deployed applications we are going to use a
-version of our deployment files where the application name has been templated out. [kd](https://github.com/UKHomeOffice/kd) 
+version of our deployment files where the application name has been templated out. [kd](https://github.com/UKHomeOffice/kd)
 is a tool that wraps kubectl and enables us to do this templating.
 
 Please specify a unique APP_NAME with your initials and some random characters when you deploy. You will also noted the image
@@ -279,7 +279,7 @@ The application is now available at http://tgxu172.notprod.homeoffice.gov.uk (re
 
 ## Deploying secrets
 
-Your application is likely to have some parameters that are essential to the security of the application - for example 
+Your application is likely to have some parameters that are essential to the security of the application - for example
 API tokens and DB passwords. These should be stored as Kubernetes secrets to enable your application to read them. This process is described in the following guide.
 
 See [official docs](http://kubernetes.io/docs/user-guide/secrets/#creating-a-secret-using-kubectl-create-secret) for more complete documentation; what follows is a very abridged version.
@@ -294,8 +294,8 @@ LC_CTYPE=C tr -dc "[:print:]" < /dev/urandom | head -c 32
 
 ### Create a kubernetes secret
 
-Create a file called **example-secret.yaml** with the following content. 
-When deployed it will create a kubernetes secret called `my-secret`:
+Create a file called **example-secret.yaml** with the following content below.
+In this example, when deployed it will create a kubernetes secret called `my-secret`. Feel free to replace the name `my-secret` with something else, especially if you are working in a group and going through this exercise for the Developer Induction. If you don't you will most likely overwrite each others secret when deploying to Kubernetes:
 
 ```yaml
 ---
@@ -316,7 +316,7 @@ Secrets are passed to kubernetes as base64 encoded strings. To encode or decode 
 
 ```bash
 echo -n "yay it is a secret" | base64
-echo eWF5IGl0IGlzIGEgc2VjcmV0 | base64 -d
+echo eWF5IGl0IGlzIGEgc2VjcmV0 | base64 -D
 ```
 
 Now let's deploy our secret to Kubernetes:
@@ -377,7 +377,18 @@ spec:
 ```
 </details>
 
-Once you've updated your deployment file to set the MYSUPERSECRET environment variable using the kubernetes secret you will need to redeploy it:
+For your own deployment.yaml file you should have an env section in the appropriate place that looks similar to this. The `name` and `key` fields should be the same:
+
+```
+env:
+  - name: MYSUPERSECRET
+    valueFrom:
+      secretKeyRef:
+          name: <what you have named your secret>
+          key: supersecret
+```
+
+Once you've updated your deployment file to set the MYSUPERSECRET environment variable using the kubernetes secret, you will need to redeploy it:
 ```
 APP_NAME=tgxu172 APP_VERSION=v1 kd --file kube-templated/deployment.yaml
 ```
@@ -386,7 +397,7 @@ Now when you navigate to https://tgxu172.notprod.homeoffice.gov.uk/ you should s
 
 ### Debug with secrets
 
-Sometimes your app doesn't want to talk to an API or a DB and you've stored the credentials or just the details of that in secret. 
+Sometimes your app doesn't want to talk to an API or a DB and you've stored the credentials or just the details of that in secret.
 
 The following approaches can be used to validate that your secret is set correctly
 ```bash
@@ -411,7 +422,7 @@ This section of the guide aims to give you some basic starting points for how to
 
 We suggest the following steps:
 
-#### 1. Check your deployment, replicaset and pods created proerly
+#### 1. Check your deployment, replicaset and pods created properly
 
 ```bash
 $ kubectl get deployments
@@ -428,7 +439,7 @@ You can get further details on why the pods couldn't be deployed by running:
 $ kubectl describe pods *pods_name_here*
 ```
 
-If your pods are running you can check they are operating as expected by `exec`ing into them (this gets you a shell on one of your containers). 
+If your pods are running you can check they are operating as expected by `exec`ing into them (this gets you a shell on one of your containers).
 
 ```bash
 $ kubectl exec -ti *pods_name_here* -c *container_name_here* bash
