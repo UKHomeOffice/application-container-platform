@@ -250,7 +250,7 @@ If you have a context set with the dev cluster (https://kube-dev.dsp.notprod.hom
  change to that context with:
  
 ```
-kubectl config set-context <context-name>
+kubectl config use-context <context-name>
 ```
 
 If you don't have this context you will need to set it with something like:
