@@ -326,18 +326,36 @@ export MY_SECRET=$(echo -n "replace this secret with something more exciting ple
 kd --file example-secret.yaml
 ```
 
-### See the stored secrets
+### See and edit the stored secrets
+
+You can retrieve the secret with:
 
 ```bash
-kubectl get secrets
-kubectl describe secret my-secret
+$ kubectl get secrets
+$ kubectl describe secret <my-secret>
 ```
+
+If you wish to edit secrets already loaded in to Kubernetes you can do so by downloading and reapplying the manifest. You can download the secrets as a Yaml file with:
+
+```bash
+$ kubectl get secret <my-secret> -o yaml > example-secrets.yaml
+```
+
+You can edit the content of  `example-secrets.yaml`, but remember: values are base64 encoded. If you wish to inspect or add a new entry, you need to decode or encode that value.
+
+Once you're done with the changes, you can reapply all the secrets with:
+
+```bash
+$ kubectl apply -f example-secrets.yaml
+```
+
+> Please note that it's possible to append a key value pair to an existing secret. You can however download the secret's manifest and reapply the changes as explained above.
+
 ### Use the secrets
 
 You can mount secrets into your application using either mounted volumes or by using them as environment variables.
 
-The below example shows a deployment that does both. However for this challenge please update your deployment in dsp-hello-world
-to use your secret as an environment variable called MYSUPERSECRET.
+The below example shows a deployment that does both. However for this challenge please update your deployment in dsp-hello-world to use your secret as an environment variable called MYSUPERSECRET.
 
 <details>
 <summary>**This yaml is an example! Please do not copy and paste, just use it as a guide to modify your own deployment.yaml!**</summary>
