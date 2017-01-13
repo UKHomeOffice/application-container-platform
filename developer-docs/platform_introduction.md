@@ -26,7 +26,7 @@ Minikube runs a virtual machine with docker and kubernetes (among other things).
 to talk to the docker daemon running in the minikube VM, rather than our local docker daemon. The following command will set
 your docker host and related variables to make this possible:
 
-```
+```bash
 $ eval $(minikube docker-env)
 ```
 
@@ -152,7 +152,7 @@ service "dsp-hello-world-service" created
 
 You can list the services in kubernetes with:
 
-```
+```bash
 $ kubectl get services
 NAME                      CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 dsp-hello-world-service   10.0.0.213   <none>        80/TCP    27s
@@ -217,70 +217,76 @@ $ minikube ip
 Visit http://<192.168.64.3>:8081
 
 ### Re-deploy with kd
-Deploying with kubectl has some limitations - in particular that it isn't possible to template out variables, making
-similar deployments to different environments very cumbersome. We use a tool called kd to overcome this constraint.
+
+Deploying with `kubectl` has some limitations - in particular that it isn't possible to template out variables, making similar deployments to different environments very cumbersome. You can use a tool called `kd` to overcome this constraint.
 
 [You can download kd here](https://github.com/UKHomeOffice/kd/releases). Please download the latest release for your computer.
 You will then need to make it executable and ideally move it to somewhere on your PATH and rename it to kd.
-```
-chmod +x kd_linux_amd64
-sudo mv kd_linux_amd64 /usr/bin/kd
+
+```bash
+$ chmod +x kd_linux_amd64
+$ sudo mv kd_linux_amd64 /usr/bin/kd
 ```
 
 You can then re-deploy to minikube with a single command:
-```
-kd --file kube/deployment.yaml --file kube/service.yaml --file kube/ingress.yaml
+
+```bash
+$ kd --file kube/deployment.yaml \
+     --file kube/service.yaml \
+     --file kube/ingress.yaml
 ```
 
 ## Deploying an application to the platform
 
 The same configuration you just created can be used to deploy the application to any of the clusters such as CI, Dev and Prod.
 
-For induction sessions we will be deploying to the **dev-induction** namespace. Typically you would be using one of
-your project namespace.
+In this particular scenario you can deploy your service to the **dev-induction** namespace. Typically you would be using one of your project namespace.
 
-You will need to update your kubernetes context - this determines which cluster you are talking to, which token to use,
-and which namespace you are using. You can view your current contexts with:
-
-```
-kubectl config view
-```
-
-If you have a context set with the dev cluster (https://kube-dev.dsp.notprod.homeoffice.gov.uk) and the dev-induction namespace
- change to that context with:
-
-```
-kubectl config use-context <context-name>
-```
-
-If you don't have this context you will need to set it with something like:
-```
-kubectl config set-context dev-induction --cluster=dsp-dev --user=dsp-dev --namespace=dev-induction
-```
-
-To ensure people on the induction don't have name clashes with their deployed applications we are going to use a
-version of our deployment files where the application name has been templated out. [kd](https://github.com/UKHomeOffice/kd)
-is a tool that wraps kubectl and enables us to do this templating.
-
-Please specify a unique APP_NAME with your initials and some random characters when you deploy. You will also noted the image
-version is templated out - a very common pattern. Please use v1 for the version.
+You will need to update your kubernetes context - this determines which cluster you are talking to, which token to use, and which namespace you are using. You can view your current contexts with:
 
 ```bash
-APP_NAME=tgxu172 APP_VERSION=v1 kd --file kube-templated/deployment.yaml --file kube-templated/service.yaml --file kube-templated/ingress.yaml
+$ kubectl config view
+```
+
+If you have a context set with the dev cluster (https://kube-dev.dsp.notprod.homeoffice.gov.uk) and the _dev-induction_ namespace change to that context with:
+
+```bash
+$ kubectl config use-context <context-name>
+```
+
+If you don't have this context you can set it with:
+
+```bash
+$ kubectl config set-context dev-induction \
+          --cluster=dsp-dev \
+          --user=dsp-dev \
+          --namespace=dev-induction
+```
+
+To ensure people on the induction don't have name clashes with their deployed applications we are going to use a version of our deployment files where the application name has been templated out. [kd](https://github.com/UKHomeOffice/kd) is a tool that wraps kubectl and enables us to do this templating.
+
+Please specify a unique `APP_NAME` with your initials and some random characters when you deploy. You will also noted the image version is templated out - a very common pattern. Please use _v1_ for the version.
+
+```bash
+$ APP_NAME=tgxu172 \
+  APP_VERSION=v1 \
+  kd --file kube-templated/deployment.yaml \
+     --file kube-templated/service.yaml \
+     --file kube-templated/ingress.yaml
 ```
 
 Also note this deployments has some improvements over the last one:
+
 - The deployment now contains an nginx instance which terminates TLS, increasing the security of our traffic
 - The service directs to the nginx port instead of the app port
-- The ingress specifies TLS certificates to use (these are already in the dev-induction namespace)
+- The ingress specifies TLS certificates to use (these are already in the _dev-induction_ namespace)
 - The ingress specifies a host which determines which requests should be routed to our application
 
-The application is now available at http://tgxu172.notprod.homeoffice.gov.uk (replacing tgxu172 with your APP_NAME variable)
+The application is now available at http://<tgxu172>.notprod.homeoffice.gov.uk (replacing _<tgxu172>_ with your `APP_NAME` variable).
 
 ## Deploying secrets
 
-Your application is likely to have some parameters that are essential to the security of the application - for example
-API tokens and DB passwords. These should be stored as Kubernetes secrets to enable your application to read them. This process is described in the following guide.
+Your application is likely to have some parameters that are essential to the security of the application - for example API tokens and DB passwords. These should be stored as Kubernetes secrets to enable your application to read them. This process is described in the following guide.
 
 See [official docs](http://kubernetes.io/docs/user-guide/secrets/#creating-a-secret-using-kubectl-create-secret) for more complete documentation; what follows is a very abridged version.
 
@@ -289,7 +295,7 @@ See [official docs](http://kubernetes.io/docs/user-guide/secrets/#creating-a-sec
 When generating passwords you should use the following code to ensure you are generating strong passwords.
 
 ```bash
-LC_CTYPE=C tr -dc "[:print:]" < /dev/urandom | head -c 32
+$ LC_CTYPE=C tr -dc "[:print:]" < /dev/urandom | head -c 32
 ```
 
 ### Create a kubernetes secret
@@ -315,15 +321,15 @@ data:
 Secrets are passed to kubernetes as base64 encoded strings. To encode or decode a base64 string use the following commands:
 
 ```bash
-echo -n "yay it is a secret" | base64
-echo eWF5IGl0IGlzIGEgc2VjcmV0 | base64 -D
+$ echo -n "yay it is a secret" | base64
+$ echo eWF5IGl0IGlzIGEgc2VjcmV0 | base64 -D
 ```
 
 Now let's deploy our secret to Kubernetes:
 
 ```bash
-export MY_SECRET=$(echo -n "replace this secret with something more exciting please!" | base64)
-kd --file example-secret.yaml
+$ export MY_SECRET=$(echo -n "replace this secret with something more exciting please!" | base64)
+$ kd --file example-secret.yaml
 ```
 
 ### See and edit the stored secrets
@@ -359,7 +365,8 @@ The below example shows a deployment that does both. However for this challenge 
 
 <details>
 <summary>**This yaml is an example! Please do not copy and paste, just use it as a guide to modify your own deployment.yaml!**</summary>
-```
+
+```yaml
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -397,7 +404,7 @@ spec:
 
 For your own deployment.yaml file you should have an env section in the appropriate place that looks similar to this. The `name` and `key` fields should be the same:
 
-```
+```yaml
 env:
   - name: MYSUPERSECRET
     valueFrom:
@@ -406,9 +413,12 @@ env:
           key: supersecret
 ```
 
-Once you've updated your deployment file to set the MYSUPERSECRET environment variable using the kubernetes secret, you will need to redeploy it:
-```
-APP_NAME=tgxu172 APP_VERSION=v1 kd --file kube-templated/deployment.yaml
+Once you've updated your deployment file to set the `MYSUPERSECRET` environment variable using the kubernetes secret, you will need to redeploy it:
+
+```bash
+$ APP_NAME=tgxu172 \
+  APP_VERSION=v1 \
+  kd --file kube-templated/deployment.yaml
 ```
 
 Now when you navigate to https://tgxu172.notprod.homeoffice.gov.uk/ you should see your secret outputted as part of the message.
@@ -418,16 +428,17 @@ Now when you navigate to https://tgxu172.notprod.homeoffice.gov.uk/ you should s
 Sometimes your app doesn't want to talk to an API or a DB and you've stored the credentials or just the details of that in secret.
 
 The following approaches can be used to validate that your secret is set correctly
+
 ```bash
-kubectl exec -ti my-pod -c my-container -- mysql -h\$DBHOST -u\$DBUSER -p\$DBPASS
+$ kubectl exec -ti my-pod -c my-container -- mysql -h\$DBHOST -u\$DBUSER -p\$DBPASS
 ## or
-kubectl exec -ti my-pod -c my-container -- openssl verify /secrets/certificate.pem
+$ kubectl exec -ti my-pod -c my-container -- openssl verify /secrets/certificate.pem
 ## or
-kubectl exec -ti my-pod -c my-container bash
+$ kubectl exec -ti my-pod -c my-container bash
 ## and you'll naturally have all the environment variables set and volumes mounted.
 ## however we recommend against outputing them to the console e.g. echo $DBHOST
 ## instead if you want to assert a variable is set correctly use
-[[ -z $DBHOST ]]; echo $?
+$ [[ -z $DBHOST ]]; echo $?
 ## if it returns 1 then the variable is set.
 ```
 
