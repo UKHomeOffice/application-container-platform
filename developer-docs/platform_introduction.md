@@ -225,7 +225,7 @@ You will then need to make it executable and ideally move it to somewhere on you
 
 ```bash
 $ chmod +x kd_linux_amd64
-$ sudo mv kd_linux_amd64 /usr/bin/kd
+$ sudo mv kd_linux_amd64 /usr/local/bin/kd
 ```
 
 You can then re-deploy to minikube with a single command:
@@ -270,7 +270,8 @@ Please specify a unique `APP_NAME` with your initials and some random characters
 ```bash
 $ APP_NAME=tgxu172 \
   APP_VERSION=v1 \
-  kd --file kube-templated/deployment.yaml \
+  kd --file kube-templated/secret.yaml \
+     --file kube-templated/deployment.yaml \
      --file kube-templated/service.yaml \
      --file kube-templated/ingress.yaml
 ```
