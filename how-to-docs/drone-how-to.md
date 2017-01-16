@@ -24,7 +24,7 @@
 - [Github drone instance](https://drone.digital.homeoffice.gov.uk): https://drone.digital.homeoffice.gov.uk
 - [Gitlab drone instance](https://drone-gitlab.digital.homeoffice.gov.uk/): https://drone-gitlab.digital.homeoffice.gov.uk/
 
-Download and install the [Drone CLI](http://readme.drone.io/0.5/reference/cli/overview/) from the official website.
+Download and install the [Drone CLI](http://readme.drone.io/0.5/install/cli/) from the official website.
 
 > **Please don't install Drone CLI with `brew`** .
 > At the time of writing `brew` installs an old version of Drone that is not compatible with Drone 0.5.
