@@ -211,7 +211,7 @@ The error points to the missing `DOCKER_PASSWORD` environment variable.
 You can inject the robot's password supplied to you in your raised ticket to the Platform team with:
 
 ```
-$ drone secret add --image="<your_image>" UKHomeOffice/<your_repo> DOCKER_PASSWORD your_robot_token
+$ drone secret add --conceal --image="<your_image>" UKHomeOffice/<your_repo> DOCKER_PASSWORD your_robot_token
 ```
 
 Restarting the build should be enough to make it pass.
