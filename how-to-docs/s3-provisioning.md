@@ -71,7 +71,7 @@ S3_BUCKET="$1"
 S3_B64="$(echo -n ${S3_BUCKET} | base64)"
 SECRET_NAME="s3-${S3_BUCKET}"
 
-while IFS=, read USER Password ACCESS SECRET
+while IFS=, read USER Password ACCESS SECRET Others
 do
   # base64 encode secrets
   S3_IAM_ACCESS_KEY=$(echo -n ${ACCESS} | base64)
