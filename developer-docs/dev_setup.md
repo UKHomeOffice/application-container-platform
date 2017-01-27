@@ -161,6 +161,8 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: default-http-backend
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   replicas: 1
   template:
