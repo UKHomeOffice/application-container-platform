@@ -24,3 +24,6 @@ When trying to get onto the platform for the first time you will need to get acc
 
 ## Support
 If you require support you can talk to us on our Slack Channel or raise an issue on our [bau board](https://github.com/UKHomeOffice/hosting-platform-bau).
+
+## How-to-docs
+We have a bunch of handy how-to guides located in this repository, find the list of them [here](how-to-docs/README.md)
