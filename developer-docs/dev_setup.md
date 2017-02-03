@@ -156,7 +156,6 @@ You should create a default http backend for Ingress. This is necessary so that 
 Create a `default-backend-deployment.yaml` file with the following content:
 
 ```yaml
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -180,7 +179,6 @@ spec:
 And create a service for the newly created default http backend `default-backend-service.yaml`:
 
 ```yaml
----
 apiVersion: v1
 kind: Service
 metadata:
@@ -228,14 +226,13 @@ $ curl <10.0.0.18>
 default backend - 404
 ```
 
-If the deployments were successful you should be able to read _"default backend - 404"_.
+If the deployments were successful you should be able to read `default backend - 404`.
 
 #### Deploy ingress controller
 
 Create a deployment for ingress named `ingress-deployment.yaml` with the following content:
 
 ```yaml
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
