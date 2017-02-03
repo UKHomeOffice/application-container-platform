@@ -201,7 +201,7 @@ $ docker login docker.digital.homeoffice.gov.uk
 Images can be pulled with:
 
 ```bash
-$ docker pull docker.digital.homeoffice.gov.uk/aws-dsp:v0.1.3-rc1
+$ docker pull docker.digital.homeoffice.gov.uk/aws-dsp:v0.4.7
 ```
 
 If you get this error instead:
