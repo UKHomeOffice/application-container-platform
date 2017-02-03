@@ -145,126 +145,20 @@ Starting local Kubernetes cluster...
 Kubectl is now configured to use the cluster.
 ```
 
-Minikube doesn't come with an Ingress bundled in [yet](https://github.com/kubernetes/minikube/issues/611). You should deploy an Ingress in minikube to expose your applications outiside of the virtual machine. The following sections describe how to do this.
-
 ### Setting up minikube ingress
 
-#### Deploy default http backend
-
-You should create a default http backend for Ingress. This is necessary so that Ingress can route unknown requests and display a 404 page.
-
-Create a `default-backend-deployment.yaml` file with the following content:
-
-```yaml
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: default-http-backend
-  annotations:
-    ingress.kubernetes.io/ssl-redirect: "false"
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: default-http-backend
-    spec:
-      containers:
-      - name: default-http-backend
-        image: gcr.io/google_containers/defaultbackend:1.0
-        ports:
-          - containerPort: 8080
-```
-
-And create a service for the newly created default http backend `default-backend-service.yaml`:
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    name: default-http-backend
-  name: default-http-backend
-spec:
-  ports:
-  - port: 80
-    targetPort: 8080
-  selector:
-    name: default-http-backend
-```
-
-You can deploy both yaml file with:
-
 ```bash
-$ kubectl create -f default-backend-deployment.yaml
-deployment "default-http-backend" created
-$ kubectl create -f default-backend-service.yaml
-service "default-http-backend" created
-```
-
-The default backend should be installed successfully. You can verify that by logging in into the cluster and issuing an http request. But first you have to retrieve the IP address for the default backend:
-
-```bash
-$ kubectl get services
-NAME                      CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
-default-http-backend      10.0.0.18    <none>        80/TCP    21h
-kubernetes                10.0.0.1     <none>        443/TCP   2d
-```
-
-You can now log in into the cluster:
-
-```bash
-$ minikube ssh
-Boot2Docker version 1.11.1, build master : 901340f - Fri Jul  1 22:52:19 UTC 2016
-Docker version 1.11.1, build 5604cbe
+$ minikube addons enable ingress
 ```
 
 And issue a request for the default backend:
 
 ```bash
-$ curl <10.0.0.18>
+$ curl $(minikube ip)
+default backend - 404
+$ curl -k https://$(minikube ip)
 default backend - 404
 ```
-
-If the deployments were successful you should be able to read `default backend - 404`.
-
-#### Deploy ingress controller
-
-Create a deployment for ingress named `ingress-deployment.yaml` with the following content:
-
-```yaml
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: ingress
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: ingress
-    spec:
-      containers:
-      - name: nginx-ingress-lb
-        image: gcr.io/google_containers/nginx-ingress-controller:0.8.3
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 80
-          hostPort: 8081
-        args:
-        - /nginx-ingress-controller
-        - --default-backend-service=default/default-http-backend
-```
-
-Retrieve the ip address of the cluster on your machine with:
-
-```bash
-$ minikube ip
-192.168.64.3
-```
-
-If the ingress deployment was successful, you should be able to visit `http://<192.168.64.3>:8081` and be greeted by the default http backend message.
-
 
 ## Quay access
 
