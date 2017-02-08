@@ -1,12 +1,14 @@
 # Customise your deployment kubes
 
-Sometimes you may need to run a different kube config in development from what you run in production. This is particularly useful when you wish to run an ecrypted connection between pods in production, but not locally or in your ephemeral deployments.
+Sometimes you may need to run a different kube config in development from what you run in production. This is particularly useful when you wish to run an ecrypted connection between pods in production, but not locally nor in ci.
 
-> ** Please note** that you should strive to keep your enviroments production like. You should keep differences between environments to a minimum.
+> ** Please note** that you should strive to keep your enviroments production-like. You should keep differences between environments to a minimum.
 
-- kd
-- separate files
-- ConfigMaps
+This document covers three different strategies to deal with kube files:
+
+- [ConfigMaps](#configmaps)
+- [kd](#kd)
+- [Separate files](#separate-files)
 
 ## ConfigMaps
 
@@ -59,7 +61,7 @@ env:
 
 ## kd
 
-You already leanrt how to template kube files in one of our [previous episode](#link). You can leverage `kd` templates and introduce `if` statements in your kube files.
+You already leanrt how to template kube files in one of our [previous episode](https://github.com/UKHomeOffice/hosting-platform/blob/master/developer-docs/platform_introduction.md#re-deploy-with-kd). You can leverage `kd` templates and introduce `if` statements in your kube files.
 
 ```yaml
 ---
@@ -77,7 +79,7 @@ spec:
       containers:
       - name: hello-world-nodejs
         image: dsp-hello-world:v1
-        imagePullPolicy: {{if .LOCAL}}ifNotPresent{{else}}AlwaysPull{{end}}
+        imagePullPolicy: {{if .LOCAL}}IfNotPresent{{else}}AlwaysPull{{end}}
         ports:
           - containerPort: 4000
 ```
@@ -86,7 +88,7 @@ spec:
 
 ## Separate files
 
-Using `kd` is convenient when your kube files differ only for few lines. If the changes are more substantial, you can decide to conditionally load another kube file based on the environment. The following script launches `kd` and is enviroment aware:
+Using `kd` is convenient when your kube files differ only for few lines. If the changes are more substantial, you can decide to conditionally load another kube file depending on the current environment. The following script launches `kd` and is enviroment aware:
 
 ```bash
 #!/bin/bash
@@ -98,5 +100,5 @@ kd --insecure-skip-tls-verify \
    --file ${ENVIRONMENT}/deployment.yaml
 ```
 
-You could have a folder for each environment with a set of deployment, service and ingress for each of them.
+You could have a folder with a set of deployment, service and ingress for each of your environments.
 
