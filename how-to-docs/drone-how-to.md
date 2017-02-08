@@ -532,10 +532,13 @@ You can run tests or any other task that interacts with the deployed service by 
 
   test_all_the_things:
     image: busybox
+    network_mode: "default"
+    dns:
+      - 10.200.0.10
     commands:
       - |
         export KUBE_NAMESPACE=`cat namespace.txt`
-        curl "<your-project>-${KUBE_NAMESPACE}.notprod.homeoffice.gov.uk"
+        wget -O- "<your-service>-${KUBE_NAMESPACE}.svc.cluster.local"
     when:
       branch: master
       event: push
@@ -543,12 +546,22 @@ You can run tests or any other task that interacts with the deployed service by 
   tidy_up:
     image: quay.io/ukhomeofficedigital/kd:v0.2.3
     ...
-
 ```
 
-You can customise the url of the service in your ingress manifest.
+Please note that `network_mode` and `dns` are required to resolve the name of the service from within the Drone agent.
 
+You can find the name of your service at the very top of your service kube file:
 
+````Yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: <name-of-your-service>
+  name: <name-of-your-service>
+...
+````
 
 ## Q&As
 
