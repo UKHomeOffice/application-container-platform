@@ -205,7 +205,7 @@ $ kubectl create -f kube/ingress.yaml
 ingress "dsp-hello-world-ingress" configured
 ```
 
-If the installation was successful, you should be able to visit the virtual machine ip on port 8081 and be greeted by _"Hello World no secret set"_.
+If the installation was successful, you should be able to visit the virtual machine ip on port 80 and be greeted by _"Hello World no secret set"_.
 
 You can find the ip address of your cluster with:
 
@@ -214,7 +214,7 @@ $ minikube ip
 192.168.64.3
 ```
 
-Visit http://<192.168.64.3>:8081
+Visit http://<192.168.64.3>
 
 ### Re-deploy with kd
 
@@ -270,6 +270,7 @@ Please specify a unique `APP_NAME` with your initials and some random characters
 ```bash
 $ APP_NAME=tgxu172 \
   APP_VERSION=v1 \
+  MY_SECRET=$(echo 'whysoserious' | base64) \
   kd --file kube-templated/secret.yaml \
      --file kube-templated/deployment.yaml \
      --file kube-templated/service.yaml \
