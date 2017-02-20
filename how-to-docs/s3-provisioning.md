@@ -121,3 +121,4 @@ Check secrets are visible in the destination namespace.
 ```
 kubectl --context=<kube-config-context> --namespace=<kube-namespace> get secrets/<myexample> -o yaml
 ```
+Note the secrets name to be issued back the user who requested the s3 bucket.
