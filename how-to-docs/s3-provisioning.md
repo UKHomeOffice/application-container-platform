@@ -3,7 +3,7 @@
 In this example env is _dev_ and the service_name is _myexample_
 
 ## AWS S3 Service Prerequisites
-This requires AWS credentials for hod-dsp-[env] to create the resources and dsp-ci for drone to deploy to the platform.
+
 The following are required before continuing though this guide:
 
 * AWS credentials for the correct platform environment
