@@ -1,10 +1,19 @@
 # Provisioning a AWS S3 Service into the Platform
 
-This requires AWS credentials for hod-dsp-[env] to create the resources and dsp-ci for drone to deploy to the platform. In this example env is _dev_ and the service_name is _myexample_
+In this example env is _dev_ and the service_name is _myexample_
+
+## AWS S3 Service Prerequisites
+This requires AWS credentials for hod-dsp-[env] to create the resources and dsp-ci for drone to deploy to the platform.
+The following are required before continuing though this guide:
+
+* AWS credentials for the correct platform environment
+* Drone.io installation and configuration inline with the [Drone CI Guide](../how-to-docs/drone-how-to.md)
+* Kubernetes installation and configuration inline with the [Devopment Setup Guide](../developer-docs/dev_setup.md)
+* DevOps gitlabs access 
 
 ## Creation of the IAM access credentials
 
-Login to AWS console with profile hod-dsp-dev
+Login to AWS console with profile hod-dsp-dev. 
 
 Create IAM user of the format **MYEXAMPLE_DEV_S3** 
 
@@ -61,7 +70,7 @@ For an S3 template, change the KMS key at the top, with the key obtained during 
 
 ## Populating the kubernetes secrets
 
-This script creates the kubernetes secrets yaml. Add this script to a shell file named mk-s3-secrets:
+This script creates the kubernetes secrets yaml. Add this script to a shell file named mk-s3-secrets.sh:
 
 ```
 #!/bin/bash
@@ -101,13 +110,14 @@ The S3 _Access key ID_ & _Secret access key_ will be presented to the end users 
 sed -i '1d' credentials.csv # snip the header from the downloaded AWS IAM credentials
 mk-s3-secrets.sh myexample-deveu-west-1 < credentials.csv
 ```
-Deploy the kubernetes secrets, make sure kubectl config has been setup inline with the [development setup guide](../developer-docs/dev_setup.md)
+Deploy the kubernetes secrets, make sure kubectl config has been setup according to the guide.
 
 ```
-kubectl --namespace=dev-induction create -f k8s-secret.yaml
+kubectl --context=<kube-config-context> get namespaces
+kubectl --context=<kube-config-context> --namespace=<kube-namespace> create -f k8s-secret.yaml
 ```
 Check secrets are visible in the destination namespace.
 
 ```
-kubectl --namespace=<namespace> get secrets/myexample -o yaml
+kubectl --context=<kube-config-context> --namespace=<kube-namespace> get secrets/<myexample> -o yaml
 ```
