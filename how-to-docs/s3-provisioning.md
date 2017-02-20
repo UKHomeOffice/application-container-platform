@@ -61,7 +61,7 @@ For an S3 template, change the KMS key at the top, with the key obtained during 
 
 ## Populating the kubernetes secrets
 
-This script creates the kubernetes secrets yaml  
+This script creates the kubernetes secrets yaml. Add this script to a shell file named mk-s3-secrets:
 
 ```
 #!/bin/bash
@@ -98,10 +98,10 @@ cat k8s-secret.yaml
 The S3 _Access key ID_ & _Secret access key_ will be presented to the end users as base64 encoded secrets in the relevent kubernetes namespace. Use the S3 bucket name as the Kubernetes secret name as a good convention.
 
 ```
-$ sed -i '1d' credentials.csv # snip the header from the downloaded AWS IAM credentials
-$ mk-s3-secrets.sh myexample-deveu-west-1 < credentials.csv
+sed -i '1d' credentials.csv # snip the header from the downloaded AWS IAM credentials
+mk-s3-secrets.sh myexample-deveu-west-1 < credentials.csv
 ```
-Deploy the kubernetes secrets  eg 
+Deploy the kubernetes secrets, make sure kubectl config has been setup inline with the [development setup guide](../developer-docs/dev_setup.md)
 
 ```
 kubectl --namespace=dev-induction create -f k8s-secret.yaml
