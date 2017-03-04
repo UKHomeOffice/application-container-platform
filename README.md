@@ -5,7 +5,7 @@ This page will give you an overview of HOD DSP, the services it entails and the 
 
 ## **Must Read**
 
-DSP is the default Home Office Hosting platfom. Its use is governed by a set of clear use principles  that all projects must be aware of (https://github.com/UKHomeOffice/hosting-platform/blob/dspuseprinciples/dspuseprinciples.md)
+DSP is the default Home Office Hosting platfom. Its use is governed by a set of clear use principles  that all projects must comply with (https://github.com/UKHomeOffice/hosting-platform/blob/dspuseprinciples/dspuseprinciples.md)
 
 
 Everyone using our platform **MUST** adhere to [technical service standards](https://github.com/UKHomeOffice/technical-service-requirements/blob/master/docs/ci.md).
