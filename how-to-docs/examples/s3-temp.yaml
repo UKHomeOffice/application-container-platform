@@ -1,0 +1,93 @@
+---
+{% set service_name = '' %}
+name: {{ service_name }}-s3bucket
+{% set bucket_name = service_name + '-' + env + region %}
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: S3 bucket stack in {{ env }} environment for {{ service_name }}
+Resources:
+  S3Bucket{{ service_name }}:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: {{ bucket_name }}
+      AccessControl: Private
+  KMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: KMS key for {{ service_name }} bucket
+      KeyPolicy:
+        Version: "2012-10-17"
+        Id: KMS{{ service_name }}Key
+        Statement:
+          - Sid: "Enable IAM User Permissions"
+            Effect: Allow
+            Action:
+              - "kms:Create*"
+              - "kms:Describe*"
+              - "kms:Enable*"
+              - "kms:List*"
+              - "kms:Put*"
+              - "kms:Update*"
+              - "kms:Revoke*"
+              - "kms:Disable*"
+              - "kms:Get*"
+              - "kms:Delete*"
+              - "kms:ScheduleKeyDeletion"
+              - "kms:CancelKeyDeletion"
+            Principal:
+              AWS:
+                - Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
+            Resource: "*"
+  KMSKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: alias/s3-{{ env }}-{{ service_name }}
+      TargetKeyId: { Ref : KMSKey }
+  IAMPolicy{{ service_name }}:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: {{ service_name }}-{{ env }}-iam
+      Users:
+      - { Ref: BucketUser }
+      PolicyDocument:
+        Statement:
+        - Resource: 'arn:aws:s3:::{{ bucket_name }}*'
+          Effect: Allow
+          Action:
+          - 's3:Get*'
+          - 's3:List*'
+          - 's3:Delete*'
+          - 's3:Put*'
+        - Resource: 
+          - Fn::GetAtt: 
+            - KMSKey 
+            - Arn
+          Effect: Allow
+          Action:
+          - 'kms:Decrypt'
+          - 'kms:DescribeKey'
+          - 'kms:Encrypt'
+          - 'kms:GenerateDataKey'
+          - 'kms:GenerateDataKeyWithoutPlaintext'
+          - 'kms:GenerateRandom'
+          - 'kms:GetKeyPolicy'
+          - 'kms:GetKeyRotationStatus'
+          - 'kms:ReEncrypt'
+        - Resource: 'arn:aws:s3:::{{ bucket_name }}*'
+          Effect : Deny
+          Action:
+          - 's3:Put*'
+          Condition:
+            StringNotEquals:
+              s3:x-amz-server-side-encryption: 'aws:kms'
+  BucketUser:
+    Type: AWS::IAM::User
+    Properties:
+      Path: /
+Outputs:
+  Bucket:
+    Value: '{{ bucket_name }}'
+  KMSID:
+    Value: '{ Ref : KMSKey }'
+  ServiceName:
+    Value: '{{ service_name }}'
