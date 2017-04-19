@@ -16,6 +16,7 @@ Resources:
       BackupRetentionPeriod: 10
       DBName: {{ service_name }}{{ service_env }}
       DBInstanceClass: db.m3.medium
+      DBInstanceIdentifier: {{ service_name }}-{{ service_env }}
       PubliclyAccessible: false
       StorageEncrypted: true
       MasterUsername: root
