@@ -1,7 +1,7 @@
 ---
 {% set service_name = '' %}
 name: {{ service_name }}-s3bucket
-{% set bucket_name = service_name + '-' + env + region %}
+{% set bucket_name = service_name + '-' + env + '-' + region %}
 ---
 AWSTemplateFormatVersion: '2010-09-09'
 Description: S3 bucket stack in {{ env }} environment for {{ service_name }}
