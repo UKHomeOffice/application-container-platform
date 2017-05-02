@@ -6,7 +6,7 @@ name: {{ service_name }}-s3bucket
 AWSTemplateFormatVersion: '2010-09-09'
 Description: S3 bucket stack in {{ env }} environment for {{ service_name }}
 Resources:
-  S3Bucket{{ service_name }}:
+  S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: {{ bucket_name }}
@@ -43,7 +43,7 @@ Resources:
     Properties:
       AliasName: alias/s3-{{ env }}-{{ service_name }}
       TargetKeyId: { Ref : KMSKey }
-  IAMPolicy{{ service_name }}:
+  IAMPolicy:
     Type: AWS::IAM::Policy
     Properties:
       PolicyName: {{ service_name }}-{{ env }}-iam
@@ -58,9 +58,9 @@ Resources:
           - 's3:List*'
           - 's3:Delete*'
           - 's3:Put*'
-        - Resource: 
-          - Fn::GetAtt: 
-            - KMSKey 
+        - Resource:
+          - Fn::GetAtt:
+            - KMSKey
             - Arn
           Effect: Allow
           Action:
