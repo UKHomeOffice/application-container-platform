@@ -21,6 +21,15 @@ Resources:
         Statement:
           - Sid: "Enable IAM User Permissions"
             Effect: Allow
+            Resource: "*"
+            Action:
+              - "kms:*"
+            Principal:
+              AWS:
+                - Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
+          - Sid: "Allow access for Key Administrators"
+            Effect: Allow
+            Resource: "*"
             Action:
               - "kms:Create*"
               - "kms:Describe*"
@@ -34,10 +43,16 @@ Resources:
               - "kms:Delete*"
               - "kms:ScheduleKeyDeletion"
               - "kms:CancelKeyDeletion"
-            Principal:
-              AWS:
-                - Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
+          - Sid: "Allow use of the key"
+            Effect: Allow
             Resource: "*"
+            Action:
+              - "kms:Encrypt"
+              - "kms:Decrypt"
+              - "kms:ReEncrypt*"
+              - "kms:GenerateDataKey*"
+              - "kms:DescribeKey"
+
   KMSKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
@@ -88,6 +103,6 @@ Outputs:
   Bucket:
     Value: '{{ bucket_name }}'
   KMSID:
-    Value: '{ Ref : KMSKey }'
+    Value: { Ref : KMSKey }
   ServiceName:
     Value: '{{ service_name }}'
