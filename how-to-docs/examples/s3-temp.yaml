@@ -6,7 +6,7 @@ name: {{ service_name }}-s3bucket
 AWSTemplateFormatVersion: '2010-09-09'
 Description: S3 bucket stack in {{ env }} environment for {{ service_name }}
 Resources:
-  S3Bucket{{ service_name }}:
+  S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: {{ bucket_name }}
@@ -21,6 +21,15 @@ Resources:
         Statement:
           - Sid: "Enable IAM User Permissions"
             Effect: Allow
+            Resource: "*"
+            Action:
+              - "kms:*"
+            Principal:
+              AWS:
+                - Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
+          - Sid: "Allow access for Key Administrators"
+            Effect: Allow
+            Resource: "*"
             Action:
               - "kms:Create*"
               - "kms:Describe*"
@@ -34,16 +43,22 @@ Resources:
               - "kms:Delete*"
               - "kms:ScheduleKeyDeletion"
               - "kms:CancelKeyDeletion"
-            Principal:
-              AWS:
-                - Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:root'
+          - Sid: "Allow use of the key"
+            Effect: Allow
             Resource: "*"
+            Action:
+              - "kms:Encrypt"
+              - "kms:Decrypt"
+              - "kms:ReEncrypt*"
+              - "kms:GenerateDataKey*"
+              - "kms:DescribeKey"
+
   KMSKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
       AliasName: alias/s3-{{ env }}-{{ service_name }}
       TargetKeyId: { Ref : KMSKey }
-  IAMPolicy{{ service_name }}:
+  IAMPolicy:
     Type: AWS::IAM::Policy
     Properties:
       PolicyName: {{ service_name }}-{{ env }}-iam
@@ -58,9 +73,9 @@ Resources:
           - 's3:List*'
           - 's3:Delete*'
           - 's3:Put*'
-        - Resource: 
-          - Fn::GetAtt: 
-            - KMSKey 
+        - Resource:
+          - Fn::GetAtt:
+            - KMSKey
             - Arn
           Effect: Allow
           Action:
@@ -88,6 +103,6 @@ Outputs:
   Bucket:
     Value: '{{ bucket_name }}'
   KMSID:
-    Value: '{ Ref : KMSKey }'
+    Value: { Ref : KMSKey }
   ServiceName:
     Value: '{{ service_name }}'
