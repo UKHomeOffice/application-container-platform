@@ -2,6 +2,11 @@
 
 This page will give you an overview of HOD DSP, the services it entails and the ways to get access to them. This is a general overview. Developers should check out the [Developer Docs](https://github.com/UKHomeOffice/hosting-platform/tree/master/developer-docs).
 
+## Service Status
+
+Please familiarise yourself to an overview of the [platform service status page](docs/platform_service_status.md). This outlines the status of our services
+and where it is in it's lifecycle. There are also [definitions of what those mean](docs/service_lifecycle.md) and the criteria of how what we measure a production ready service by.
+
 ## **Must Read**
 Everyone using our platform **MUST** adhere to [technical service standards](https://github.com/UKHomeOffice/technical-service-requirements/blob/master/docs/ci.md).
 All Services will be under a review process
