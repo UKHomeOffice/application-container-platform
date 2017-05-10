@@ -1,0 +1,48 @@
+---
+{% set cluster_name='' %}
+name: {{ cluster_name }}-redis-cluster 
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ElastiCache stack in {{ env }} environment
+Resources:
+
+  SubnetGroup:
+    Type: "AWS::ElastiCache::SubnetGroup"
+    Properties:
+      Description: "Cache Subnet Group"
+      CacheSubnetGroupName: {{ cluster_name }}-Subnet
+      SubnetIds:
+{% for subnet in compute_subnets %}
+        - "{{ get_stack_output(cf_conn, env + '-infra', 'ComputeSubnet' + loop.index0|string) }}"
+{% endfor %}
+
+  ReplicationGroup:
+    Type: "AWS::ElastiCache::ReplicationGroup"
+    Properties:
+      ReplicationGroupDescription: "Redis Cluster"
+      ReplicasPerNodeGroup: 1
+      NumNodeGroups: 3
+      Engine: "redis"
+      ReplicationGroupId: {{ cluster_name }}
+      CacheSubnetGroupName: {{ cluster_name }}-Subnet
+      CacheNodeType: "cache.t2.micro"
+      AutoMinorVersionUpgrade: "true"
+      AutomaticFailoverEnabled: "true"
+      EngineVersion: 3.2.4
+      PreferredMaintenanceWindow: "wed:09:25-wed:22:30"
+      SnapshotRetentionLimit: 4
+      SnapshotWindow: "03:30-05:30"
+      SecurityGroupIds:
+        - { Ref: RedisSG }
+
+  RedisSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: RedisSecurityGroup
+      VpcId: {{ get_vpc_id(vpc_conn, vpc_name) }}
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 6379
+        ToPort: 6379
+        SourceSecurityGroupId: {{ get_stack_output(cf_conn, env + '-infra', 'ComputeDefaultSG') }}
+
