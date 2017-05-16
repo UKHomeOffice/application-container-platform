@@ -33,14 +33,14 @@ The following are the options and an example of answer for this endpoints instan
 
 Option | Example answer | Description
 ------ | -------------- | -----------
-Endpoint identifer | database-source/target | This is the name you want to use to identify the endpoint.
+Endpoint identifer | database-source/target | This is the name you use to identify the endpoint.
 Source/target engine | postgres | Choose the type of database engine that for this endpoint.
 Server name | mysqlsrvinst.abcd123456789.us-west-1.rds.amazonaws.com | Type of server name. For an on-premises database, this can be the IP address or the public hostname. For an Amazon RDS DB instance, this can be the endpoint for the DB instance.
 Port | 5432 | The port used by the database.
 SSL mode | None | SSL mode for encryption for your endpoints. 
 Username | root | The user name with the permissions required to allow data migration.
 Password | ******** | The password for the account with the required permissions.
-Database Name (target) | dev-db | The name of the attached database to the selcted endpoint.
+Database Name (target) | dev-db | The name of the attached database to the selected endpoint.
 
 Repeat these options for both source and target and make sure to test connection before clicking next. You might need to append security group rules to allow the replication instance access, for example:
 
@@ -64,7 +64,7 @@ Task name | Migration-task | A name for the task.
 Task Description | Task for migrating | A description for the task.
 Source endpoint | source-instance | The source endpoint for migration.
 Target endpoint | target-instance | The target endpoint for migration.
-Replication instance | replication-instance | The replication isntance which will be used.
+Replication instance | replication-instance | The replication instance to be used.
 Migration type | Migrate existing data | Migration method you wnat to use. 
 Start task on create | True | When selected the task begins as soon as it is created.
 Target table preparation | Drop table on target | Migration strategy on target.
