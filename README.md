@@ -1,6 +1,6 @@
-# Digital Hosting Platform
+# Application Container Platform
 
-This page will give you an overview of HOD DSP, the services it entails and the ways to get access to them. This is a general overview. Developers should check out the [Developer Docs](https://github.com/UKHomeOffice/hosting-platform/tree/master/developer-docs).
+This page will give you an overview of HOD DSP, the services it entails and the ways to get access to them. This is a general overview. Developers should check out the [Developer Docs](https://github.com/UKHomeOffice/application-container-platform/tree/master/developer-docs).
 
 ## Service Status
 
@@ -27,7 +27,7 @@ These are the core services which we provide across our platform.
 When trying to get onto the platform for the first time you will need to get access to a various things that will allow you to get to other things. The full flow for this can be found [here](docs/newuser.md)
 
 ## Support
-If you require support you can talk to us on our Slack Channel or raise an issue on our [bau board](https://github.com/UKHomeOffice/hosting-platform-bau).
+If you require support you can talk to us on our Slack Channel or raise an issue on our [bau board](https://github.com/UKHomeOffice/application-container-platform-bau).
 
 ## How-to-docs
 We have a bunch of handy how-to guides located in this repository, find the list of them [here](how-to-docs/README.md)

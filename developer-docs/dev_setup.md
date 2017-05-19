@@ -67,7 +67,7 @@ We recommend copying the [example kubectl config](resources/kubeconfig) to `~/.k
 
 The only change you will need to make is to replace _"XXXXXXXXXX"_ with your kubernetes token.
 
-You can submit a request to obtain a kubernetes token by adding an issue to the Hosting Platform Bau project on Github [here](https://github.com/UKHomeOffice/hosting-platform-bau/issues).
+You can submit a request to obtain a kubernetes token by adding an issue to the Hosting Platform Bau project on Github [here](https://github.com/UKHomeOffice/application-container-platform-bau/issues).
 
 Please use the below template for your request:
 
@@ -164,7 +164,7 @@ default backend - 404
 
 We use [quay](https://www.quay.io) for storing public docker images. Please login to quay with your Github account and create a password for your account (accounts created by signing in with Github don't have a password by default). You are not able to publish docker images to the UKHomeOffice organisation unless you request access to it.
 
-You can submit a request to be part of the UKHomeOffice organisation on quay by adding an issue to the Hosting Platform Bau project on Github [here](https://github.com/UKHomeOffice/hosting-platform-bau/issues).
+You can submit a request to be part of the UKHomeOffice organisation on quay by adding an issue to the Hosting Platform Bau project on Github [here](https://github.com/UKHomeOffice/application-container-platform-bau/issues).
 
 Please use the below template for your request:
 
