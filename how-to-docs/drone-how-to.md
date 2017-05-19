@@ -153,7 +153,7 @@ If your repository is hosted on Gitlab, you don't want to publish your images to
 Register for a free [Quay account](https://quay.io) using your Github account linked to the Home Office organisation.
 
 Once you've logged into Quay check that you have `ukhomeofficedigital` under Users and Organisations.  
-If you do not, [make a request by adding an issue to the Platform Access column] (https://github.com/UKHomeOffice/hosting-platform-bau/projects/1)
+If you do not, [make a request by adding an issue to the Platform Access column] (https://github.com/UKHomeOffice/application-container-platform-bau/projects/1)
 
 Once you have access to view the `ukhomeofficedigital` repositories, click repositories and
 click the `+ Create New Repositories` that is:
@@ -163,7 +163,7 @@ click the `+ Create New Repositories` that is:
 
 Add your project to the UKHomeOffice Quay account
 
-[Raise a ticket for a new UKHomeOffice Quay robot in the Platform Access column](https://github.com/UKHomeOffice/hosting-platform-bau/projects/1). You have to pick a name for it.  You should be supplied a robot password in response.
+[Raise a ticket for a new UKHomeOffice Quay robot in the Platform Access column](https://github.com/UKHomeOffice/application-container-platform-bau/projects/1). You have to pick a name for it.  You should be supplied a robot password in response.
 
 Add the step to publish the docker image to Quay in your Drone pipeline with the supplied docker login but NOT the password:
 
@@ -222,7 +222,7 @@ Images hosted on [Artifactory](https://docker.digital.homeoffice.gov.uk) are pri
 
 If your repository is hosted publicly on GitHub, you shouldn't publish your images to Artifactory. Artifactory is only used to publish private images. [You should use Quay to publish your public images](#publishing-to-quay).
 
-[Raise a ticket for a new Artifactory robot](https://github.com/UKHomeOffice/hosting-platform-bau/). You have to pick a name for it.  You should be supplied a robot token in response.
+[Raise a ticket for a new Artifactory robot](https://github.com/UKHomeOffice/application-container-platform-bau/). You have to pick a name for it.  You should be supplied a robot token in response.
 
 You can inject the robot's token supplied to you in your raised ticket to the Platform team with:
 
@@ -359,7 +359,7 @@ Drone will automatically execute that step when a new pull request is raised.
 
 ## Deploying to DSP
 
-> Please note that this section assumes you have a separate repository containing your kube files as explained [here](https://github.com/UKHomeOffice/hosting-platform/blob/master/developer-docs/platform_introduction.md#define-a-deployment-for-your-application).
+> Please note that this section assumes you have a separate repository containing your kube files as explained [here](https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/platform_introduction.md#define-a-deployment-for-your-application).
 
 You can clone your kube repo as part of your pipeline with:
 
@@ -404,7 +404,7 @@ The kube `deploy.sh` scripts relies on 3 environment variables:
 
 - `KUBE_NAMESPACE` - the kubernetes namespace you wish to deploy to. **You need to provide the kubernetes namespace as part of the deployment job**.
 
-- `KUBE_TOKEN` - this is the token used to authenticate against the kubernetes cluster. **You need to add this as a secret to your build step. You can [request a kubernetes token here](https://github.com/UKHomeOffice/hosting-platform-bau/issues/new)**. In this particular case, the secret was added with:
+- `KUBE_TOKEN` - this is the token used to authenticate against the kubernetes cluster. **You need to add this as a secret to your build step. You can [request a kubernetes token here](https://github.com/UKHomeOffice/application-container-platform-bau/issues/new)**. In this particular case, the secret was added with:
 
   ```bash
   $ drone secret add --image=quay.io/ukhomeofficedigital/kd:v0.2.3 --conceal  UKHomeOffice/<your_repo> KUBE_TOKEN <your_token>
@@ -473,7 +473,7 @@ You can deploy your application to a temporary namespace in the cluster, run the
 
 You should already have kubernetes configs for deployment, service and ingress. In order to create an environment from scratch you need all your kubernetes secrets to be loaded as part of the startup process.
 
-Kubernetes secrets can be loaded in your environment using a configuration (yaml) file or inline. You can find more information setting secrets [here](https://github.com/UKHomeOffice/hosting-platform/blob/master/developer-docs/platform_introduction.md#create-a-kubernetes-secret). We recommend you create a `secrets.yaml` as a template for your secrets.
+Kubernetes secrets can be loaded in your environment using a configuration (yaml) file or inline. You can find more information setting secrets [here](https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/platform_introduction.md#create-a-kubernetes-secret). We recommend you create a `secrets.yaml` as a template for your secrets.
 
 ```yaml
   deploy_to_ci:
