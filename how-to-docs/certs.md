@@ -30,4 +30,4 @@ myapp.dev.myproject.homeoffice.gov.uk
 myapp.preprod.myproject.homeoffice.gov.uk
 myapp.myproject.homeoffice.gov.uk
 ```
-Before you start you should raise a request on the [bau board](https://github.com/UKHomeOffice/hosting-platform-bau) so that we can set up a dns entry from *.myproject.homeoffice.gov.uk to the ingress.
+Before you start you should raise a request on the [bau board](https://github.com/UKHomeOffice/application-container-platform-bau) so that we can set up a dns entry from *.myproject.homeoffice.gov.uk to the ingress.

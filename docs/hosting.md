@@ -12,4 +12,4 @@ Tokens are needed for each of our clusters that you require access to.
 
 Each project should have it's own namespace to deploy into, these can be created by doing a PR to our [kube-hod-platform](https://gitlab.digital.homeoffice.gov.uk/Devops/kube-hod-platform) repo.
 
-More information on Kubernetes can be found at their [site](http://kubernetes.io) as well as our [guide](https://github.com/UKHomeOffice/hosting-platform/blob/master/developer-docs/dev_setup.md).
+More information on Kubernetes can be found at their [site](http://kubernetes.io) as well as our [guide](https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/dev_setup.md).
