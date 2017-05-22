@@ -27,6 +27,7 @@ These are the core services which we provide across our platform.
 When trying to get onto the platform for the first time you will need to get access to a various things that will allow you to get to other things. The full flow for this can be found [here](docs/newuser.md)
 
 ## Support
+[You can find more information about support here](sla.md)
 If you require support you can talk to us on our Slack Channel or raise an issue on our [bau board](https://github.com/UKHomeOffice/application-container-platform-bau).
 
 ## How-to-docs
