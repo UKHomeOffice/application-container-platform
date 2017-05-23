@@ -1,6 +1,6 @@
 # Hosting
 
-## AWS
+## AWS
 We host all of our services and infrastructure in AWS. We have five main accounts: notProd, CI, OPS, VPN and Prod. Access is managed through a central account called Hod-Central which can be used to assume role into each of the other accounts. This is all managed through the [Hoddat-iam repo](https://gitlab.digital.homeoffice.gov.uk/Devops/hoddat-iam). Our environments are managed using [stacks](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacks.html), each account having its own related repo. To see how notProd and Prod are set up refer to [stacks-hod-platform repo](https://gitlab.digital.homeoffice.gov.uk/Devops/stacks-hod-platform).
 
 ## Kubernetes
