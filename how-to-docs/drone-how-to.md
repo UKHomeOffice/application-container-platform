@@ -642,6 +642,17 @@ predeploy_to_uat:
     environment: uat
     event: deployment
 ```
+Note if you happen to have private GitLab repository, you do not need x-oauth-basic authencation. So the step would look like:
+
+```yaml
+predeploy_to_uat:
+  image: plugins/git
+  commands:
+    - git clone https://gitlab.digital.homeoffice.gov.uk/<your_repo>.git
+  when:
+    environment: uat
+    event: deployment
+```
 
 Your repository is saved in the workspace, which in turn is shared among all steps in the pipeline.
 
