@@ -46,12 +46,12 @@ c412afff3115: gcr.io/google-containers/kube-addon-manager:v5.1
 
 ### Dockerise "Hello World"
 
-For this demo we will use a simple nodejs application:  [UKHomeOffice/dsp-hello-world](https://github.com/UKHomeOffice/dsp-hello-world)
+For this demo we will use a simple nodejs application:  [UKHomeOffice/acp-hello-world](https://github.com/UKHomeOffice/acp-hello-world)
 
 You can clone the repository on your machine with:
 
 ```bash
-$ git clone https://github.com/UKHomeOffice/dsp-hello-world
+$ git clone https://github.com/UKHomeOffice/acp-hello-world
 ```
 
 > **Please note** that this application is already dockerised. If you are dockerising a different application please follow the Home Office guidance [here](./writing_dockerfiles.md).
@@ -59,15 +59,15 @@ $ git clone https://github.com/UKHomeOffice/dsp-hello-world
 You can build the application with:
 
 ```bash
-$ docker build -t dsp-hello-world:v1 .
+$ docker build -t acp-hello-world:v1 .
 Successfully built 985301b648c5
 ```
 
 Since the docker daemon is running in the virtual machine, no image is created on your host. You can verify the image was created successfully with:
 
 ```bash
-$ docker images | grep dsp-hello-world
-dsp-hello-world                                       v1                  53bfe98bf88f
+$ docker images | grep acp-hello-world
+acp-hello-world                                       v1                  53bfe98bf88f
 ```
 
 ### Deploy to Kubernetes
@@ -81,17 +81,17 @@ In this particular case we want to run our Node.js container as a single contain
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: dsp-hello-world
+  name: acp-hello-world
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        name: dsp-hello-world
+        name: acp-hello-world
     spec:
       containers:
       - name: hello-world-nodejs
-        image: dsp-hello-world:v1
+        image: acp-hello-world:v1
         imagePullPolicy: ifNotPresent
         ports:
           - containerPort: 4000
@@ -103,7 +103,7 @@ You can deploy the application to minikube with:
 
 ```bash
 $ kubectl create -f kube/deployment.yaml
-deployment "dsp-hello-world" created
+deployment "acp-hello-world" created
 ```
 
 If the deployment was successful, you should see a running container:
@@ -111,13 +111,13 @@ If the deployment was successful, you should see a running container:
 ```bash
 $ kubectl get pods
 NAME                               READY     STATUS    RESTARTS   AGE
-dsp-hello-world-3757754181-x1kdu   1/1       Running   0          4s
+acp-hello-world-3757754181-x1kdu   1/1       Running   0          4s
 ```
 
 If the deployment wasn't successful and the status is `ErrImagePull` you can inspect the deployment logs with:
 
 ```bash
-$ kubectl describe pod <dsp-hello-world-3757754181-x1kdu>
+$ kubectl describe pod <acp-hello-world-3757754181-x1kdu>
 ```
 
 ### Define a service
@@ -132,22 +132,22 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    name: dsp-hello-world-service
-  name: dsp-hello-world-service
+    name: acp-hello-world-service
+  name: acp-hello-world-service
 spec:
   ports:
   - name: exposed-port
     port: 80
     targetPort: 4000
   selector:
-    name: dsp-hello-world
+    name: acp-hello-world
 ```
 
 You can deploy the service with:
 
 ```bash
 $ kubectl create -f kube/service.yaml
-service "dsp-hello-world-service" created
+service "acp-hello-world-service" created
 ```
 
 You can list the services in kubernetes with:
@@ -155,7 +155,7 @@ You can list the services in kubernetes with:
 ```bash
 $ kubectl get services
 NAME                      CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
-dsp-hello-world-service   10.0.0.213   <none>        80/TCP    27s
+acp-hello-world-service   10.0.0.213   <none>        80/TCP    27s
 kubernetes                10.0.0.1     <none>        443/TCP   5h
 ```
 
@@ -187,13 +187,13 @@ The repository already contains a simple ingress manifest in `kube/ingress.yaml`
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: dsp-hello-world-ingress
+  name: acp-hello-world-ingress
 spec:
   rules:
   - http:
       paths:
       - backend:
-          serviceName: dsp-hello-world-service
+          serviceName: acp-hello-world-service
           servicePort: 80
         path: /
 ```
@@ -202,7 +202,7 @@ You can create an ingress with:
 
 ```bash
 $ kubectl create -f kube/ingress.yaml
-ingress "dsp-hello-world-ingress" configured
+ingress "acp-hello-world-ingress" configured
 ```
 
 If the installation was successful, you should be able to visit the virtual machine ip on port 80 and be greeted by _"Hello World no secret set"_.
@@ -363,7 +363,7 @@ $ kubectl apply -f example-secrets.yaml
 
 You can mount secrets into your application using either mounted volumes or by using them as environment variables.
 
-The below example shows a deployment that does both. However for this challenge please update your deployment in dsp-hello-world to use your secret as an environment variable called MYSUPERSECRET.
+The below example shows a deployment that does both. However for this challenge please update your deployment in acp-hello-world to use your secret as an environment variable called MYSUPERSECRET.
 
 <details>
 <summary>**This yaml is an example! Please do not copy and paste, just use it as a guide to modify your own deployment.yaml!**</summary>
@@ -508,7 +508,7 @@ In order to attach to the nginx container, you need to know the name of the cont
 $ kubectl get pods
 NAME                               READY     STATUS    RESTARTS   AGE
 default-http-backend-2kodr         1/1       Running   1          5d
-dsp-hello-world-3757754181-x1kdu   1/1       Running   2          6d
+acp-hello-world-3757754181-x1kdu   1/1       Running   2          6d
 ingress-3879072234-5f4uq           1/1       Running   2          5d
 ```
 
