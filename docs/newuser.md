@@ -9,7 +9,7 @@ These are all services that you can access through normal internet access with p
 [Quay](https://quay.io) You can access this with your github account after requesting access to our Quay Organisation with your personal account. Requests should be raised on the [bau board](https://github.com/UKHomeOffice/application-container-platform-bau/issues)
 
 ## Office 365 Account
-[Office 365](https://portal.office.com) If you are part of digital you should be provided with one of these. If not you can raise a ticket on the [bau board](https://github.com/UKHomeOffice/application-container-platform-bau/issues) and you will be provided with an AD only account to use.
+[Office 365](https://portal.office.com), these are provided by emailing DigitalCapabilitiesPMO@homeoffice.gsi.gov.uk, this is not managed by us.
 
 ### Artifactory
 [Artifactory](https://artifactory.digital.homeoffice.gov.uk.). Sign in with office 365 button. The docker repository in artifactory is accessed by the docker.digital.homeoffice.gov.uk address.
