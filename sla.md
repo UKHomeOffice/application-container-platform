@@ -16,7 +16,7 @@ https://github.com/UKHomeOffice/hosting-platform-bau
 
 General questions about the hosting platform can be raised on the _HOD-DSP - General_ slack channel.
 
-We will endeavour to respond to a support ticket or slack query within 8 working hours of the ticket being raised. 
+We will endeavour to respond to a support ticket or slack query within 8 working hours of the ticket being raised.
 
 Current BAU support contacts:
 
@@ -28,7 +28,7 @@ Rick Williams: rick.williams@digital.homeoffice.gov.uk
 
 ## Support hours
 
-Delivery support is available from 9.00-5.30 on weekdays, excluding Bank holidays 
+Delivery support is available from 9.00-5.30 on weekdays, excluding Bank holidays
 
 ## Support Scope
 
@@ -53,19 +53,19 @@ To request access to any of the above services, please raise a ticket on the BAU
 
 * Access to Amazon SES
 * Providing SMTP credentials
-* Verifying domains and email addresses when using the Amazon Simple Email Service (SeS) 
-* Publishing Sender Policy Framework (SPF) records for SES 
+* Verifying domains and email addresses when using the Amazon Simple Email Service (SeS)
+* Publishing Sender Policy Framework (SPF) records for SES
 * Creating RDS with access credentials
 * Creating S3 buckets and providing  access credentials
 * Provisioning of SQS (Simple queuing Service) and access credentials
 * Accepting peering requests and creating routes to other AWS accounts
-* Create VPN profiles for accessing other AWS accounts 
+* Create VPN profiles for accessing other AWS accounts
 
 To request access to any of the above services, please raise a ticket on the BAU board
 
 ### DNS setup
 
-* Creating dns entries for production services 
+* Creating dns entries for production services
 
 To request the creation of a dns entry, please raise a ticket on the BAU board.
 
@@ -76,7 +76,7 @@ All general issues will be picked up as soon as an engineer is available.
 
 ### Specific project requests
 
-Specific project requests can also be raised on the BAU board and will be handled in the same way as issues. 
+Specific project requests can also be raised on the BAU board and will be handled in the same way as issues.
 
 ### Enhancement requests
 
@@ -88,7 +88,7 @@ We encourage feedback from all service delivery teams and continue to strive to 
 
 Email sent to the hodo365team@digital.homeoffice.gov.uk titled "Request for ADUSER - Name (or just USERS if its a list)"
 
-Email needs to be FROM someone on the agreed authority list. The current list is as follows: 
+Email needs to be FROM someone on the agreed authority list. The current list is as follows:
 
 Andrew Martin - andrew.martin16@homeoffice.gsi.gov.uk
 
@@ -104,9 +104,11 @@ Geoff Teale - Geoff.Teale@homeoffice.gsi.gov.uk
 
 Onur Yelekci - onur.yelekci@digital.homeoffice.gov.uk
 
+Philip Stevenson - philip.stevenson@homeoffice.gsi.gov.uk
+
 Email contents:
 
-1. Name (as in Firstname and lastname); 
+1. Name (as in Firstname and lastname);
 2. POISE email (that the script sends the welcome email and creds to) if not available then we can send it to the requestors email;
 3. Department (as in DSAB, AFTC etc)
 
