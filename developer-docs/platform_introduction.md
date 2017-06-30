@@ -202,7 +202,7 @@ You can create an ingress with:
 
 ```bash
 $ kubectl create -f kube/ingress.yaml
-ingress "acp-hello-world-ingress" configured
+ingress "acp-hello-world-ingress" created
 ```
 
 If the installation was successful, you should be able to visit the virtual machine ip on port 80 and be greeted by _"Hello World no secret set"_.
