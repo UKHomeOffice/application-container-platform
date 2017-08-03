@@ -442,7 +442,7 @@ However always using the latest version of the deployment configuration can caus
 
 To counteract this you should use a specific version of your deployment scripts. In fact, you should  `git checkout` the tag or sha as part of your deployment step.
 
-This is how the new pipeline would look like:
+This is how the new pipeline would look:
 
 ```yaml
 predeploy_generic:
