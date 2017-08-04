@@ -153,7 +153,7 @@ If your repository is hosted on Gitlab, you don't want to publish your images to
 Register for a free [Quay account](https://quay.io) using your Github account linked to the Home Office organisation.
 
 Once you've logged into Quay check that you have `ukhomeofficedigital` under Users and Organisations.  
-If you do not, [make a request by adding an issue to the Platform Access column] (https://github.com/UKHomeOffice/application-container-platform-bau/projects/1)
+If you do not, [make a request by adding an issue to the Platform Access column](https://github.com/UKHomeOffice/application-container-platform-bau/projects/1)
 
 Once you have access to view the `ukhomeofficedigital` repositories, click repositories and
 click the `+ Create New Repositories` that is:
