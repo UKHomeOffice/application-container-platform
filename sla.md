@@ -20,7 +20,9 @@ We will endeavour to respond to a support ticket or slack query within 8 working
 
 Current BAU support contacts:
 
-Joseph Irving: joseph.irving@digital.homeoffice.gov.uk
+Ben Eustace: ben.eustace@digital.homeoffice.gov.uk
+
+Onur Yelekci: onur.yelekci@digital.homeoffice.gov.uk
 
 Current issue escalation contacts:
 
@@ -38,9 +40,7 @@ Delivery support will cover the following:
 
 The ACP hosting platform provides access to a number of services that can be set up for delivery teams. These services include:
 
-* Access to HOD-DSP slack channel for support queries
 * Access to UK home office Github organisation
-* Un-blocking Gitlab accounts. Note: a Gitlab account is created automatically with O365, but blocked by default.
 * Tokens to access Kubernetes
 * Allowing access to specific VPN profiles (eg prod)
 * Sysdig account setup
@@ -103,8 +103,6 @@ Thomas Fitzherbert - thomas.fitzherbert1@homeoffice.gsi.gov.uk
 Geoff Teale - Geoff.Teale@homeoffice.gsi.gov.uk
 
 Onur Yelekci - onur.yelekci@digital.homeoffice.gov.uk
-
-Philip Stevenson - philip.stevenson@homeoffice.gsi.gov.uk
 
 Email contents:
 
