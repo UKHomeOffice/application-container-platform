@@ -11,3 +11,5 @@ This folder contains a collection of how-to guides for both Developers and DevOp
   - [Platform Setup](platform_setup.md)
   - [Setting up the VPN](vpn.md)
   - [Generating Certs](ca_tls.md)
+  - [Importing local Certs](local_certs.md)
+  - [Creating namespaces in UK cluster](namespace-how-to.md)
