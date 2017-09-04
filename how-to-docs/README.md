@@ -13,3 +13,5 @@ This folder contains a collection of how-to guides for both Developers and DevOp
   - [Generating Certs](ca_tls.md)
   - [Importing local Certs](local_certs.md)
   - [Creating namespaces in UK cluster](namespace-how-to.md)
+  - [How to get a Kubernetes token for the UK cluster](kubernetes-token.md)
+  - [How to get a DNS record for my service](DNS-how-to.md)
