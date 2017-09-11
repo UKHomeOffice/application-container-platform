@@ -18,4 +18,3 @@ This folder contains a collection of how-to guides for both Developers and DevOp
   - [Getting a Kubernetes Robot Token](kubernetes-robot-token.md)
   - [Defining a new RBAC policy](define-rbac-policy.md)
   - [Using an Ingress](ingress.md)
-
