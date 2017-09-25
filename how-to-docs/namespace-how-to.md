@@ -1,10 +1,10 @@
 ## How do I create a namespace in the UK cluster?
-Please visit the [ACP-Kube-Namespaces](https://gitlab.digital.homeoffice.gov.uk/Devops/acp-kube-namespaces) repo on Gitlab to create a namespace.
+Please visit the [ACP-Kube](https://gitlab.digital.homeoffice.gov.uk/Devops/acp-kube) repo on Gitlab to create a namespace.
 
-+ Clusters are defined by the folders within the `namespaces/` directory. This directory contains all defined namespaces for each given cluster.
++ Clusters are defined by the folders within the `policies/` directory, with each cluster having a subdirectory labelled `namespaces`, this directory contains all defined namespaces for each given cluster.
 
 + Namespaces should be defined in the following format within this repository:
-`namespaces/<cluster-name>/<namespace.yaml>`
+`policies/clusters/<cluster-name>/namespaces/<namespace.yaml>`
 
 Example namespace creation of **foo** namespace in **bar** cluster:
 
@@ -17,7 +17,7 @@ metadata:
     name: foo
   name: foo
 ```
-to be defined in `namespaces/bar/foo.yaml`
+to be defined in `policies/clusters/bar/namespaces/foo.yaml`
 - The name of the file must match the label defined in the yaml.
-+ Clone and branch the ACP-Kube-Namespaces repo and create your namespace file
++ Clone and branch the ACP-Kube repo and create your namespace file
 + Submit a PR of your branch to master - once your PR is accepted your namespace will be created.
