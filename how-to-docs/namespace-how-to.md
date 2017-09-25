@@ -1,7 +1,7 @@
 ## How do I create a namespace in the UK cluster?
 Please visit the [ACP-Kube](https://gitlab.digital.homeoffice.gov.uk/Devops/acp-kube) repo on Gitlab to create a namespace.
 
-+ Clusters are defined by the folders within the `policies/` directory, with each cluster having a subdirectory labelled `namespaces`, this directory contains all defined namespaces for each given cluster.
++ Clusters are defined by the folders within the `policies/` directory, with each cluster having a subdirectory labelled `namespaces`.
 
 + Namespaces should be defined in the following format within this repository:
 `policies/clusters/<cluster-name>/namespaces/<namespace.yaml>`
