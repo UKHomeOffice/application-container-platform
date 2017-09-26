@@ -8,6 +8,6 @@
 
 4. Enter the required information and submit your request.
 
-5. Someone from the acp platform team will process your request and supply you with your robot token.
+5. Someone from the ACP platform team will process your request, after which you will find the robot token on the **Connected Identities** page on the platform hub.
 
 [platform hub link]: https://hub.acp.homeoffice.gov.uk/
