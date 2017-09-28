@@ -5,7 +5,6 @@
   - [Activate your pipeline](#activate-your-pipeline)
 - Adding a repository to Drone
   - [Configure your pipeline](#configure-your-pipeline)
-  - [Signature](#signature)
 - Publishing Docker images to
   - [Quay](#publishing-to-quay)
   - [Artifactory](#publishing-to-artifactory)
@@ -127,24 +126,6 @@ The current configuration requires extended privileges to run, but you're reposi
 Once you are good to go, you can trigger a new build by pushing a new commit or through the Drone UI.
 
 This time the build will succeed.
-
-## Signature
-
-Drone requires you to sign the Yaml file before injecting secrets into your build environment. You can generate a signature for a named repository like this:
-
-```bash
-$ drone sign UKHomeOffice/<your_repo>
-```
-
-This will create a `.drone.yml.sig` in the current directory. You should commit this file:
-
-```bash
-$ git add .drone.yml.sig
-$ git commit
-$ git push origin master
-```
-
-You must re-sign your `.drone.yml` every time you change it.
 
 ## Publishing to Quay
 
