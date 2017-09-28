@@ -241,7 +241,7 @@ deploy-to-preprod:
     event: deployment
 ```
 
-Sign your build and push the changes to your remote repository.
+Push the changes to your remote repository.
 
 You can deploy the build you just pushed with the following command:
 
