@@ -5,7 +5,6 @@
   - [Activate your pipeline](#activate-your-pipeline)
 - Adding a repository to Drone
   - [Configure your pipeline](#configure-your-pipeline)
-  - [Signature](#signature)
 - Publishing Docker images to
   - [Quay](#publishing-to-quay)
   - [Artifactory](#publishing-to-artifactory)
@@ -128,24 +127,6 @@ Once you are good to go, you can trigger a new build by pushing a new commit or 
 
 This time the build will succeed.
 
-## Signature
-
-Drone requires you to sign the Yaml file before injecting secrets into your build environment. You can generate a signature for a named repository like this:
-
-```bash
-$ drone sign UKHomeOffice/<your_repo>
-```
-
-This will create a `.drone.yml.sig` in the current directory. You should commit this file:
-
-```bash
-$ git add .drone.yml.sig
-$ git commit
-$ git push origin master
-```
-
-You must re-sign your `.drone.yml` every time you change it.
-
 ## Publishing to Quay
 
 If your repository is hosted on Gitlab, you don't want to publish your images to Quay. Images published to Quay are public and can be inspected and downloaded by anyone. [You should publish your private images to Artifactory](#publishing-to-artifactory).
@@ -188,16 +169,6 @@ docker tag image_name quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COM
 ```
 
 is the name of the image you tagged previously in the build step.
-
-Since your `.drone.yml`  has changed, you have to sign it before you can push the repository to the remote:
-
-```
-$ drone sign UKHomeOffice/<your_repo>
-$ git add .drone.yml.sig
-$ git add .drone.yml
-$ git commit
-$ git push origin master
-```
 
 The build should fail with the following error:
 
@@ -254,16 +225,6 @@ docker tag image_name quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COM
 
 is the name of the image you tagged previously in the build step.
 
-Since your `.drone.yml`  has changed, you have to sign it before you can push the repository to the remote:
-
-```bash
-$ drone sign UKHomeOffice/<your_repo>
-$ git add .drone.yml.sig
-$ git add .drone.yml
-$ git commit
-$ git push origin master
-```
-
 The image should now be published on Artifactory.
 
 ## Deployments and promotions
@@ -280,7 +241,7 @@ deploy-to-preprod:
     event: deployment
 ```
 
-Sign your build and push the changes to your remote repository.
+Push the changes to your remote repository.
 
 You can deploy the build you just pushed with the following command:
 
@@ -602,7 +563,6 @@ services:
 
 A: This suggests that the `docker` executable prompted for credentials instead of reading them from the command line. This might be caused by:
 
-- Your `.drone.yml` not being signed. When you want to inject environment variables in your build you must sign your `.drone.yml`.
 - The secret wasn't injected correctly or the password is incorrect.
 
 ### Q: As part of my build process I have two `Dockerfile`s to produce a Docker image. How can I share files between builds in the same step?
@@ -660,7 +620,7 @@ pipeline:
       environment: uat
 ```
 
-Once you are ready, you can sign the `.drone.yml` and push the changes to the remote repository. In your main repository you can add the following step:
+Once you are ready, you can push the changes to the remote repository. In your main repository you can add the following step:
 
 ```yaml
 trigger_deploy:
@@ -690,12 +650,6 @@ $ drone deploy UKHomeOffice/<your_repo> 16 uat
 This will trigger a new deployment on the second repository.
 
 Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
-
-## Q: I can't sign `.drone.yml`
-
-- Make sure that your repository is activated in Drone
-- Make sure your `DRONE_SERVER` and `DRONE_TOKEN` are properly set
-- Make sure you can successfully connect to Drone by typing `drone info`
 
 ## Q: Should I use Gitlab with Quay?
 
