@@ -20,8 +20,8 @@
 
 ## Install Drone CLI
 
-- [Github drone instance](https://drone.digital.homeoffice.gov.uk): https://drone.digital.homeoffice.gov.uk
-- [Gitlab drone instance](https://drone-gitlab.digital.homeoffice.gov.uk/): https://drone-gitlab.digital.homeoffice.gov.uk/
+- Github drone instance: https://drone.acp.homeoffice.gov.uk
+- Gitlab drone instance: https://drone-gitlab.acp.homeoffice.gov.uk/
 
 Download and install the [Drone CLI](http://readme.drone.io/0.5/install/cli/) from the official website.
 
@@ -35,10 +35,10 @@ $ drone --version
 drone version 0.5.0+dev
 ```
 
-Export the `DRONE_SERVER` and `DRONE_TOKEN` variables. You can find your token on the top left corner in your [account page](https://drone.digital.homeoffice.gov.uk/account).
+Export the `DRONE_SERVER` and `DRONE_TOKEN` variables. You can find your token on the top left corner in your [account page](https://drone.acp.homeoffice.gov.uk/account).
 
 ```bash
-export DRONE_SERVER=https://drone.digital.homeoffice.gov.uk
+export DRONE_SERVER=https://drone.acp.homeoffice.gov.uk
 export DRONE_TOKEN=123_your_token
 ```
 
@@ -66,14 +66,14 @@ Email: youremail@gmail.com
 
 ## Activate your pipeline
 
-Once you are logged in, navigate to your [Account](https://drone.digital.homeoffice.gov.uk/account) from the top right corner.
+Once you are logged in, navigate to your [Account](https://drone.acp.homeoffice.gov.uk/account) from the top right corner.
 
 Select the repo you want to activate.
 
 Navigate to your repository's settings in Github (or Gitlab) and update the payload url in the web hook section so that it matches this pattern:
 
 ```
-https://drone-external.digital.homeoffice.gov.uk/hook?access_token=some_token
+https://drone-external.acp.homeoffice.gov.uk/hook?access_token=some_token
 ```
 
 
@@ -605,7 +605,7 @@ Once you are ready, you can push the changes to the remote repository. In your m
 ```yaml
 trigger_deploy:
   image: quay.io/ukhomeofficedigital/drone-trigger:latest
-  drone_server: https://drone.digital.homeoffice.gov.uk
+  drone_server: https://drone.acp.homeoffice.gov.uk
   repo: UKHomeOffice/<deployment_repo>
   branch: <master>
   deploy_to: <uat>
