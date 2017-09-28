@@ -563,7 +563,6 @@ services:
 
 A: This suggests that the `docker` executable prompted for credentials instead of reading them from the command line. This might be caused by:
 
-- Your `.drone.yml` not being signed. When you want to inject environment variables in your build you must sign your `.drone.yml`.
 - The secret wasn't injected correctly or the password is incorrect.
 
 ### Q: As part of my build process I have two `Dockerfile`s to produce a Docker image. How can I share files between builds in the same step?
@@ -621,7 +620,7 @@ pipeline:
       environment: uat
 ```
 
-Once you are ready, you can sign the `.drone.yml` and push the changes to the remote repository. In your main repository you can add the following step:
+Once you are ready, you can push the changes to the remote repository. In your main repository you can add the following step:
 
 ```yaml
 trigger_deploy:
