@@ -95,14 +95,6 @@ pipeline:
     when:
       branch: master
       event: push
-
-services:
-  dind:
-    image: docker:1.11-dind
-    privileged: true
-    command:
-      - "-s"
-      - "overlay"
 ```
 
 Commit and push your changes:
@@ -546,18 +538,6 @@ my-build:
     branch: master
     event: push
 ````
-
-Also make sure that you have `dind` as a service in your `.drone.yml`:
-
-```
-services:
-  dind:
-    image: docker:1.11-dind
-    privileged: true
-    command:
-      - "-s"
-      - "overlay"
-```
 
 ### Q: The build fails when uploading to Quay with the error _"Inappropriate ioctl for device"_
 
