@@ -89,7 +89,7 @@ pipeline:
     privileged: true
     image: docker:1.11
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - docker build -t <image_name> .
     when:
@@ -144,7 +144,7 @@ Add the step to publish the docker image to Quay in your Drone pipeline with the
 image_to_quay:
   image: docker:1.11
   environment:
-    - DOCKER_HOST=tcp://127.0.0.1:2375
+    - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
     - docker login -u="ukhomeofficedigital+drone_demo" -p=${DOCKER_PASSWORD} quay.io
     - docker tag <image_name> quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
@@ -199,7 +199,7 @@ You can add the following step in your `.drone.yml`:
 image_to_artifactory:
   image: docker:1.11
   environment:
-    - DOCKER_HOST=tcp://127.0.0.1:2375
+    - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
     - docker login -u="<your_robot_user>" -p=${DOCKER_ARTIFACTORY_PASSWORD} docker.digital.homeoffice.gov.uk
     - docker tag image_name docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
@@ -299,7 +299,7 @@ pr-builder:
   privileged: true
   image: docker:1.11
   environment:
-    - DOCKER_HOST=tcp://127.0.0.1:2375
+    - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
     - docker build -t <node-hello-world> .
   when:
@@ -524,14 +524,14 @@ A: Your repository isn't in the trusted list of repositories. Get in touch with 
 
 ### Q: The build fails with _"Cannot connect to the Docker daemon. Is the docker daemon running on this host?"_
 
-A: Make sure that your steps contain the environment variable `DOCKER_HOST=tcp://127.0.0.1:2375` like in this case:
+A: Make sure that your steps contain the environment variable `DOCKER_HOST=tcp://172.17.0.1:2375` like in this case:
 
 ````
 my-build:
   privileged: true
   image: docker:1.11
   environment:
-    - DOCKER_HOST=tcp://127.0.0.1:2375
+    - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
     - docker build -t <image_name> .
   when:
