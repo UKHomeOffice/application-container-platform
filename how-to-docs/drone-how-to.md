@@ -170,16 +170,6 @@ docker tag image_name quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COM
 
 is the name of the image you tagged previously in the build step.
 
-Since your `.drone.yml`  has changed, you have to sign it before you can push the repository to the remote:
-
-```
-$ drone sign UKHomeOffice/<your_repo>
-$ git add .drone.yml.sig
-$ git add .drone.yml
-$ git commit
-$ git push origin master
-```
-
 The build should fail with the following error:
 
 ```bash
@@ -234,16 +224,6 @@ docker tag image_name quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COM
 ```
 
 is the name of the image you tagged previously in the build step.
-
-Since your `.drone.yml`  has changed, you have to sign it before you can push the repository to the remote:
-
-```bash
-$ drone sign UKHomeOffice/<your_repo>
-$ git add .drone.yml.sig
-$ git add .drone.yml
-$ git commit
-$ git push origin master
-```
 
 The image should now be published on Artifactory.
 
@@ -671,12 +651,6 @@ $ drone deploy UKHomeOffice/<your_repo> 16 uat
 This will trigger a new deployment on the second repository.
 
 Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
-
-## Q: I can't sign `.drone.yml`
-
-- Make sure that your repository is activated in Drone
-- Make sure your `DRONE_SERVER` and `DRONE_TOKEN` are properly set
-- Make sure you can successfully connect to Drone by typing `drone info`
 
 ## Q: Should I use Gitlab with Quay?
 
