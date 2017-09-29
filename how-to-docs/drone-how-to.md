@@ -20,7 +20,7 @@
 
 ## Install Drone CLI
 
-- Github drone instance: https://drone.acp.homeoffice.gov.uk
+- Github drone instance: https://drone.acp.homeoffice.gov.uk/
 - Gitlab drone instance: https://drone-gitlab.acp.homeoffice.gov.uk/
 
 Download and install the [Drone CLI](http://readme.drone.io/0.5/install/cli/) from the official website.
@@ -128,7 +128,7 @@ If your repository is hosted on Gitlab, you don't want to publish your images to
 Register for a free [Quay account](https://quay.io) using your Github account linked to the Home Office organisation.
 
 Once you've logged into Quay check that you have `ukhomeofficedigital` under Users and Organisations.  
-If you do not, [make a request by adding an issue to the Platform Access column](https://github.com/UKHomeOffice/application-container-platform-bau/projects/1)
+If you do not, [submit a support request on the platform hub for access to the ukhomeoffice organisation](https://hub.acp.homeoffice.gov.uk/help/support/requests/overview).
 
 Once you have access to view the `ukhomeofficedigital` repositories, click repositories and
 click the `+ Create New Repositories` that is:
@@ -136,9 +136,7 @@ click the `+ Create New Repositories` that is:
 - public
 - empty - no need to create a repo from a Dockerfile or link it to an existing repository
 
-Add your project to the UKHomeOffice Quay account
-
-[Raise a ticket for a new UKHomeOffice Quay robot in the Platform Access column](https://github.com/UKHomeOffice/application-container-platform-bau/projects/1). You have to pick a name for it.  You should be supplied a robot password in response.
+Add your project to the UKHomeOffice Quay account and [submit a support request on the platform hub for a new Quay robot](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/quay-robot-request).
 
 Add the step to publish the docker image to Quay in your Drone pipeline with the supplied docker login but NOT the password:
 
@@ -148,35 +146,37 @@ image_to_quay:
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
-    - docker login -u="ukhomeofficedigital+drone_demo" -p=${DOCKER_PASSWORD} quay.io
-    - docker tag <image_name> quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
-    - docker push quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
+    - docker login -u="ukhomeofficedigital+<your_robot_username>" -p=$${DOCKER_PASSWORD} quay.io
+    - docker tag <image_name> quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA}
+    - docker push quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA}
   when:
     branch: master
     event: push
 ```
 
-Where the `image_name` in:
+Where the `<image_name>` in:
 
 ```yaml
-docker tag image_name quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
+docker tag <image_name> quay.io/ukhomeofficedigital/<your_quay_repo>:${DRONE_COMMIT_SHA}
 ```
 
 is the name of the image you tagged previously in the build step.
 
+> Note: $${DRONE_COMMIT_SHA} is a Drone environment variable that is passed to the container at runtime.
+
 The build should fail with the following error:
 
 ```bash
-docker login -u="ukhomeofficedigital+<drone>" -p=${DOCKER_PASSWORD} quay.io
+docker login -u="ukhomeofficedigital+<your_robot_username>" -p=$${DOCKER_PASSWORD} quay.io
 inappropriate ioctl for device
 ```
 
 The error points to the missing `DOCKER_PASSWORD` environment variable.
 
-You can inject the robot's password supplied to you in your raised ticket to the Platform team with:
+You can inject the robot's token that has been supplied to you with:
 
 ```
-$ drone secret add --conceal --image="<your_image>" UKHomeOffice/<your_repo> DOCKER_PASSWORD your_robot_token
+$ drone secret add --conceal --image="<image_name>" UKHomeOffice/<your_github_repo> DOCKER_PASSWORD your_robot_token
 ```
 
 Restarting the build should be enough to make it pass.
