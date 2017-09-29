@@ -66,7 +66,7 @@ Email: youremail@gmail.com
 
 ## Activate your pipeline
 
-Once you are logged in, navigate to your [Account](https://drone.acp.homeoffice.gov.uk/account) from the top right corner.
+Once you are logged in to Drone, you will find a list of repos by clicking the icon in the top right corner and going to [Repositories](https://drone.acp.homeoffice.gov.uk/account/repos).
 
 Select the repo you want to activate.
 
@@ -76,7 +76,9 @@ Navigate to your repository's settings in Github (or Gitlab) and update the payl
 https://drone-external.acp.homeoffice.gov.uk/hook?access_token=some_token
 ```
 
-
+> If it is already in that format there is no need to change anything.
+>
+> The token in the payload url will not be the same as the personal token that you exported and it should be left unchanged.
 
 ## Configure your pipeline
 
