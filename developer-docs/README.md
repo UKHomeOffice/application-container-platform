@@ -1,48 +1,49 @@
-# HOD DSP Developer Documentation
+# HOD ACP Developer Documentation
 
-## Before you start
-We strongly recommend getting to know Docker and Kubernetes - the 2 core technologies that the platform is based around.
-[Docker](http://docker.io/) is a tool for building and managing containers
-[Kubernetes](http://kubernetes.io/docs/whatisk8s/) is an open-source platform for automating deployment, scaling,
+## Introduction
+ACP serves as a platform for teams to build and deploy projects in the Home Office. In addition to other technologies that we use, we strongly recommend to get an understanding of two of the core technologies that ACP is based on - Docker and Kubernetes:
+* [Docker](https://www.docker.com) is a software tool designed to make it easier to create, deploy and run applications by packaging up along with all its dependencies to containers.
+* [Kubernetes](https://kubernetes.io) is an open-source platform for automating deployment, scaling,
 and operations of application containers across clusters of hosts, providing container-centric infrastructure.
 
-Some [recommended resources for Docker and Kubernetes are available here](./recommended-reading.md)
-
-## Projects and namespaces
-Kubernetes resources (including your applications!) are always deployed into a particular namespace.
-These namespaces provide separation between the different projects hosted on the platform.
-We also recommend that each project has one namespace per environment (e.g. for dev, preprod, prod)
-
-## Project getting started guide
-For new projects you will need to put a PR into the hosting platform to create new namespaces.
-Instructions are available here:  
-https://gitlab.digital.homeoffice.gov.uk/Devops/kube-hod-platform
-
-We recommend you have one per environment, with each namespace prefixed with the project name.
-For example if the project name were *boomba* the namespaces might be *boomba-dev*, *boomba-uat*, *boomba-preprod*.
-
-You will also need to ask for your team to be granted access to the new namespaces, which you can do by making a request here:  
-https://github.com/UKHomeOffice/application-container-platform-bau/projects/1
-
-## Project getting to production guide
-Content to follow soon! In the meantime please ask for help in the Devops channel on the [HOD DSP Slack](https://hod-dsp.slack.com)
+For further information on Docker and Kubernetes:
+* Docker
+  * [Docker getting started tutorial](https://docs.docker.com/engine/getstarted/)  
+* Kubernetes
+  * [What is Kubernetes?](http://kubernetes.io/docs/whatisk8s/)  
+  * [Kubernetes talk to introduce the concepts](https://www.youtube.com/watch?v=5gz8kOUstFc)
 
 ## Developer getting started guide
-[This guide](dev_setup.md) shows you how to:
+Some prerequisites are required before developing on ACP. [This guide](dev_setup.md) will show you how to:
 
-* Get access to the VPN that allows you to connect to the platform
-* Get setup with the kubectl client that lets you deploy applications to kubernetes
-* Get access to Quay and Artifactory
+  * Get access to the VPNs that allows you to connect to the platform
+  * Get setup with the kubectl client that lets you deploy applications to kubernetes
+  * Get access to Quay and Artifactory
 
-## Developer application deployment guide
+In addition, new developers should look at the [new user flow](../docs/newuser.md) documentation whilst going through this doc to serve as a checklist and make sure you are onboarded to all necessary platform services.
+
+## Platform Hub
+  [The Platform Hub](https://hub.acp.homeoffice.gov.uk) serves as a central portal for users of ACP. It acts as an all-in-one place to find information, requests and also support for the platform. The hub also provides tools to develop, build, deploy and manage all your projects.
+
+  You can submit [support requests via the hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/overview) located in `Support Requests` under the `Help & Support` tab on the sidebar. These request templates cover a wide majority of general requests that users normally need. If your issue/request is not listed, please get in touch with us using the [Contact Us](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/contact-us) support request.
+
+Updates are also on its way to include more self-service tools, along with documentation, FAQs and live status updates.
+> Access to the Platform Hub requires the `ACP Platform` VPN profile. Please make sure you have followed the [Developer getting started guide](#Developer-getting-started-guide) for instructions on connecting to VPNs.
+
+## Developer platform introduction guide
 [This guide](platform_introduction.md) takes you through deploying a demo application to the platform, and explains some basic steps you can take to debug applications on the platform
 
+## Project getting started guide
+Kubernetes resources (including your applications!) are always deployed into a particular namespace.
+These namespaces provide separation between the different projects hosted on the platform.
+We also recommend that each project has one namespace per environment. For example if the project name were *foo* the namespaces might be *foo-dev*, *foo-uat*, *foo-preprod*. For instructions on creating new namespaces and other relevant resources on getting started can be found below on [ACP How-to Docs](#ACP-How-to-Docs)
+
+## ACP How-to Docs
+The How To Docs within the ACP repo provides a collection of how-to guides for both Developers and DevOps to use:
+https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/README.md
+
 ## Developer guide to Continuous Integration with Drone
-[The guide to Drone](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/drone-how-to.md) covers how to
-use drone to test your PRs, to build and push docker images, and to deploy.
+Drone is what we use for Continuous Integration in ACP. [This guide](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/drone-how-to.md) will cover how to use drone to test your PRs, build and push docker images, and to deploy.
 
 ## Writing Dockerfiles
 [This guide](./writing_dockerfiles.md) covers best practice for building Dockerfiles, and lists our standard base images.
-
-## How to setup a build monitor
-[This guide](build_monitors.md) covers how to set up a build monitor.
