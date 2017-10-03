@@ -294,7 +294,7 @@ $ drone deploy UKHomeOffice/<your_repo> 16 prod
 
 ## Drone as a Pull Request builder
 
-Drone pipelines are triggered when events occurs. Event triggers can be as simple as a _push_, _a tagged commit_ or _a pull request_ or as granular as _only for pull request with a named branch `test`_. You can limit the execution of build steps at runtime using the `when` block. As an example, this block executes only on pull requests:
+Drone pipelines are triggered when events occurs. Event triggers can be as simple as a _push_, _a tagged commit_, _a pull request_ or as granular as _only for pull requests for a branch named `test`_. You can limit the execution of build steps at runtime using the `when` block. As an example, this block executes only on pull requests:
 
 ```yaml
 pr-builder:
@@ -303,14 +303,14 @@ pr-builder:
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
-    - docker build -t <node-hello-world> .
+    - docker build -t <image_name> .
   when:
     event: pull_request
 ```
 
 Drone will automatically execute that step when a new pull request is raised.
 
-[> Read more about Drone conditions](http://readme.drone.io/0.5/usage/conditions/)
+[Read more about Drone conditions](http://docs.drone.io/conditional-steps/).
 
 ## Deploying to DSP
 
