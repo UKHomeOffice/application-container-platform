@@ -1,4 +1,9 @@
 
+### **Keycloak Release 3.1.0-3"
+
+An update to the govuk themes from v1.1.0 to v1.1.1 (https://github.com/UKHomeOffice/keycloak-theme-govuk)
+
+- this will change the govuk, govuk-internal and social themes
 
 ### **Keycloak Releases**
 
