@@ -240,18 +240,18 @@ Push the changes to your remote repository.
 You can deploy the build you just pushed with the following command:
 
 ```bash
-$ drone deploy UKHomeOffice/<your_repo> 16 preprod
+$ drone deploy ukhomeoffice/<your_repo> 16 preprod
 ```
 
-Where `16` is the successful build number you wish to deploy to the `preprod` environment.
+Where `16` is the successful build number on drone that you wish to deploy to the `preprod` environment.
 
-You can pass additional arguments to your deployment as environment variables:
+You can pass additional parameters to your deployment as environment variables:
 
 ```bash
-$ drone deploy UKHomeOffice/<your_repo> 16 preprod -p DEBUG=1 -p NAME=Dan
+$ drone deploy ukhomeoffice/<your_repo> 16 preprod -p DEBUG=1 -p NAME=Dan
 ```
 
-and use from the step like this:
+and use them in the step like this:
 
 ```yaml
 deploy-to-preprod:
@@ -286,11 +286,11 @@ deploy-to-prod:
 And deploy them accordingly:
 
 ```bash
-$ drone deploy UKHomeOffice/<your_repo> 15 preprod
-$ drone deploy UKHomeOffice/<your_repo> 16 prod
+$ drone deploy ukhomeoffice/<your_repo> 15 preprod
+$ drone deploy ukhomeoffice/<your_repo> 16 prod
 ```
 
-[Read more on environment and constraints](http://readme.drone.io/0.5/usage/constraints/#environment)
+Read more on [environments](http://docs.drone.io/environment/).
 
 ## Drone as a Pull Request builder
 
