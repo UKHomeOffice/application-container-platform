@@ -11,7 +11,7 @@
 - Deployments
   - [Deployments and promotions](#deployments-and-promotions)
   - [Drone as a pull request builder](#drone-as-a-pull-request-builder)
-  - [Deploying to DSP](#deploying-to-dsp)
+  - [Deploying to ACP](#deploying-to-acp)
   - [Versioned deployments](#versioned-deployments)
   - [Ephemeral deployments](#ephemeral-deployments)
 - [QAs](#qas)
@@ -320,70 +320,73 @@ Drone will automatically execute that step when a new pull request is raised.
 
 [Read more about Drone conditions](http://docs.drone.io/conditional-steps/).
 
-### Deploying to DSP
+### Deploying to ACP
 
-> Please note that this section assumes you have a separate repository containing your kube files as explained [here](https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/platform_introduction.md#define-a-deployment-for-your-application).
-
-You can clone your kube repo as part of your pipeline with:
-
-```yaml
-predeploy_to_uat:
-  image: plugins/git
-  commands:
-    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
-  when:
-    environment: uat
-    event: deployment
+Add a deployment script with the following:
+ 
+```bash
+#!/bin/bash
+export KUBE_NAMESPACE=<dev-induction>
+export KUBE_SERVER=${KUBE_SERVER}
+export KUBE_TOKEN=${KUBE_TOKEN}
+  
+kd --insecure-skip-tls-verify \
+    -f deployment.yaml \
+    -f service.yaml \
+    -f ingress.yaml
 ```
 
-from now on, the repository is part of the workspace and is ready to be accessed by other steps in the pipeline.
+> Please note that this is only an example script and it will need to be changed to fit your particular application's needs.
 
-You can execute the deployment script in a new step with:
+If you deployed this now you would likely receive an error similar to this:
+
+```bash
+error: You must be logged in to the server (the server has asked for the client to provide credentials)
+```
+
+This error appears because [kd](https://github.com/UKHomeOffice/kd) needs 3 environment variables to be set before deploying:
+
+- `KUBE_NAMESPACE` - The kubernetes namespace you wish to deploy to. **You need to provide the kubernetes namespace as part of the deployment job**.
+
+- `KUBE_TOKEN` - This is the token used to authenticate against the kubernetes cluster. **If you do not already have a kube token, [here are docs explaining how to get one](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/kubernetes-token.md)**.
+
+- `KUBE_SERVER` - This is the address of the kubernetes cluster that you want to deploy to.
+
+You will need to add `KUBE_TOKEN` and `KUBE_SERVER` as drone secrets.
+
+You can add and view a list of secrets through the Drone UI. Go to Drone and select your repo, then click the icon in the top right and select **Secrets**. You should be presented with a list of the secrets for that repo (if there are any) and you should be able to add secrets giving them a name and value. Add the `KUBE_TOKEN` and `KUBE_SERVER` secrets with their respective values.
+
+Alternatively, you can use this command to add the `KUBE_TOKEN` secret:
+
+```bash
+$ drone secret add --image quay.io/ukhomeofficedigital/kd:v0.2.3 --repository ukhomeoffice/<your_repo> --name KUBE_TOKEN --value <your_token>
+```
+
+Adding the `KUBE_SERVER` will be similar.
+
+You can verify that the secrets for your repo are present with:
+
+```bash
+$ drone secret ls ukhomeoffice/<your-repo>
+```
+
+_Please note that you need to be an admin to issue this command._
+
+
+Once the secrets have been added, add a new step to your drone pipeline that will execute the deployment script:
 
 ```yaml
 deploy_to_uat:
   image: quay.io/ukhomeofficedigital/kd:v0.2.3
-  environment:
-    - KUBE_NAMESPACE=<dev-induction>
+  secrets:
+    - kube_server
+    - kube_token
   commands:
-    - cd <kube-node-hello-world>
     - ./deploy.sh
   when:
     environment: uat
     event: deployment
 ```
-
-The build will fail with the following error:
-
-```bash
-[INFO] 2016/10/20 10:17:40 main.go:158: deploying deployment/induction-hello-world
-[ERROR] 2016/10/20 10:17:40 main.go:160: error: You must be logged in to the server (the server has asked for the client to provide credentials)
-[ERROR] 2016/10/20 10:17:40 main.go:130: exit status 1
-```
-
-This suggests that you are not authorised to deploy to the kubernetes cluster. You can fix this by setting your `KUBE_TOKEN` to a valid value. But before you do this, let's recap the environment variables needed to deploy successfully to DSP.
-
-The kube `deploy.sh` scripts relies on 3 environment variables:
-
-- `KUBE_NAMESPACE` - the kubernetes namespace you wish to deploy to. **You need to provide the kubernetes namespace as part of the deployment job**.
-
-- `KUBE_TOKEN` - this is the token used to authenticate against the kubernetes cluster. **You need to add this as a secret to your build step. You can [request a kubernetes token here](https://github.com/UKHomeOffice/application-container-platform-bau/issues/new)**. In this particular case, the secret was added with:
-
-  ```bash
-  $ drone secret add --image=quay.io/ukhomeofficedigital/kd:v0.2.3 --conceal  UKHomeOffice/<your_repo> KUBE_TOKEN <your_token>
-  ```
-
-- `KUBE_SERVER` - this is the address of the kubernetes cluster. There are four environment variables set as an organisational secret in Drone: `KUBE_SERVER_DEV`,  `KUBE_SERVER_OPS`, `KUBE_SERVER_PROD` and `KUBE_SERVER_CI`. You can verify that the secrets are present with:
-
-  ```
-  $ drone org secret ls UKHomeOffice
-  ```
-
-  _Please note that you need to be an admin to issue this command._
-
-You need to reassign one of those four variables to `KUBE_SERVER` before your script runs, [like in this case](https://github.com/UKHomeOffice/kube-node-hello-world/blob/99af304ce0b894e8f0db1c05780cf6512741516d/deploy.sh#L4).
-
-Restarting the build should be enough to see it succeed.
 
 ### Versioned deployments
 
