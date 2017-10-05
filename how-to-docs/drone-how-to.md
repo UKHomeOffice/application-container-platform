@@ -23,23 +23,26 @@
 - Github drone instance: https://drone.acp.homeoffice.gov.uk/
 - Gitlab drone instance: https://drone-gitlab.acp.homeoffice.gov.uk/
 
-Download and install the [Drone CLI](http://readme.drone.io/0.5/install/cli/) from the official website.
+Download and install the [Drone CLI](http://docs.drone.io/cli-installation/).
 
-> **Please don't install Drone CLI with `brew`** .
-> At the time of writing `brew` installs an old version of Drone that is not compatible with Drone 0.5.
+> At the time of writing, we are using version 0.8 of Drone.
+
+You can also install a release from [Drone CLI's GitHub repo](https://github.com/drone/drone-cli/releases).
+Once you have downloaded the relevant file, extract it and move it to the `/usr/local/bin` directory.
+
 
 Verify it works as expected:
 
 ```bash
 $ drone --version
-drone version 0.5.0+dev
+drone version 0.8.0
 ```
 
-Export the `DRONE_SERVER` and `DRONE_TOKEN` variables. You can find your token on the top left corner in your [account page](https://drone.acp.homeoffice.gov.uk/account).
+Export the `DRONE_SERVER` and `DRONE_TOKEN` variables. You can find your token on Drone by clicking the icon in the top right corner and going to [Token](https://drone.acp.homeoffice.gov.uk/account/token).
 
 ```bash
 export DRONE_SERVER=https://drone.acp.homeoffice.gov.uk
-export DRONE_TOKEN=123_your_token
+export DRONE_TOKEN=your_drone_token
 ```
 
 If your installation is successful, you should be able to query the current Drone instance:
