@@ -9,9 +9,9 @@ pipeline:
     privileged: true
     image: docker:1.11
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker build -t quay.io/ukhomeofficedigital/your_app_name:${DRONE_COMMIT_SHA} .
+      - docker build -t quay.io/ukhomeofficedigital/<image_name>:$${DRONE_COMMIT_SHA} .
     when:
       branch: master
       event: push
@@ -19,10 +19,10 @@ pipeline:
   image_to_quay:
     image: docker:1.11
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker login -u="ukhomeofficedigital+your_namespace" -p=${DOCKER_PASSWORD} quay.io
-      - docker push quay.io/ukhomeofficedigital/your_app_name:${DRONE_COMMIT_SHA} .
+      - docker login -u="ukhomeofficedigital+<your_robot_username>" -p=$${DOCKER_PASSWORD} quay.io
+      - docker push quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA} .
     when:
       branch: master
       event: push
@@ -30,7 +30,7 @@ pipeline:
   clone_deployment_scripts:
     image: plugins/git
     commands:
-      - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/your_repo_name.git kube
+      - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo_name>.git kube
     when:
       branch: master
       event: push
@@ -38,7 +38,10 @@ pipeline:
   deploy_to_dev:
     image: quay.io/ukhomeofficedigital/kd:v0.2.2
     environment:
-      - KUBE_NAMESPACE=your_namespace
+      - KUBE_NAMESPACE=<your_namespace>
+    secrets:
+      - kube_server
+      - kube_token
     commands:
       - cd kube
       - git checkout v1.0.0
@@ -56,7 +59,7 @@ pipeline:
   clone_deployment_scripts:
     image: plugins/git
     commands:
-      - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/your_repo_name.git kube
+      - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo_name>.git kube
     when:
       event: deployment
 
@@ -64,6 +67,9 @@ pipeline:
     image: quay.io/ukhomeofficedigital/kd:v0.2.2
     environment:
       - KUBE_NAMESPACE=dev-induction
+    secrets:
+      - kube_server
+      - kube_token
     commands:
       - cd kube
       - git checkout v1.1
@@ -82,9 +88,9 @@ pipeline:
     privileged: true
     image: docker:1.11
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker build -t irrelevant_tag_name .
+      - docker build -t <image_name> .
     when:
       event: pull_request
 ```
@@ -111,16 +117,15 @@ Create a file `sonar-project.properties` in the root of your project with the fo
 
 ```
 # Name of your git repo
-sonar.projectKey=rmp-prototype
+sonar.projectKey=<your_repo>
 # Name of your git repo
-sonar.projectName=rmp-prototype
+sonar.projectName=<your_repo>
 # Language
-#sonar.language=js
+sonar.language=<language>
 # Location of your src
 sonar.sources=app
 # Location of your tests
-# sonar.tests=test
+sonar.tests=test
 # Location of your code coverage reports
 #sonar.scoverage.reportPath=
 ```
-
