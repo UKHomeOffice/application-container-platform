@@ -190,12 +190,12 @@ Images hosted on [Artifactory](https://docker.digital.homeoffice.gov.uk) are pri
 
 If your repository is hosted publicly on GitHub, you shouldn't publish your images to Artifactory. Artifactory is only used to publish private images. [You should use Quay to publish your public images](#publishing-to-quay).
 
-[Raise a ticket for a new Artifactory robot](https://github.com/UKHomeOffice/application-container-platform-bau/). You have to pick a name for it.  You should be supplied a robot token in response.
+[Submit a support request for a new Artifactory robot](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/artifactory-bot). You should be supplied a robot token in response.
 
-You can inject the robot's token supplied to you in your raised ticket to the Platform team with:
+You can inject the robot's token that has been supplied to you with:
 
 ```
-$ drone secret add --image="<your_image>" UKHomeOffice/<your_repo> DOCKER_ARTIFACTORY_PASSWORD your_robot_token
+$ drone secret add --image="<image_name>" ukhomeoffice/<your_gitlab_repo> DOCKER_ARTIFACTORY_PASSWORD your_robot_token
 ```
 
 You can add the following step in your `.drone.yml`:
@@ -206,18 +206,18 @@ image_to_artifactory:
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
-    - docker login -u="<your_robot_user>" -p=${DOCKER_ARTIFACTORY_PASSWORD} docker.digital.homeoffice.gov.uk
-    - docker tag image_name docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
-    - docker push docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
+    - docker login -u="<your_robots_username>" -p=$${DOCKER_ARTIFACTORY_PASSWORD} docker.digital.homeoffice.gov.uk
+    - docker tag <image_name> docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<your_artifactory_repo>:$${DRONE_COMMIT_SHA}
+    - docker push docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<your_artifactory_repo>:$${DRONE_COMMIT_SHA}
   when:
     branch: master
     event: push
 ```
 
-Where the `image_name` in:
+Where the `<image_name>` in:
 
 ```yaml
-docker tag image_name quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
+docker tag <image_name> docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<your_artifactory_repo>:$${DRONE_COMMIT_SHA}
 ```
 
 is the name of the image you tagged previously in the build step.
