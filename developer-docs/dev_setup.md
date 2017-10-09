@@ -21,6 +21,8 @@ Once you've got an Office 365 Account you can now navigate to [https://authd.dig
 
 Once you're logged in please download the VPN profile called _"DSP Platform Dev, CI, Ops"_ from under VPN Profiles.
 
+>For access to the Platform Hub please download the _"ACP Platform"_ VPN profile located at https://access-acp.digital.homeoffice.gov.uk
+
 You can connect to the vpn using `openvpn`.  You can follow the instruction to install `openvpn` from the [OpenVPN website](https://openvpn.net/index.php/open-source/downloads.html).
 
 You can verify the installation was successful with:
