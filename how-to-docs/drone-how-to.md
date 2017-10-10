@@ -10,15 +10,16 @@
   - [Artifactory](#publishing-to-artifactory)
 - Deployments
   - [Deployments and promotions](#deployments-and-promotions)
+  - [Drone as a pull request builder](#drone-as-a-pull-request-builder)
   - [Deploying to DSP](#deploying-to-dsp)
   - [Versioned deployments](#versioned-deployments)
   - [Ephemeral deployments](#ephemeral-deployments)
-- Pull requests
-  - [PR Builder](#drone-as-a-pull-request-builder)
 - [QAs](#qas)
 - [Snippets](drone-snippets.md)
 
-## Install Drone CLI
+## Setup
+
+### Install Drone CLI
 
 - Github drone instance: https://drone.acp.homeoffice.gov.uk/
 - Gitlab drone instance: https://drone-gitlab.acp.homeoffice.gov.uk/
@@ -67,7 +68,7 @@ Email: youremail@gmail.com
 >
 >  Please make sure that you have exported the `DRONE_SERVER` and `DRONE_TOKEN` variables properly.
 
-## Activate your pipeline
+### Activate your pipeline
 
 Once you are logged in to Drone, you will find a list of repos by clicking the icon in the top right corner and going to [Repositories](https://drone.acp.homeoffice.gov.uk/account/repos).
 
@@ -83,7 +84,7 @@ https://drone-external.acp.homeoffice.gov.uk/hook?access_token=some_token
 >
 > The token in the payload url will not be the same as the personal token that you exported and it should be left unchanged.
 
-## Configure your pipeline
+### Configure your pipeline
 
 In the root folder of your project, create a `.drone.yml` file with the following content:
 
@@ -124,7 +125,9 @@ Once you are good to go, you can trigger a new build by pushing a new commit or 
 
 This time the build will succeed.
 
-## Publishing to Quay
+## Publishing Docker images
+
+### Publishing to Quay
 
 If your repository is hosted on Gitlab, you don't want to publish your images to Quay. Images published to Quay are public and can be inspected and downloaded by anyone. [You should publish your private images to Artifactory](#publishing-to-artifactory).
 
@@ -184,7 +187,7 @@ $ drone secret add --conceal --image="<image_name>" UKHomeOffice/<your_github_re
 
 Restarting the build should be enough to make it pass.
 
-## Publishing to Artifactory
+### Publishing to Artifactory
 
 Images hosted on [Artifactory](https://docker.digital.homeoffice.gov.uk) are private.
 
@@ -224,7 +227,9 @@ is the name of the image you tagged previously in the build step.
 
 The image should now be published on Artifactory.
 
-## Deployments and promotions
+## Deployments
+
+### Deployments and promotions
 
 Create a step that runs only on deployments:
 
@@ -295,7 +300,7 @@ $ drone deploy ukhomeoffice/<your_repo> 16 prod
 
 Read more on [environments](http://docs.drone.io/environment/).
 
-## Drone as a Pull Request builder
+### Drone as a Pull Request builder
 
 Drone pipelines are triggered when events occurs. Event triggers can be as simple as a _push_, _a tagged commit_, _a pull request_ or as granular as _only for pull requests for a branch named `test`_. You can limit the execution of build steps at runtime using the `when` block. As an example, this block executes only on pull requests:
 
@@ -315,7 +320,7 @@ Drone will automatically execute that step when a new pull request is raised.
 
 [Read more about Drone conditions](http://docs.drone.io/conditional-steps/).
 
-## Deploying to DSP
+### Deploying to DSP
 
 > Please note that this section assumes you have a separate repository containing your kube files as explained [here](https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/platform_introduction.md#define-a-deployment-for-your-application).
 
@@ -380,7 +385,7 @@ You need to reassign one of those four variables to `KUBE_SERVER` before your sc
 
 Restarting the build should be enough to see it succeed.
 
-## Versioned deployments
+### Versioned deployments
 
 When you restart your build, Drone will automatically use the latest version of the code. However always using the latest version of the deployment configuration can cause major issues and isn't recommended. For example when promoting from preprod to prod you want to use the preprod version of the deployment configuration. If you use the latest it could potentially break your production environment, especially as it won't necessarily have been tested.
 
@@ -402,7 +407,7 @@ deploy_to_uat:
     event: deployment
 ```
 
-## Ephemeral deployments
+### Ephemeral deployments
 
 Sometimes you might want to start more than one service and test how those services interact with each other. This is particularly useful when you want to run integration or end-to-end tests as part of your pipeline.
 
@@ -613,7 +618,7 @@ This will trigger a new deployment on the second repository.
 
 Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
 
-## Q: Should I use Gitlab with Quay?
+### Q: Should I use Gitlab with Quay?
 
 A: Please don't. If your repository is hosted in Gitlab then use Artifactory to publish your images. Images published to Artifactory are kept private.
 
