@@ -14,8 +14,6 @@
   - [Deploying to DSP](#deploying-to-dsp)
   - [Versioned deployments](#versioned-deployments)
   - [Ephemeral deployments](#ephemeral-deployments)
-- Pull requests
-  - [PR Builder](#drone-as-a-pull-request-builder)
 - [QAs](#qas)
 - [Snippets](drone-snippets.md)
 
@@ -643,7 +641,7 @@ This will trigger a new deployment on the second repository.
 
 Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
 
-## Q: Should I use Gitlab with Quay?
+### Q: Should I use Gitlab with Quay?
 
 A: Please don't. If your repository is hosted in Gitlab then use Artifactory to publish your images. Images published to Artifactory are kept private.
 
