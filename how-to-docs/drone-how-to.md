@@ -467,7 +467,7 @@ The `tidy_up` step is configured to run on successful and failed builds and remo
 
 You can run tests or any other task that interacts with the deployed service by adding a step in the pipeline between the `deploy_to_ci` and `tidy_up`. As an example, you can `curl` the service to probe its liveness:
 
-```
+```yaml
   deploy_to_ci:
     image: quay.io/ukhomeofficedigital/kd:v0.2.3
     ...
@@ -515,7 +515,7 @@ A: Your repository isn't in the trusted list of repositories. Get in touch with 
 
 A: Make sure that your steps contain the environment variable `DOCKER_HOST=tcp://172.17.0.1:2375` like in this case:
 
-````
+```yaml
 my-build:
   privileged: true
   image: docker:1.11
@@ -526,7 +526,7 @@ my-build:
   when:
     branch: master
     event: push
-````
+```
 
 ### Q: The build fails when uploading to Quay with the error _"Inappropriate ioctl for device"_
 
