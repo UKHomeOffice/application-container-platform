@@ -422,22 +422,19 @@ Kubernetes secrets can be loaded in your environment using a configuration (yaml
     image: quay.io/ukhomeofficedigital/kd:v0.2.3
     commands:
       - |
-        export KUBE_NAMESPACE="<your-project-name>-$(head /dev/urandom | tr -dc a-z0-9 | head -c 13)"
-        export KUBE_SERVER=${KUBE_SERVER_CI}
-        export KUBE_TOKEN=${KUBE_TOKEN_CI}
-        export MY_SECRET=$(head /dev/urandom | tr -dc a-z0-9 | head -c 13 | base64)
+        export KUBE_NAMESPACE="<your-project-name-temp>"
+        export KUBE_SERVER=${KUBE_SERVER}
+        export KUBE_TOKEN=${KUBE_TOKEN}
 
         echo ${KUBE_NAMESPACE} > namespace.txt
 
         kubectl create namespace ${KUBE_NAMESPACE} --insecure-skip-tls-verify=true --server=${KUBE_SERVER} --token=${KUBE_TOKEN}
-        cd kube-node-hello-world
 
-        cd kube
         kd --insecure-skip-tls-verify \
-           --file example-secrets.yaml \
-           --file example-deployment.yaml \
-           --file example-service.yaml \
-           --file example-ingress.yaml
+           --file secrets.yaml \
+           --file deployment.yaml \
+           --file service.yaml \
+           --file ingress.yaml
     when:
       branch: master
       event: push
@@ -447,8 +444,8 @@ Kubernetes secrets can be loaded in your environment using a configuration (yaml
     commands:
       - |
         export KUBE_NAMESPACE=`cat namespace.txt`
-        export KUBE_SERVER=${KUBE_SERVER_CI}
-        export KUBE_TOKEN=${KUBE_TOKEN_CI}
+        export KUBE_SERVER=${KUBE_SERVER}
+        export KUBE_TOKEN=${KUBE_TOKEN}
         kubectl delete namespace ${KUBE_NAMESPACE} --insecure-skip-tls-verify=true --server=${KUBE_SERVER} --token=${KUBE_TOKEN}
     when:
       branch: master
@@ -456,16 +453,11 @@ Kubernetes secrets can be loaded in your environment using a configuration (yaml
       status: [ success, failure ]
 ```
 
-These are the variables used:
-
-- `KUBE_TOKEN_CI` is provided to you as global secret. This is used to authenticate to the Kubernetes cluster. There's no need to set this yourself.
-- `KUBE_SERVER_CI` is the url for one of the four clusters (the other three being DEV, PREPROD & PROD). This is a global secret and there's no need to set this yourself.
-- `KUBENAMESPACE` is the name for the Kubernetes namespace. The name is created dynamically using `uuidgen`, but you could use any function you wish as long as the string is unique _enough_.
-- `DB_USERNAME` and `DB_PASSWORD` are base64 strings used to store username and password for the database. Those secrets are passed into the `example-secrets.yml` and deployed to the namespace. Since we don't care about the value for those secrets, the content is created pseudo randomly with `uuidgen`.
-
 The `tidy_up` step is configured to run on successful and failed builds and removes the generated namespace.
 
-You can run tests or any other task that interacts with the deployed service by adding a step in the pipeline between the `deploy_to_ci` and `tidy_up`. As an example, you can `curl` the service to probe its liveness:
+> Please note that this is only an example. Parts of this will need to be modified depending on your application. `KUBE_SERVER` AND `KUBE_TOKEN` will need to be set as Drone secrets similar to how they were set in the [Deploying to ACP section](#deploying-to-acp).
+
+You can run tests or any other task that interacts with the deployed service by adding a step in the pipeline between the `deploy_to_ci` and `tidy_up`. As an example, you can use `wget` to check that your service works:
 
 ```yaml
   deploy_to_ci:
@@ -475,12 +467,19 @@ You can run tests or any other task that interacts with the deployed service by 
   test_all_the_things:
     image: busybox
     network_mode: "default"
-    dns:
-      - 10.200.0.10
     commands:
       - |
-        export KUBE_NAMESPACE=`cat namespace.txt`
-        wget -O- "<your-service>-${KUBE_NAMESPACE}.svc.cluster.local"
+        start=$SECONDS
+        timeout=60
+        (exit 9)
+        while [ $? -ne 0  ]
+        do
+          if [ (( $SECONDS - $start )) -ge $timeout ]
+          then
+            break
+          fi
+          wget -O- "<your-service-host-url>"
+        done
     when:
       branch: master
       event: push
@@ -489,21 +488,6 @@ You can run tests or any other task that interacts with the deployed service by 
     image: quay.io/ukhomeofficedigital/kd:v0.2.3
     ...
 ```
-
-Please note that `network_mode` and `dns` are required to resolve the name of the service from within the Drone agent.
-
-You can find the name of your service at the very top of your service kube file:
-
-````Yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    name: <name-of-your-service>
-  name: <name-of-your-service>
-...
-````
 
 ## Q&As
 
