@@ -382,40 +382,19 @@ Restarting the build should be enough to see it succeed.
 
 ## Versioned deployments
 
-In the previous step you learnt how to `git checkout` another repository and deploy your app to DSP. Since there's no tag nor commit on the repository url, the `predeploy_uat` step always checks out the latest code:
-
-```yaml
-predeploy_to_uat:
-  image: plugins/git
-  commands:
-    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
-  when:
-    environment: uat
-    event: deployment
-```
-
-This is convenient if you change your deployment repository frequently, since drone will checkout the latest code every time you restart the build.
-
-However always using the latest version of the deployment configuration can cause major issues and isn't recommended. For example when promoting from preprod to prod you want to use the preprod version of the deployment configuration. If you use the latest it could potentially break your production environment, especially as it won't necessarily have been tested.
+When you restart your build, Drone will automatically use the latest version of the code. However always using the latest version of the deployment configuration can cause major issues and isn't recommended. For example when promoting from preprod to prod you want to use the preprod version of the deployment configuration. If you use the latest it could potentially break your production environment, especially as it won't necessarily have been tested.
 
 To counteract this you should use a specific version of your deployment scripts. In fact, you should  `git checkout` the tag or sha as part of your deployment step.
 
 This is how the new pipeline would look:
 
 ```yaml
-predeploy_generic:
-  image: plugins/git
-  commands:
-    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
-  when:
-    event: deployment
-
 deploy_to_uat:
   image: quay.io/ukhomeofficedigital/kd:v0.2.3
-  environment:
-    - KUBE_NAMESPACE=<dev-induction>
+  secrets:
+    - kube_server
+    - kube_token
   commands:
-    - cd <kube-node-hello-world>
     - git checkout v1.1
     - ./deploy.sh
   when:
