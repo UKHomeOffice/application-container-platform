@@ -546,9 +546,7 @@ my-build:
 
 ### Q: The build fails when uploading to Quay with the error _"Inappropriate ioctl for device"_
 
-A: This suggests that the `docker` executable prompted for credentials instead of reading them from the command line. This might be caused by:
-
-- The secret wasn't injected correctly or the password is incorrect.
+A: This suggests that the `docker` executable prompted for credentials instead of reading them from the command line. This is likely because the secret wasn't injected correctly or the password is incorrect.
 
 ### Q: As part of my build process I have two `Dockerfile`s to produce a Docker image. How can I share files between builds in the same step?
 
