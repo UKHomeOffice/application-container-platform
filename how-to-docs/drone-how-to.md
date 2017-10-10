@@ -14,6 +14,7 @@
   - [Deploying to DSP](#deploying-to-dsp)
   - [Versioned deployments](#versioned-deployments)
   - [Ephemeral deployments](#ephemeral-deployments)
+- [Migrating your Pipeline](#migrating-your-pipeline)
 - [QAs](#qas)
 - [Snippets](drone-snippets.md)
 
@@ -504,6 +505,29 @@ metadata:
   name: <name-of-your-service>
 ...
 ````
+
+## Migrating your pipeline
+
+### Secrets and signing
+
+It is no longer necessary to sign your `.drone.yml` so the `.drone.yml.sig` can be deleted. Secrets can be defined in the drone UI and can be restricted to selected events, for example deployments or pull requests. See [location] for an example of this
+
+### Docker-in-Docker
+
+The Docker-in-Docker (dind) service is no longer required. Instead, add `DOCKER_HOST=tcp://172.17.0.1:2375` to the `envionment` section of your pipline, and you will be able to access the shared Docker server on the drone agent. Note that it is only possible to run one docker build per 
+
+### Services
+
+If you use the `services` section of your `.drone.yml` it is possible to reference them using the DNS name of the service. 
+
+For example, if using the following section:
+
+```
+services:
+  database:
+    image: mysql
+```
+The mysql server would be available on `tcp://database:3306`
 
 ## Q&As
 
