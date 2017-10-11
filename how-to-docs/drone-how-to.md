@@ -505,6 +505,68 @@ metadata:
 ...
 ````
 
+### Using Another Repo
+
+It is possible to access files or deployment scripts from another repo, there are two ways of doing this.
+
+The recommended method is to clone another repo in the current repo (since this only requires maintaining one .drone.yml) using the following step:
+
+```yaml
+predeploy_to_uat:
+  image: plugins/git
+  commands:
+    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
+  when:
+    environment: uat
+    event: deployment
+```
+
+Your repository is saved in the workspace, which in turn is shared among all steps in the pipeline.
+
+However, if you decide that you want to trigger a completely different pipeline on a separate repository, you can leverage the [drone-trigger](https://github.com/UKHomeOffice/drone-trigger) plugin. If you have a secondary repository, you can setup Drone on that repository like so:
+
+```yaml
+pipeline:
+  deploy_to_uat:
+    image: busybox
+    commands:
+      - echo ${SHA}
+    when:
+      event: deployment
+      environment: uat
+```
+
+Once you are ready, you can push the changes to the remote repository. In your main repository you can add the following step:
+
+```yaml
+trigger_deploy:
+  image: quay.io/ukhomeofficedigital/drone-trigger:latest
+  drone_server: https://drone.acp.homeoffice.gov.uk
+  repo: UKHomeOffice/<deployment_repo>
+  branch: <master>
+  deploy_to: <uat>
+  params: SHA=${DRONE_COMMIT_SHA}
+  when:
+    event: deployment
+    environment: uat
+```
+
+The settings are very similar to the `drone deploy` command:
+
+- `deploy_to` is the [environment constraint](http://docs.drone.io/conditional-steps/#environment)
+- `params` is a list of comma separated list of arguments. In the command line tool, this is equivalent to `-p PARAM1=ONE -p PARAM2=TWO`
+- `repo` the repository where the deployment scripts are located
+
+The next time you trigger a deployment on the main repository with:
+
+```bash
+$ drone deploy UKHomeOffice/<your_repo> 16 uat
+```
+
+This will trigger a new deployment on the second repository.
+
+Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
+
 ## Q&As
 
 ### Q: The build fails with _"ERROR: Insufficient privileges to use privileged mode"_
@@ -555,68 +617,6 @@ pipeline:
       branch: master
       event: push
 ```
-
-### Q : What shall I do when my deployment scripts are in another repo?
-
-A: You can clone another repo in the current repo using the following step:
-
-```yaml
-predeploy_to_uat:
-  image: plugins/git
-  commands:
-    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
-  when:
-    environment: uat
-    event: deployment
-```
-
-Your repository is saved in the workspace, which in turn is shared among all steps in the pipeline.
-
-This is the preferred way to deploy our code since you need to maintain one single `.drone.yml`.
-
-However, if you decide that you want to trigger a completely different pipeline on a separate repository, you can leverage the [drone-trigger](https://github.com/UKHomeOffice/drone-trigger) plugin. If you have a secondary repository, you can setup Drone on that repository like so:
-
-```yaml
-pipeline:
-  deploy_to_uat:
-    image: busybox
-    commands:
-      - echo ${SHA}
-    when:
-      event: deployment
-      environment: uat
-```
-
-Once you are ready, you can push the changes to the remote repository. In your main repository you can add the following step:
-
-```yaml
-trigger_deploy:
-  image: quay.io/ukhomeofficedigital/drone-trigger:latest
-  drone_server: https://drone.acp.homeoffice.gov.uk
-  repo: UKHomeOffice/<deployment_repo>
-  branch: <master>
-  deploy_to: <uat>
-  params: SHA=${DRONE_COMMIT_SHA}
-  when:
-    event: deployment
-    environment: uat
-```
-
-The settings are very similar to the `drone deploy` command:
-
-- `deploy_to` is the [environment constraint](http://readme.drone.io/0.5/usage/constraints/#environment)
-- `params` is a list of comma separated list of arguments. In the command line tool, this is equivalent to `-p PARAM1=ONE -p PARAM2=TWO`
-- `repo` the repository where the deployment scripts are located
-
-The next time you trigger a deployment on the main repository with:
-
-```bash
-$ drone deploy UKHomeOffice/<your_repo> 16 uat
-```
-
-This will trigger a new deployment on the second repository.
-
-Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
 
 ### Q: Should I use Gitlab with Quay?
 
