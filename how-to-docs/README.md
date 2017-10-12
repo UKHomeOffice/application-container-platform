@@ -16,3 +16,4 @@ This folder contains a collection of how-to guides for both Developers and DevOp
   - [How to get a DNS record for my service](DNS-how-to.md)
   - [Getting a Kubernetes Robot Token](kubernetes-robot-token.md)
   - [Using an Ingress](ingress.md)
+  - [Network Policies](network-policies.md)
