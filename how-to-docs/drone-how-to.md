@@ -182,7 +182,7 @@ The error points to the missing `DOCKER_PASSWORD` environment variable.
 You can inject the robot's token that has been supplied to you with:
 
 ```
-$ drone secret add --conceal --image="<image_name>" UKHomeOffice/<your_github_repo> DOCKER_PASSWORD your_robot_token
+$ drone secret add --image="<image_name>" --repository ukhomeoffice/<your_github_repo> --name DOCKER_PASSWORD --value your_robot_token
 ```
 
 Restarting the build should be enough to make it pass.
@@ -198,7 +198,7 @@ If your repository is hosted publicly on GitHub, you shouldn't publish your imag
 You can inject the robot's token that has been supplied to you with:
 
 ```
-$ drone secret add --image="<image_name>" ukhomeoffice/<your_gitlab_repo> DOCKER_ARTIFACTORY_PASSWORD your_robot_token
+$ drone secret add --image="<image_name>" --repository ukhomeoffice/<your_gitlab_repo> --name DOCKER_ARTIFACTORY_PASSWORD --value your_robot_token
 ```
 
 You can add the following step in your `.drone.yml`:
