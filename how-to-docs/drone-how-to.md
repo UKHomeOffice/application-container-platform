@@ -15,6 +15,10 @@
   - [Versioned deployments](#versioned-deployments)
   - [Ephemeral deployments](#ephemeral-deployments)
   - [Using Another Repo](#using-another-repo)
+- Migrating your Pipeline
+  - [Secrets and Signing](#secrets-and-signing)
+  - [Docker in Docker](#docker-in-docker)
+  - [Services](#services)
 - [QAs](#qas)
 - [Snippets](drone-snippets.md)
 
@@ -557,6 +561,33 @@ $ drone deploy UKHomeOffice/<your_repo> 16 uat
 This will trigger a new deployment on the second repository.
 
 Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
+
+## Migrating your pipeline
+
+### Secrets and Signing
+
+It is no longer necessary to sign your `.drone.yml` so the `.drone.yml.sig` can be deleted. Secrets can be defined in the drone UI and can be restricted to selected events, for example deployments or pull requests. See [location] for an example of this
+
+### Docker-in-Docker
+
+The Docker-in-Docker (dind) service is no longer required. Instead, add `DOCKER_HOST=tcp://172.17.0.1:2375` to the `envionment` section of your pipline, and you will be able to access the shared Docker server on the drone agent. Note that it is only possible to run one docker build at a time per drone agent.
+
+Since priviliged mode was primarily used for docker in docker, in most cases it should be possible to remove the `priviliged: true` line from your .drone.yml
+
+### Services
+
+If you use the `services` section of your `.drone.yml` it is possible to reference them using the DNS name of the service. 
+
+For example, if using the following section:
+
+```
+services:
+  database:
+    image: mysql
+```
+The mysql server would be available on `tcp://database:3306`
+
+```
 
 ## Q&As
 
