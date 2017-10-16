@@ -90,9 +90,7 @@ In the root folder of your project, create a `.drone.yml` file with the followin
 
 ```yaml
 pipeline:
-
   my-build:
-    privileged: true
     image: docker:1.11
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
@@ -113,17 +111,7 @@ $ git push origin master
 
 > **Please note** you should replace the name <...> with the name of your app.
 
-After you pushed, you should be able to see the build failing in Drone with the following message:
-
-```bash
-ERROR: Insufficient privileges to use privileged mode
-```
-
-The current configuration requires extended privileges to run, but you're repository is not trusted. With a little help from Devops you should get your repository whitelisted.
-
-Once you are good to go, you can trigger a new build by pushing a new commit or through the Drone UI.
-
-This time the build will succeed.
+You should be able to watch your build succeed in the drone UI.
 
 ## Publishing Docker images
 
