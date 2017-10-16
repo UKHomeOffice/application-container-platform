@@ -11,7 +11,7 @@
 - Deployments
   - [Deployments and promotions](#deployments-and-promotions)
   - [Drone as a pull request builder](#drone-as-a-pull-request-builder)
-  - [Deploying to DSP](#deploying-to-dsp)
+  - [Deploying to ACP](#deploying-to-acp)
   - [Versioned deployments](#versioned-deployments)
   - [Ephemeral deployments](#ephemeral-deployments)
   - [Using Another Repo](#using-another-repo)
@@ -91,9 +91,7 @@ In the root folder of your project, create a `.drone.yml` file with the followin
 
 ```yaml
 pipeline:
-
   my-build:
-    privileged: true
     image: docker:1.11
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
@@ -114,17 +112,7 @@ $ git push origin master
 
 > **Please note** you should replace the name <...> with the name of your app.
 
-After you pushed, you should be able to see the build failing in Drone with the following message:
-
-```bash
-ERROR: Insufficient privileges to use privileged mode
-```
-
-The current configuration requires extended privileges to run, but you're repository is not trusted. With a little help from Devops you should get your repository whitelisted.
-
-Once you are good to go, you can trigger a new build by pushing a new commit or through the Drone UI.
-
-This time the build will succeed.
+You should be able to watch your build succeed in the drone UI.
 
 ## Publishing Docker images
 
@@ -183,7 +171,7 @@ The error points to the missing `DOCKER_PASSWORD` environment variable.
 You can inject the robot's token that has been supplied to you with:
 
 ```
-$ drone secret add --conceal --image="<image_name>" UKHomeOffice/<your_github_repo> DOCKER_PASSWORD your_robot_token
+$ drone secret add --image="<image_name>" --repository ukhomeoffice/<your_github_repo> --name DOCKER_PASSWORD --value your_robot_token
 ```
 
 Restarting the build should be enough to make it pass.
@@ -199,7 +187,7 @@ If your repository is hosted publicly on GitHub, you shouldn't publish your imag
 You can inject the robot's token that has been supplied to you with:
 
 ```
-$ drone secret add --image="<image_name>" ukhomeoffice/<your_gitlab_repo> DOCKER_ARTIFACTORY_PASSWORD your_robot_token
+$ drone secret add --image="<image_name>" --repository ukhomeoffice/<your_gitlab_repo> --name DOCKER_ARTIFACTORY_PASSWORD --value your_robot_token
 ```
 
 You can add the following step in your `.drone.yml`:
@@ -321,70 +309,73 @@ Drone will automatically execute that step when a new pull request is raised.
 
 [Read more about Drone conditions](http://docs.drone.io/conditional-steps/).
 
-### Deploying to DSP
+### Deploying to ACP
 
-> Please note that this section assumes you have a separate repository containing your kube files as explained [here](https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/platform_introduction.md#define-a-deployment-for-your-application).
-
-You can clone your kube repo as part of your pipeline with:
-
-```yaml
-predeploy_to_uat:
-  image: plugins/git
-  commands:
-    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
-  when:
-    environment: uat
-    event: deployment
+Add a deployment script with the following:
+ 
+```bash
+#!/bin/bash
+export KUBE_NAMESPACE=<dev-induction>
+export KUBE_SERVER=${KUBE_SERVER}
+export KUBE_TOKEN=${KUBE_TOKEN}
+  
+kd --insecure-skip-tls-verify \
+    -f deployment.yaml \
+    -f service.yaml \
+    -f ingress.yaml
 ```
 
-from now on, the repository is part of the workspace and is ready to be accessed by other steps in the pipeline.
+> Please note that this is only an example script and it will need to be changed to fit your particular application's needs.
 
-You can execute the deployment script in a new step with:
+If you deployed this now you would likely receive an error similar to this:
+
+```bash
+error: You must be logged in to the server (the server has asked for the client to provide credentials)
+```
+
+This error appears because [kd](https://github.com/UKHomeOffice/kd) needs 3 environment variables to be set before deploying:
+
+- `KUBE_NAMESPACE` - The kubernetes namespace you wish to deploy to. **You need to provide the kubernetes namespace as part of the deployment job**.
+
+- `KUBE_TOKEN` - This is the token used to authenticate against the kubernetes cluster. **If you do not already have a kube token, [here are docs explaining how to get one](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/kubernetes-token.md)**.
+
+- `KUBE_SERVER` - This is the address of the kubernetes cluster that you want to deploy to.
+
+You will need to add `KUBE_TOKEN` and `KUBE_SERVER` as drone secrets.
+
+You can add and view a list of secrets through the Drone UI. Go to Drone and select your repo, then click the icon in the top right and select **Secrets**. You should be presented with a list of the secrets for that repo (if there are any) and you should be able to add secrets giving them a name and value. Add the `KUBE_TOKEN` and `KUBE_SERVER` secrets with their respective values.
+
+Alternatively, you can use this command to add the `KUBE_TOKEN` secret:
+
+```bash
+$ drone secret add --image quay.io/ukhomeofficedigital/kd:v0.2.3 --repository ukhomeoffice/<your_repo> --name KUBE_TOKEN --value <your_token>
+```
+
+Adding the `KUBE_SERVER` will be similar.
+
+You can verify that the secrets for your repo are present with:
+
+```bash
+$ drone secret ls ukhomeoffice/<your-repo>
+```
+
+_Please note that you need to be an admin to issue this command._
+
+
+Once the secrets have been added, add a new step to your drone pipeline that will execute the deployment script:
 
 ```yaml
 deploy_to_uat:
   image: quay.io/ukhomeofficedigital/kd:v0.2.3
-  environment:
-    - KUBE_NAMESPACE=<dev-induction>
+  secrets:
+    - kube_server
+    - kube_token
   commands:
-    - cd <kube-node-hello-world>
     - ./deploy.sh
   when:
     environment: uat
     event: deployment
 ```
-
-The build will fail with the following error:
-
-```bash
-[INFO] 2016/10/20 10:17:40 main.go:158: deploying deployment/induction-hello-world
-[ERROR] 2016/10/20 10:17:40 main.go:160: error: You must be logged in to the server (the server has asked for the client to provide credentials)
-[ERROR] 2016/10/20 10:17:40 main.go:130: exit status 1
-```
-
-This suggests that you are not authorised to deploy to the kubernetes cluster. You can fix this by setting your `KUBE_TOKEN` to a valid value. But before you do this, let's recap the environment variables needed to deploy successfully to DSP.
-
-The kube `deploy.sh` scripts relies on 3 environment variables:
-
-- `KUBE_NAMESPACE` - the kubernetes namespace you wish to deploy to. **You need to provide the kubernetes namespace as part of the deployment job**.
-
-- `KUBE_TOKEN` - this is the token used to authenticate against the kubernetes cluster. **You need to add this as a secret to your build step. You can [request a kubernetes token here](https://github.com/UKHomeOffice/application-container-platform-bau/issues/new)**. In this particular case, the secret was added with:
-
-  ```bash
-  $ drone secret add --image=quay.io/ukhomeofficedigital/kd:v0.2.3 --conceal  UKHomeOffice/<your_repo> KUBE_TOKEN <your_token>
-  ```
-
-- `KUBE_SERVER` - this is the address of the kubernetes cluster. There are four environment variables set as an organisational secret in Drone: `KUBE_SERVER_DEV`,  `KUBE_SERVER_OPS`, `KUBE_SERVER_PROD` and `KUBE_SERVER_CI`. You can verify that the secrets are present with:
-
-  ```
-  $ drone org secret ls UKHomeOffice
-  ```
-
-  _Please note that you need to be an admin to issue this command._
-
-You need to reassign one of those four variables to `KUBE_SERVER` before your script runs, [like in this case](https://github.com/UKHomeOffice/kube-node-hello-world/blob/99af304ce0b894e8f0db1c05780cf6512741516d/deploy.sh#L4).
-
-Restarting the build should be enough to see it succeed.
 
 ### Versioned deployments
 
@@ -423,22 +414,19 @@ Kubernetes secrets can be loaded in your environment using a configuration (yaml
     image: quay.io/ukhomeofficedigital/kd:v0.2.3
     commands:
       - |
-        export KUBE_NAMESPACE="<your-project-name>-$(head /dev/urandom | tr -dc a-z0-9 | head -c 13)"
-        export KUBE_SERVER=${KUBE_SERVER_CI}
-        export KUBE_TOKEN=${KUBE_TOKEN_CI}
-        export MY_SECRET=$(head /dev/urandom | tr -dc a-z0-9 | head -c 13 | base64)
+        export KUBE_NAMESPACE="<your-project-name-temp>"
+        export KUBE_SERVER=${KUBE_SERVER}
+        export KUBE_TOKEN=${KUBE_TOKEN}
 
         echo ${KUBE_NAMESPACE} > namespace.txt
 
         kubectl create namespace ${KUBE_NAMESPACE} --insecure-skip-tls-verify=true --server=${KUBE_SERVER} --token=${KUBE_TOKEN}
-        cd kube-node-hello-world
 
-        cd kube
         kd --insecure-skip-tls-verify \
-           --file example-secrets.yaml \
-           --file example-deployment.yaml \
-           --file example-service.yaml \
-           --file example-ingress.yaml
+           --file secrets.yaml \
+           --file deployment.yaml \
+           --file service.yaml \
+           --file ingress.yaml
     when:
       branch: master
       event: push
@@ -448,8 +436,8 @@ Kubernetes secrets can be loaded in your environment using a configuration (yaml
     commands:
       - |
         export KUBE_NAMESPACE=`cat namespace.txt`
-        export KUBE_SERVER=${KUBE_SERVER_CI}
-        export KUBE_TOKEN=${KUBE_TOKEN_CI}
+        export KUBE_SERVER=${KUBE_SERVER}
+        export KUBE_TOKEN=${KUBE_TOKEN}
         kubectl delete namespace ${KUBE_NAMESPACE} --insecure-skip-tls-verify=true --server=${KUBE_SERVER} --token=${KUBE_TOKEN}
     when:
       branch: master
@@ -457,16 +445,11 @@ Kubernetes secrets can be loaded in your environment using a configuration (yaml
       status: [ success, failure ]
 ```
 
-These are the variables used:
-
-- `KUBE_TOKEN_CI` is provided to you as global secret. This is used to authenticate to the Kubernetes cluster. There's no need to set this yourself.
-- `KUBE_SERVER_CI` is the url for one of the four clusters (the other three being DEV, PREPROD & PROD). This is a global secret and there's no need to set this yourself.
-- `KUBENAMESPACE` is the name for the Kubernetes namespace. The name is created dynamically using `uuidgen`, but you could use any function you wish as long as the string is unique _enough_.
-- `DB_USERNAME` and `DB_PASSWORD` are base64 strings used to store username and password for the database. Those secrets are passed into the `example-secrets.yml` and deployed to the namespace. Since we don't care about the value for those secrets, the content is created pseudo randomly with `uuidgen`.
-
 The `tidy_up` step is configured to run on successful and failed builds and removes the generated namespace.
 
-You can run tests or any other task that interacts with the deployed service by adding a step in the pipeline between the `deploy_to_ci` and `tidy_up`. As an example, you can `curl` the service to probe its liveness:
+> Please note that this is only an example. Parts of this will need to be modified depending on your application. `KUBE_SERVER` AND `KUBE_TOKEN` will need to be set as Drone secrets similar to how they were set in the [Deploying to ACP section](#deploying-to-acp).
+
+You can run tests or any other task that interacts with the deployed service by adding a step in the pipeline between the `deploy_to_ci` and `tidy_up`. As an example, you can use `wget` to check that your service works:
 
 ```yaml
   deploy_to_ci:
@@ -476,12 +459,19 @@ You can run tests or any other task that interacts with the deployed service by 
   test_all_the_things:
     image: busybox
     network_mode: "default"
-    dns:
-      - 10.200.0.10
     commands:
       - |
-        export KUBE_NAMESPACE=`cat namespace.txt`
-        wget -O- "<your-service>-${KUBE_NAMESPACE}.svc.cluster.local"
+        start=$SECONDS
+        timeout=60
+        (exit 9)
+        while [ $? -ne 0  ]
+        do
+          if [ (( $SECONDS - $start )) -ge $timeout ]
+          then
+            break
+          fi
+          wget -O- "<your-service-host-url>"
+        done
     when:
       branch: master
       event: push
@@ -495,7 +485,7 @@ Please note that `network_mode` and `dns` are required to resolve the name of th
 
 You can find the name of your service at the very top of your service kube file:
 
-````Yaml
+```Yaml
 ---
 apiVersion: v1
 kind: Service
@@ -504,7 +494,7 @@ metadata:
     name: <name-of-your-service>
   name: <name-of-your-service>
 ...
-````
+```
 
 ### Using Another Repo
 
