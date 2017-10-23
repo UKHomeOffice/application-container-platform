@@ -20,13 +20,11 @@ We will endeavour to respond to a support ticket or slack query within 8 working
 
 Current BAU support contacts:
 
-Ben Eustace: ben.eustace@digital.homeoffice.gov.uk
-
-Onur Yelekci: onur.yelekci@digital.homeoffice.gov.uk
+Ben Eustace and Onur Yelekci
 
 Current issue escalation contacts:
 
-Rick Williams: rick.williams@digital.homeoffice.gov.uk
+Rick Williams
 
 ## Support hours
 
@@ -90,19 +88,7 @@ Email sent to the hodo365team@digital.homeoffice.gov.uk titled "Request for ADUS
 
 Email needs to be FROM someone on the agreed authority list. The current list is as follows:
 
-Andrew Martin - andrew.martin16@homeoffice.gsi.gov.uk
-
-David McQue - David.McQue@homeoffice.gsi.gov.uk
-
-Joseph Irving - Joseph.Irving@digital.homeoffice.gov.uk
-
-Jon Shanks - Jon.shanks@digital.homeoffice.gov.uk
-
-Thomas Fitzherbert - thomas.fitzherbert1@homeoffice.gsi.gov.uk
-
-Geoff Teale - Geoff.Teale@homeoffice.gsi.gov.uk
-
-Onur Yelekci - onur.yelekci@digital.homeoffice.gov.uk
+Andrew Martin, David McQue, Ben Eustace, Jon Shanks, Thomas Fitzherbert, Geoff Teale and Onur Yelekci 
 
 Email contents:
 
