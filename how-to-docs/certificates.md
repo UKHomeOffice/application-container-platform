@@ -31,8 +31,9 @@ spec:
     spec:
       containers:
       - name: certs
-        image: quay.io/ukhomeofficedigital/cfssl-sidekick:v0.0.1
-        imagePullPolicy: Always
+        image: quay.io/ukhomeofficedigital/cfssl-sidekick:v0.0.2
+        securityContext:
+          runAsNonRoot: true
         args:
         - --certs=/certs
         - --domain=myservice.${KUBE_NAMESPACE}.svc.cluster.local
