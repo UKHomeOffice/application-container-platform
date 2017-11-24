@@ -270,7 +270,7 @@ and use them in the step like this:
 deploy-to-preprod:
   image: busybox
   commands:
-    - /bin/echo hello ${NAME}
+    - /bin/echo hello $${NAME}
   when:
     environment: preprod
     event: deployment
@@ -299,7 +299,7 @@ deploy-to-prod:
 And deploy them accordingly:
 
 ```bash
-$ drone deploy ukhomeoffice/<your_repo> 15 preprod
+$ drone deploy ukhomeoffice/<your_repo> 16 preprod
 $ drone deploy ukhomeoffice/<your_repo> 16 prod
 ```
 
