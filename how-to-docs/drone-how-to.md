@@ -96,7 +96,7 @@ In the root folder of your project, create a `.drone.yml` file with the followin
 ```yaml
 pipeline:
   my-build:
-    image: docker:1.11
+    image: docker:17.09.0-ce
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
@@ -141,7 +141,7 @@ Add the step to publish the docker image to Quay in your Drone pipeline with the
 
 ```yaml
 image_to_quay:
-  image: docker:1.11
+  image: docker:17.09.0-ce
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
@@ -198,7 +198,7 @@ You can add the following step in your `.drone.yml`:
 
 ```yaml
 image_to_artifactory:
-  image: docker:1.11
+  image: docker:17.09.0-ce
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
@@ -300,7 +300,7 @@ Drone pipelines are triggered when events occurs. Event triggers can be as simpl
 ```yaml
 pr-builder:
   privileged: true
-  image: docker:1.11
+  image: docker:17.09.0-ce
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
@@ -602,7 +602,7 @@ A: Make sure that your steps contain the environment variable `DOCKER_HOST=tcp:/
 ```yaml
 my-build:
   privileged: true
-  image: docker:1.11
+  image: docker:17.09.0-ce
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
