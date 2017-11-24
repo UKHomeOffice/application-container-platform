@@ -145,6 +145,8 @@ Add the step to publish the docker image to Quay in your Drone pipeline with the
 ```yaml
 image_to_quay:
   image: docker:17.09.0-ce
+  secrets:
+    - docker_password
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
@@ -159,7 +161,7 @@ image_to_quay:
 Where the `<image_name>` in:
 
 ```yaml
-docker tag <image_name> quay.io/ukhomeofficedigital/<your_quay_repo>:${DRONE_COMMIT_SHA}
+docker tag <image_name> quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA}
 ```
 
 is the name of the image you tagged previously in the build step.
@@ -169,19 +171,24 @@ is the name of the image you tagged previously in the build step.
 The build should fail with the following error:
 
 ```bash
-docker login -u="ukhomeofficedigital+<your_robot_username>" -p=$${DOCKER_PASSWORD} quay.io
-inappropriate ioctl for device
+Error response from daemon: Get https://quay.io/v2/: unauthorized: Could not find robot with username: ukhomeofficedigital+<your_robot_username> and supplied password.
 ```
 
-The error points to the missing `DOCKER_PASSWORD` environment variable.
+The error points to the missing `DOCKER_PASSWORD` environment variable. You will need to add this as a drone secret.
 
-You can inject the robot's token that has been supplied to you with:
+You can do this through the Drone UI by going to your repo, clicking the menu icon in the top right and then clicking **Secrets**. You should be presented with a list of the secrets for that repo (if there are any) and you should be able to add secrets giving them a name and value. Add a secret with the name **DOCKER_PASSWORD** and with the value being the robot token that was supplied to you.
+
+Alternatively, you can use the Drone CLI to add the secret:
 
 ```
-$ drone secret add --image="<image_name>" --repository ukhomeoffice/<your_github_repo> --name DOCKER_PASSWORD --value your_robot_token
+$ drone secret add --image="docker:17.09.0-ce" --repository ukhomeoffice/<your_github_repo> --name DOCKER_PASSWORD --value <your_robot_token>
 ```
 
 Restarting the build should be enough to make it pass.
+
+> The Drone CLI allows for more control over the secret as opposed to the UI. For example, the CLI allows you to specify the image and the events that the secret will be allowed to be used with.
+>
+> Also note that the secret was specified in the `secrets` section of the pipeline to give it access to the secret. Without this, the pipeline would not be able to use the secret and it would fail.
 
 ### Publishing to Artifactory
 
