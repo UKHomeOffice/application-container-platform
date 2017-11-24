@@ -19,6 +19,8 @@
   - [Secrets and Signing](#secrets-and-signing)
   - [Docker in Docker](#docker-in-docker)
   - [Services](#services)
+  - [Secrets](#secrets)
+  - [Variable Escaping](#variable-escaping)
 - [QAs](#qas)
 - [Snippets](drone-snippets.md)
 
@@ -557,13 +559,13 @@ deploy_to_uat:
 
 ### Secrets and Signing
 
-It is no longer necessary to sign your `.drone.yml` so the `.drone.yml.sig` can be deleted. Secrets can be defined in the drone UI and can be restricted to selected events, for example deployments or pull requests. See [location] for an example of this
+It is no longer necessary to sign your `.drone.yml` so the `.drone.yml.sig` can be deleted. Secrets can be defined in the Drone UI and can be restricted to selected events, for example deployments or pull requests.
 
 ### Docker-in-Docker
 
-The Docker-in-Docker (dind) service is no longer required. Instead, add `DOCKER_HOST=tcp://172.17.0.1:2375` to the `envionment` section of your pipline, and you will be able to access the shared Docker server on the drone agent. Note that it is only possible to run one docker build at a time per drone agent.
+The Docker-in-Docker (dind) service is no longer required. Instead, change Docker host to `DOCKER_HOST=tcp://172.17.0.1:2375` in the `environment` section of your pipline, and you will be able to access the shared Docker server on the drone agent. Note that it is only possible to run one Docker build at a time per Drone agent.
 
-Since priviliged mode was primarily used for docker in docker, in most cases it should be possible to remove the `priviliged: true` line from your .drone.yml
+Since priviliged mode was primarily used for docker in docker, you should remove the `priviliged: true` line from your .drone.yml.
 
 ### Services
 
@@ -571,12 +573,44 @@ If you use the `services` section of your `.drone.yml` it is possible to referen
 
 For example, if using the following section:
 
-```
+```yaml
 services:
   database:
     image: mysql
 ```
+
 The mysql server would be available on `tcp://database:3306`
+
+### Secrets
+
+Organisation secrets are no longer available. This means that if you are using any organisation secrets such as `KUBE_TOKEN_DEV`, you will need to add a secret in Drone to replace it.
+
+Pipelines by default do not have access to any Drone secrets that you have added. You must now define which secrets a pipeline is allowed access to in a `secrets` section in your pipeline. Here is an example of a pipeline that has access to the `DOCKER_PASSWORD` secret which will be used to push an image to Quay:
+
+```yaml
+image_to_quay:
+  image: docker:17.09.0-ce
+  environment:
+    - DOCKER_HOST=tcp://172.17.0.1:2375
+  secrets:
+    - docker_password
+  commands:
+    - docker login -u="ukhomeofficedigital+my_robot" -p=$${DOCKER_PASSWORD} quay.io
+    - docker tag my_built_image quay.io/ukhomeofficedigital/my_repo:$${DRONE_COMMIT_SHA}
+    - docker push quay.io/ukhomeofficedigital/my_repo:$${DRONE_COMMIT_SHA}
+  when:
+    branch: master
+    event: push
+```
+
+### Variable Escaping
+
+Any Drone variables (secrets and environment variables) must now be escaped by having two $$ instead of one. Examples:
+
+```yaml
+${DOCKER_PASSWORD} --> $${DOCKER_PASSWORD}
+${DRONE_TAG} --> $${DRONE_TAG}
+${DRONE_COMMIT_SHA} --> $${DRONE_COMMIT_SHA}
 
 ```
 
