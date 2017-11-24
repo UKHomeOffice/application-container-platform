@@ -6,27 +6,43 @@
 pipeline:
 
   build:
-    privileged: true
-    image: docker:1.11
+    image: docker:17.09.0-ce
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker build -t quay.io/ukhomeofficedigital/<image_name>:$${DRONE_COMMIT_SHA} .
+      - docker build -t <image_name>:$${DRONE_COMMIT_SHA} .
     when:
-      branch: master
       event: push
       
   image_to_quay:
-    image: docker:1.11
+    image: docker:17.09.0-ce
+    secrets:
+      - docker_password
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - docker login -u="ukhomeofficedigital+<your_robot_username>" -p=$${DOCKER_PASSWORD} quay.io
-      - docker push quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA} .
+      - docker tag <image_name>:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA}
+      - docker tag <image_name>:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/<your_quay_repo>:latest
+      - docker push quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA}
+      - docker push quay.io/ukhomeofficedigital/<your_quay_repo>:latest
     when:
       branch: master
       event: push
       
+  tagged_image_to_quay:
+    image: docker:17.09.0-ce
+    secrets:
+      - docker_password
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+      - docker login -u="ukhomeofficedigital+<your_robot_username>" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag <image_name>:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_TAG}
+      - docker push quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_TAG}
+    when:
+      event: tag
+
   clone_deployment_scripts:
     image: plugins/git
     commands:
@@ -34,7 +50,7 @@ pipeline:
     when:
       branch: master
       event: push
-      
+
   deploy_to_dev:
     image: quay.io/ukhomeofficedigital/kd:v0.2.2
     environment:
@@ -47,7 +63,7 @@ pipeline:
       - git checkout v1.0.0
       - ./deploy.sh
     when:
-      environment: master
+      branch: master
       event: push
 ```
 
@@ -66,7 +82,7 @@ pipeline:
   deploy_to_prod:
     image: quay.io/ukhomeofficedigital/kd:v0.2.2
     environment:
-      - KUBE_NAMESPACE=dev-induction
+      - KUBE_NAMESPACE=<dev-induction>
     secrets:
       - kube_server
       - kube_token
@@ -75,7 +91,7 @@ pipeline:
       - git checkout v1.1
       - ./deploy.sh
     when:
-      environment: production
+      environment: prod
       event: deployment
 ```
 
@@ -85,14 +101,36 @@ pipeline:
 pipeline:
 
   pr-builder:
-    privileged: true
-    image: docker:1.11
+    image: docker:17.09.0-ce
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - docker build -t <image_name> .
     when:
       event: pull_request
+```
+
+## Export Drone variables automatically
+
+Add these lines to your `.bashrc` file:
+
+```bash
+export DRONE_SERVER=https://drone.acp.homeoffice.gov.uk # change if you need it for gitlab
+export DRONE_TOKEN=<your_drone_token>
+```
+
+or add it as a function so you can swap between Github and Gitlab as needed:
+
+```bash
+function dronehub {
+  export DRONE_SERVER=https://drone.acp.homeoffice.gov.uk
+  export DRONE_TOKEN=<your_github_drone_token>
+}
+
+function dronelab {
+  export DRONE_SERVER=https://drone-gitlab.acp.homeoffice.gov.uk
+  export DRONE_TOKEN=<your_gitlab_drone_token>
+}
 ```
 
 ## SonarQube
