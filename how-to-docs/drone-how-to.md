@@ -385,7 +385,7 @@ Sometimes you might want to start more than one service and test how those servi
 
 You can deploy your application to a temporary namespace in the cluster, run the test and dispose of the environment as part of your pipeline.
 
-You should already have kubernetes configs for deployment, service and ingress. In order to create an environment from scratch you need all your kubernetes secrets to be loaded as part of the startup process.
+You should already have Kubernetes configs for deployment, service and ingress. In order to create an environment from scratch you need all your Kubernetes secrets to be loaded as part of the startup process.
 
 Kubernetes secrets can be loaded in your environment using a configuration (yaml) file or inline. You can find more information setting secrets [here](https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/platform_introduction.md#create-a-kubernetes-secret). We recommend you create a `secrets.yaml` as a template for your secrets.
 
@@ -425,9 +425,9 @@ Kubernetes secrets can be loaded in your environment using a configuration (yaml
       status: [ success, failure ]
 ```
 
-The `tidy_up` step is configured to run on successful and failed builds and removes the generated namespace.
+The `tidy_up` step is configured to run on both successful and failed builds and removes the generated namespace.
 
-> Please note that this is only an example. Parts of this will need to be modified depending on your application. `KUBE_SERVER` AND `KUBE_TOKEN` will need to be set as Drone secrets similar to how they were set in the [Deploying to ACP section](#deploying-to-acp).
+> Please note that this is only an example. Parts of this will need to be modified depending on your application. `KUBE_SERVER` AND `KUBE_TOKEN` will need to be set as Drone secrets similar to how they were set in the [Deploying to ACP section](#deploying-to-acp). Also note that these commands do not have to be in the Drone yaml; they can be put into a seperate file and called as normal in the pipeline.
 
 You can run tests or any other task that interacts with the deployed service by adding a step in the pipeline between the `deploy_to_ci` and `tidy_up`. As an example, you can use `wget` to check that your service works:
 
@@ -438,7 +438,6 @@ You can run tests or any other task that interacts with the deployed service by 
 
   test_all_the_things:
     image: busybox
-    network_mode: "default"
     commands:
       - |
         start=$SECONDS
@@ -459,21 +458,6 @@ You can run tests or any other task that interacts with the deployed service by 
   tidy_up:
     image: quay.io/ukhomeofficedigital/kd:v0.2.3
     ...
-```
-
-Please note that `network_mode` and `dns` are required to resolve the name of the service from within the Drone agent.
-
-You can find the name of your service at the very top of your service kube file:
-
-```Yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    name: <name-of-your-service>
-  name: <name-of-your-service>
-...
 ```
 
 ### Using Another Repo
