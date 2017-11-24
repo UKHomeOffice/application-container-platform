@@ -311,7 +311,6 @@ Drone pipelines are triggered when events occurs. Event triggers can be as simpl
 
 ```yaml
 pr-builder:
-  privileged: true
   image: docker:17.09.0-ce
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
@@ -321,7 +320,7 @@ pr-builder:
     event: pull_request
 ```
 
-Drone will automatically execute that step when a new pull request is raised.
+Drone will only execute that step when a new pull request is raised (and when pushes are made to the branch while a pull request is open).
 
 [Read more about Drone conditions](http://docs.drone.io/conditional-steps/).
 
