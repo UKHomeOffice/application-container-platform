@@ -618,7 +618,7 @@ ${DRONE_COMMIT_SHA} --> $${DRONE_COMMIT_SHA}
 
 ### Q: The build fails with _"ERROR: Insufficient privileges to use privileged mode"_
 
-A: Your repository isn't in the trusted list of repositories. Get in touch with Devops and ask them to trust it.
+A: Remove `priviliged: true` from your `.drone.yml`. As explained in the [migrating your pipeline section](migrating-your-pipeline), the primary use of this was for Docker-in-Docker which is not required.
 
 ### Q: The build fails with _"Cannot connect to the Docker daemon. Is the docker daemon running on this host?"_
 
@@ -626,7 +626,6 @@ A: Make sure that your steps contain the environment variable `DOCKER_HOST=tcp:/
 
 ```yaml
 my-build:
-  privileged: true
   image: docker:17.09.0-ce
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
@@ -637,11 +636,11 @@ my-build:
     event: push
 ```
 
-### Q: The build fails when uploading to Quay with the error _"Inappropriate ioctl for device"_
+### Q: The build fails when uploading to Quay with the error _"Error response from daemon: Get https://quay.io/v2/: unauthorized:..."_
 
-A: This suggests that the `docker` executable prompted for credentials instead of reading them from the command line. This is likely because the secret wasn't injected correctly or the password is incorrect.
+A: This is likely because the secret wasn't added correctly or the password is incorrect. Check that the secret has been added to Drone and that you have added it to the pipeline that requires it.
 
-### Q: As part of my build process I have two `Dockerfile`s to produce a Docker image. How can I share files between builds in the same step?
+### Q: As part of my build process I have two `Dockerfiles` to produce a Docker image. How can I share files between builds in the same step?
 
 A: When the pipeline starts, Drone creates a Docker data volume that is passed along all active steps in the pipeline. If the first step creates a `test.txt` file, the second step can use that file. As an example, this pipeline uses a two step build process:
 
