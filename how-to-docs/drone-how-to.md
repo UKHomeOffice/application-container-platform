@@ -356,26 +356,13 @@ This error appears because [kd](https://github.com/UKHomeOffice/kd) needs 3 envi
 
 - `KUBE_SERVER` - This is the address of the kubernetes cluster that you want to deploy to.
 
-You will need to add `KUBE_TOKEN` and `KUBE_SERVER` as drone secrets.
-
-You can add and view a list of secrets through the Drone UI. Go to Drone and select your repo, then click the icon in the top right and select **Secrets**. You should be presented with a list of the secrets for that repo (if there are any) and you should be able to add secrets giving them a name and value. Add the `KUBE_TOKEN` and `KUBE_SERVER` secrets with their respective values.
-
-Alternatively, you can use this command to add the `KUBE_TOKEN` secret:
-
-```bash
-$ drone secret add --image quay.io/ukhomeofficedigital/kd:v0.2.3 --repository ukhomeoffice/<your_repo> --name KUBE_TOKEN --value <your_token>
-```
-
-Adding the `KUBE_SERVER` will be similar.
+You will need to add `KUBE_TOKEN` and `KUBE_SERVER` as drone secrets. Infomation about how to add Drone secrets can be found in the [publishing to Quay section](#publishing-to-quay).
 
 You can verify that the secrets for your repo are present with:
 
 ```bash
-$ drone secret ls ukhomeoffice/<your-repo>
+$ drone secret ls --repository ukhomeoffice/<your-repo>
 ```
-
-_Please note that you need to be an admin to issue this command._
-
 
 Once the secrets have been added, add a new step to your drone pipeline that will execute the deployment script:
 
