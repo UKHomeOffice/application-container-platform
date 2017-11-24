@@ -48,7 +48,7 @@ Export the `DRONE_SERVER` and `DRONE_TOKEN` variables. You can find your token o
 
 ```bash
 export DRONE_SERVER=https://drone.acp.homeoffice.gov.uk
-export DRONE_TOKEN=your_drone_token
+export DRONE_TOKEN=<your_drone_token>
 ```
 
 If your installation is successful, you should be able to query the current Drone instance:
@@ -88,6 +88,8 @@ https://drone-external.acp.homeoffice.gov.uk/hook?access_token=some_token
 > If it is already in that format there is no need to change anything.
 >
 > The token in the payload url will not be the same as the personal token that you exported and it should be left unchanged.
+>
+> **Please note that this does not apply to Gitlab. When you activate the repo in Drone, you should not change anything for a Gitlab repo.**
 
 ### Configure your pipeline
 
@@ -95,6 +97,7 @@ In the root folder of your project, create a `.drone.yml` file with the followin
 
 ```yaml
 pipeline:
+
   my-build:
     image: docker:17.09.0-ce
     environment:
@@ -116,7 +119,7 @@ $ git push origin master
 
 > **Please note** you should replace the name <...> with the name of your app.
 
-You should be able to watch your build succeed in the drone UI.
+You should be able to watch your build succeed in the Drone UI.
 
 ## Publishing Docker images
 
