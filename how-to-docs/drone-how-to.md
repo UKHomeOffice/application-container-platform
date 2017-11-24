@@ -201,7 +201,7 @@ If your repository is hosted publicly on GitHub, you shouldn't publish your imag
 You can inject the robot's token that has been supplied to you with:
 
 ```
-$ drone secret add --image="<image_name>" --repository ukhomeoffice/<your_gitlab_repo> --name DOCKER_ARTIFACTORY_PASSWORD --value your_robot_token
+$ drone secret add --image="docker:17.09.0-ce" --repository <gitlab_repo_group>/<your_gitlab_repo> --name DOCKER_ARTIFACTORY_PASSWORD --value <your_robot_token>
 ```
 
 You can add the following step in your `.drone.yml`:
@@ -209,6 +209,8 @@ You can add the following step in your `.drone.yml`:
 ```yaml
 image_to_artifactory:
   image: docker:17.09.0-ce
+  secrets:
+    - docker_artifactory_password
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
