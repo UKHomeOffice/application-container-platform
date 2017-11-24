@@ -12,9 +12,9 @@
   - [Deployments and promotions](#deployments-and-promotions)
   - [Drone as a pull request builder](#drone-as-a-pull-request-builder)
   - [Deploying to ACP](#deploying-to-acp)
-  - [Versioned deployments](#versioned-deployments)
   - [Ephemeral deployments](#ephemeral-deployments)
   - [Using Another Repo](#using-another-repo)
+  - [Versioned deployments](#versioned-deployments)
 - Migrating your Pipeline
   - [Secrets and Signing](#secrets-and-signing)
   - [Docker in Docker](#docker-in-docker)
@@ -379,28 +379,6 @@ deploy_to_uat:
     event: deployment
 ```
 
-### Versioned deployments
-
-When you restart your build, Drone will automatically use the latest version of the code. However always using the latest version of the deployment configuration can cause major issues and isn't recommended. For example when promoting from preprod to prod you want to use the preprod version of the deployment configuration. If you use the latest it could potentially break your production environment, especially as it won't necessarily have been tested.
-
-To counteract this you should use a specific version of your deployment scripts. In fact, you should  `git checkout` the tag or sha as part of your deployment step.
-
-This is how the new pipeline would look:
-
-```yaml
-deploy_to_uat:
-  image: quay.io/ukhomeofficedigital/kd:v0.2.3
-  secrets:
-    - kube_server
-    - kube_token
-  commands:
-    - git checkout v1.1
-    - ./deploy.sh
-  when:
-    environment: uat
-    event: deployment
-```
-
 ### Ephemeral deployments
 
 Sometimes you might want to start more than one service and test how those services interact with each other. This is particularly useful when you want to run integration or end-to-end tests as part of your pipeline.
@@ -559,6 +537,37 @@ $ drone deploy UKHomeOffice/<your_repo> 16 uat
 This will trigger a new deployment on the second repository.
 
 Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
+
+### Versioned deployments
+
+When you restart your build, Drone will automatically use the latest version of the code. However always using the latest version of the deployment configuration can cause major issues and isn't recommended. For example when promoting from preprod to prod you want to use the preprod version of the deployment configuration. If you use the latest it could potentially break your production environment, especially as it won't necessarily have been tested.
+
+To counteract this you should use a specific version of your deployment scripts. In fact, you should  `git checkout` the tag or sha as part of your deployment step.
+
+Here is an example of this:
+
+```yaml
+predeploy_to_uat:
+  image: plugins/git
+  commands:
+    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
+  when:
+    environment: uat
+    event: deployment
+
+deploy_to_uat:
+  image: quay.io/ukhomeofficedigital/kd:v0.2.3
+  secrets:
+    - kube_server
+    - kube_token
+  commands:
+    - apk update && apk add git
+    - git checkout v1.1
+    - ./deploy.sh
+  when:
+    environment: uat
+    event: deployment
+```
 
 ## Migrating your pipeline
 
