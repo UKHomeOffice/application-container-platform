@@ -567,6 +567,33 @@ The Docker-in-Docker (dind) service is no longer required. Instead, change Docke
 
 Since priviliged mode was primarily used for docker in docker, you should remove the `priviliged: true` line from your .drone.yml.
 
+You can also use your freshly built image directly and run commands as part of your pipeline.
+
+Example:
+
+```yaml
+pipeline:
+
+  build_image:
+    image: docker:17.09.0-ce
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+      - docker build -t hello_world .
+    when:
+      branch: master
+      event: push
+
+  test_image:
+    image: hello_world
+    commands:
+      - ./run-hello-world.sh
+    when:
+      branch: master
+      event: push
+```
+
+
 ### Services
 
 If you use the `services` section of your `.drone.yml` it is possible to reference them using the DNS name of the service. 
