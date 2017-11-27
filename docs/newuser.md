@@ -27,7 +27,7 @@ These are all services that you can access through normal internet access with p
 [GitLab](https://gitlab.digital.homeoffice.gov.uk) To get access to this you will need to first login via Office 365 by clicking the Office 365 login button.
 
 ### Kubernetes
-You will need a token before you can access any of the clusters. Requests can be made on the [Platform Hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/kubernetes-token) 
+You will need a token before you can access any of the clusters. Follow the instructions here: [How to get a Kubernetes token](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/kubernetes-token.md).
 
 ### Drone
 We have two instances [gitlab](https://drone-gitlab.digital.homeoffice.gov.uk) uses your GitLab login and the one for [github](https://drone.digital.homeoffice.gov.uk) uses your github login.
