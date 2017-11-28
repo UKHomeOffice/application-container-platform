@@ -1,4 +1,4 @@
-# Getting a Kubernetes Robot Token in the UK cluster
+# Getting a Kubernetes Robot Token for a UK cluster
 
 ## Users
 

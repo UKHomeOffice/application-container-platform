@@ -1,4 +1,4 @@
-# Getting a Kubernetes Token for the UK cluster
+# Getting a Kubernetes Token for a UK cluster
 
 ## Users
 
