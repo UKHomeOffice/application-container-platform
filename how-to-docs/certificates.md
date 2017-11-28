@@ -101,11 +101,12 @@ We then connect the services together, tying up the ingress and backend services
 kind: Ingress
 metadata:
   name: ingress
-  labels:
+  annotations:
     # this tells the ingress to use tls between itself and service
     ingress.kubernetes.io/secure-backends: "true"
     # this selects the external ingress - internet facing
     kubernetes.io/ingress.class: "nginx-external"
+  labels:
     # this asks for a certificate from letsencrypt
     stable.k8s.psg.io/kcm.class: default
 spec:
@@ -142,4 +143,36 @@ spec:
       port: 443
 ```
 
+**HTTP Challenge**
 
+The above example requires that the DNS zone of the ingress hostname you are adding is located in the AWS account that kube-cert-manager resides. Assuming this is not the case you will need to use a HTTP challenge rather than the default DNS one. You wil need to change your DNS name to a CNAME of ingress-external / ingress-internal ENVIRONMENT.acp.homeoffice.gov.uk i.e assuming notprod environment mysite.domain.com -> ingress-external.notprod.acp.homeoffice.gov.uk
+
+
+```shell
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    # this tells the ingress to use tls between itself and service
+    ingress.kubernetes.io/secure-backends: "true"
+    # this selects the external ingress - internet facing
+    kubernetes.io/ingress.class: "nginx-external"
+    # change the provider to http
+    stable.k8s.psg.io/kcm.provider: http
+  labels:
+    # this asks for a certificate from letsencrypt
+    stable.k8s.psg.io/kcm.class: default
+spec:
+  tls:
+  - hosts:
+    - hostname.example.gov.uk
+    secretName: hostname_tls
+  rules:
+  - host: hostname.example.gov.uk
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: myservicename
+          servicePort: 443
+```
