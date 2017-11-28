@@ -101,11 +101,12 @@ We then connect the services together, tying up the ingress and backend services
 kind: Ingress
 metadata:
   name: ingress
-  labels:
+  annotations:
     # this tells the ingress to use tls between itself and service
     ingress.kubernetes.io/secure-backends: "true"
     # this selects the external ingress - internet facing
     kubernetes.io/ingress.class: "nginx-external"
+  labels:
     # this asks for a certificate from letsencrypt
     stable.k8s.psg.io/kcm.class: default
 spec:
