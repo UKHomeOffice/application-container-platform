@@ -12,13 +12,15 @@
   - [Deployments and promotions](#deployments-and-promotions)
   - [Drone as a pull request builder](#drone-as-a-pull-request-builder)
   - [Deploying to ACP](#deploying-to-acp)
-  - [Versioned deployments](#versioned-deployments)
   - [Ephemeral deployments](#ephemeral-deployments)
   - [Using Another Repo](#using-another-repo)
+  - [Versioned deployments](#versioned-deployments)
 - Migrating your Pipeline
   - [Secrets and Signing](#secrets-and-signing)
   - [Docker in Docker](#docker-in-docker)
   - [Services](#services)
+  - [Secrets](#secrets)
+  - [Variable Escaping](#variable-escaping)
 - [QAs](#qas)
 - [Snippets](drone-snippets.md)
 
@@ -48,7 +50,7 @@ Export the `DRONE_SERVER` and `DRONE_TOKEN` variables. You can find your token o
 
 ```bash
 export DRONE_SERVER=https://drone.acp.homeoffice.gov.uk
-export DRONE_TOKEN=your_drone_token
+export DRONE_TOKEN=<your_drone_token>
 ```
 
 If your installation is successful, you should be able to query the current Drone instance:
@@ -88,6 +90,8 @@ https://drone-external.acp.homeoffice.gov.uk/hook?access_token=some_token
 > If it is already in that format there is no need to change anything.
 >
 > The token in the payload url will not be the same as the personal token that you exported and it should be left unchanged.
+>
+> **Please note that this does not apply to Gitlab. When you activate the repo in Drone, you should not change anything for a Gitlab repo.**
 
 ### Configure your pipeline
 
@@ -95,8 +99,9 @@ In the root folder of your project, create a `.drone.yml` file with the followin
 
 ```yaml
 pipeline:
+
   my-build:
-    image: docker:1.11
+    image: docker:17.09.0-ce
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
@@ -116,7 +121,7 @@ $ git push origin master
 
 > **Please note** you should replace the name <...> with the name of your app.
 
-You should be able to watch your build succeed in the drone UI.
+You should be able to watch your build succeed in the Drone UI.
 
 ## Publishing Docker images
 
@@ -127,7 +132,7 @@ If your repository is hosted on Gitlab, you don't want to publish your images to
 Register for a free [Quay account](https://quay.io) using your Github account linked to the Home Office organisation.
 
 Once you've logged into Quay check that you have `ukhomeofficedigital` under Users and Organisations.  
-If you do not, [submit a support request on the platform hub for access to the ukhomeoffice organisation](https://hub.acp.homeoffice.gov.uk/help/support/requests/overview).
+If you do not, [submit a support request on the platform hub for access to the ukhomeoffice organisation](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/quay-add-to-org).
 
 Once you have access to view the `ukhomeofficedigital` repositories, click repositories and
 click the `+ Create New Repositories` that is:
@@ -141,7 +146,9 @@ Add the step to publish the docker image to Quay in your Drone pipeline with the
 
 ```yaml
 image_to_quay:
-  image: docker:1.11
+  image: docker:17.09.0-ce
+  secrets:
+    - docker_password
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
@@ -156,7 +163,7 @@ image_to_quay:
 Where the `<image_name>` in:
 
 ```yaml
-docker tag <image_name> quay.io/ukhomeofficedigital/<your_quay_repo>:${DRONE_COMMIT_SHA}
+docker tag <image_name> quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA}
 ```
 
 is the name of the image you tagged previously in the build step.
@@ -166,19 +173,24 @@ is the name of the image you tagged previously in the build step.
 The build should fail with the following error:
 
 ```bash
-docker login -u="ukhomeofficedigital+<your_robot_username>" -p=$${DOCKER_PASSWORD} quay.io
-inappropriate ioctl for device
+Error response from daemon: Get https://quay.io/v2/: unauthorized: Could not find robot with username: ukhomeofficedigital+<your_robot_username> and supplied password.
 ```
 
-The error points to the missing `DOCKER_PASSWORD` environment variable.
+The error points to the missing `DOCKER_PASSWORD` environment variable. You will need to add this as a drone secret.
 
-You can inject the robot's token that has been supplied to you with:
+You can do this through the Drone UI by going to your repo, clicking the menu icon in the top right and then clicking **Secrets**. You should be presented with a list of the secrets for that repo (if there are any) and you should be able to add secrets giving them a name and value. Add a secret with the name **DOCKER_PASSWORD** and with the value being the robot token that was supplied to you.
+
+Alternatively, you can use the Drone CLI to add the secret:
 
 ```
-$ drone secret add --image="<image_name>" --repository ukhomeoffice/<your_github_repo> --name DOCKER_PASSWORD --value your_robot_token
+$ drone secret add --image="docker:17.09.0-ce" --repository ukhomeoffice/<your_github_repo> --name DOCKER_PASSWORD --value <your_robot_token>
 ```
 
 Restarting the build should be enough to make it pass.
+
+> The Drone CLI allows for more control over the secret as opposed to the UI. For example, the CLI allows you to specify the image and the events that the secret will be allowed to be used with.
+>
+> Also note that the secret was specified in the `secrets` section of the pipeline to give it access to the secret. Without this, the pipeline would not be able to use the secret and it would fail.
 
 ### Publishing to Artifactory
 
@@ -191,14 +203,16 @@ If your repository is hosted publicly on GitHub, you shouldn't publish your imag
 You can inject the robot's token that has been supplied to you with:
 
 ```
-$ drone secret add --image="<image_name>" --repository ukhomeoffice/<your_gitlab_repo> --name DOCKER_ARTIFACTORY_PASSWORD --value your_robot_token
+$ drone secret add --image="docker:17.09.0-ce" --repository <gitlab_repo_group>/<your_gitlab_repo> --name DOCKER_ARTIFACTORY_PASSWORD --value <your_robot_token>
 ```
 
 You can add the following step in your `.drone.yml`:
 
 ```yaml
 image_to_artifactory:
-  image: docker:1.11
+  image: docker:17.09.0-ce
+  secrets:
+    - docker_artifactory_password
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
@@ -258,7 +272,7 @@ and use them in the step like this:
 deploy-to-preprod:
   image: busybox
   commands:
-    - /bin/echo hello ${NAME}
+    - /bin/echo hello $${NAME}
   when:
     environment: preprod
     event: deployment
@@ -287,7 +301,7 @@ deploy-to-prod:
 And deploy them accordingly:
 
 ```bash
-$ drone deploy ukhomeoffice/<your_repo> 15 preprod
+$ drone deploy ukhomeoffice/<your_repo> 16 preprod
 $ drone deploy ukhomeoffice/<your_repo> 16 prod
 ```
 
@@ -299,8 +313,7 @@ Drone pipelines are triggered when events occurs. Event triggers can be as simpl
 
 ```yaml
 pr-builder:
-  privileged: true
-  image: docker:1.11
+  image: docker:17.09.0-ce
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
@@ -309,7 +322,7 @@ pr-builder:
     event: pull_request
 ```
 
-Drone will automatically execute that step when a new pull request is raised.
+Drone will only execute that step when a new pull request is raised (and when pushes are made to the branch while a pull request is open).
 
 [Read more about Drone conditions](http://docs.drone.io/conditional-steps/).
 
@@ -345,26 +358,13 @@ This error appears because [kd](https://github.com/UKHomeOffice/kd) needs 3 envi
 
 - `KUBE_SERVER` - This is the address of the kubernetes cluster that you want to deploy to.
 
-You will need to add `KUBE_TOKEN` and `KUBE_SERVER` as drone secrets.
-
-You can add and view a list of secrets through the Drone UI. Go to Drone and select your repo, then click the icon in the top right and select **Secrets**. You should be presented with a list of the secrets for that repo (if there are any) and you should be able to add secrets giving them a name and value. Add the `KUBE_TOKEN` and `KUBE_SERVER` secrets with their respective values.
-
-Alternatively, you can use this command to add the `KUBE_TOKEN` secret:
-
-```bash
-$ drone secret add --image quay.io/ukhomeofficedigital/kd:v0.2.3 --repository ukhomeoffice/<your_repo> --name KUBE_TOKEN --value <your_token>
-```
-
-Adding the `KUBE_SERVER` will be similar.
+You will need to add `KUBE_TOKEN` and `KUBE_SERVER` as drone secrets. Infomation about how to add Drone secrets can be found in the [publishing to Quay section](#publishing-to-quay).
 
 You can verify that the secrets for your repo are present with:
 
 ```bash
-$ drone secret ls ukhomeoffice/<your-repo>
+$ drone secret ls --repository ukhomeoffice/<your-repo>
 ```
-
-_Please note that you need to be an admin to issue this command._
-
 
 Once the secrets have been added, add a new step to your drone pipeline that will execute the deployment script:
 
@@ -381,35 +381,13 @@ deploy_to_uat:
     event: deployment
 ```
 
-### Versioned deployments
-
-When you restart your build, Drone will automatically use the latest version of the code. However always using the latest version of the deployment configuration can cause major issues and isn't recommended. For example when promoting from preprod to prod you want to use the preprod version of the deployment configuration. If you use the latest it could potentially break your production environment, especially as it won't necessarily have been tested.
-
-To counteract this you should use a specific version of your deployment scripts. In fact, you should  `git checkout` the tag or sha as part of your deployment step.
-
-This is how the new pipeline would look:
-
-```yaml
-deploy_to_uat:
-  image: quay.io/ukhomeofficedigital/kd:v0.2.3
-  secrets:
-    - kube_server
-    - kube_token
-  commands:
-    - git checkout v1.1
-    - ./deploy.sh
-  when:
-    environment: uat
-    event: deployment
-```
-
 ### Ephemeral deployments
 
 Sometimes you might want to start more than one service and test how those services interact with each other. This is particularly useful when you want to run integration or end-to-end tests as part of your pipeline.
 
 You can deploy your application to a temporary namespace in the cluster, run the test and dispose of the environment as part of your pipeline.
 
-You should already have kubernetes configs for deployment, service and ingress. In order to create an environment from scratch you need all your kubernetes secrets to be loaded as part of the startup process.
+You should already have Kubernetes configs for deployment, service and ingress. In order to create an environment from scratch you need all your Kubernetes secrets to be loaded as part of the startup process.
 
 Kubernetes secrets can be loaded in your environment using a configuration (yaml) file or inline. You can find more information setting secrets [here](https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/platform_introduction.md#create-a-kubernetes-secret). We recommend you create a `secrets.yaml` as a template for your secrets.
 
@@ -449,9 +427,9 @@ Kubernetes secrets can be loaded in your environment using a configuration (yaml
       status: [ success, failure ]
 ```
 
-The `tidy_up` step is configured to run on successful and failed builds and removes the generated namespace.
+The `tidy_up` step is configured to run on both successful and failed builds and removes the generated namespace.
 
-> Please note that this is only an example. Parts of this will need to be modified depending on your application. `KUBE_SERVER` AND `KUBE_TOKEN` will need to be set as Drone secrets similar to how they were set in the [Deploying to ACP section](#deploying-to-acp).
+> Please note that this is only an example. Parts of this will need to be modified depending on your application. `KUBE_SERVER` AND `KUBE_TOKEN` will need to be set as Drone secrets similar to how they were set in the [Deploying to ACP section](#deploying-to-acp). Also note that these commands do not have to be in the Drone yaml; they can be put into a seperate file and called as normal in the pipeline.
 
 You can run tests or any other task that interacts with the deployed service by adding a step in the pipeline between the `deploy_to_ci` and `tidy_up`. As an example, you can use `wget` to check that your service works:
 
@@ -462,7 +440,6 @@ You can run tests or any other task that interacts with the deployed service by 
 
   test_all_the_things:
     image: busybox
-    network_mode: "default"
     commands:
       - |
         start=$SECONDS
@@ -483,21 +460,6 @@ You can run tests or any other task that interacts with the deployed service by 
   tidy_up:
     image: quay.io/ukhomeofficedigital/kd:v0.2.3
     ...
-```
-
-Please note that `network_mode` and `dns` are required to resolve the name of the service from within the Drone agent.
-
-You can find the name of your service at the very top of your service kube file:
-
-```Yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    name: <name-of-your-service>
-  name: <name-of-your-service>
-...
 ```
 
 ### Using Another Repo
@@ -562,17 +524,75 @@ This will trigger a new deployment on the second repository.
 
 Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
 
+### Versioned deployments
+
+When you restart your build, Drone will automatically use the latest version of the code. However always using the latest version of the deployment configuration can cause major issues and isn't recommended. For example when promoting from preprod to prod you want to use the preprod version of the deployment configuration. If you use the latest it could potentially break your production environment, especially as it won't necessarily have been tested.
+
+To counteract this you should use a specific version of your deployment scripts. In fact, you should  `git checkout` the tag or sha as part of your deployment step.
+
+Here is an example of this:
+
+```yaml
+predeploy_to_uat:
+  image: plugins/git
+  commands:
+    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
+  when:
+    environment: uat
+    event: deployment
+
+deploy_to_uat:
+  image: quay.io/ukhomeofficedigital/kd:v0.2.3
+  secrets:
+    - kube_server
+    - kube_token
+  commands:
+    - apk update && apk add git
+    - git checkout v1.1
+    - ./deploy.sh
+  when:
+    environment: uat
+    event: deployment
+```
+
 ## Migrating your pipeline
 
 ### Secrets and Signing
 
-It is no longer necessary to sign your `.drone.yml` so the `.drone.yml.sig` can be deleted. Secrets can be defined in the drone UI and can be restricted to selected events, for example deployments or pull requests. See [location] for an example of this
+It is no longer necessary to sign your `.drone.yml` so the `.drone.yml.sig` can be deleted. Secrets can be defined in the Drone UI and can be restricted to selected events, for example deployments or pull requests.
 
 ### Docker-in-Docker
 
-The Docker-in-Docker (dind) service is no longer required. Instead, add `DOCKER_HOST=tcp://172.17.0.1:2375` to the `envionment` section of your pipline, and you will be able to access the shared Docker server on the drone agent. Note that it is only possible to run one docker build at a time per drone agent.
+The Docker-in-Docker (dind) service is no longer required. Instead, change Docker host to `DOCKER_HOST=tcp://172.17.0.1:2375` in the `environment` section of your pipline, and you will be able to access the shared Docker server on the drone agent. Note that it is only possible to run one Docker build at a time per Drone agent.
 
-Since priviliged mode was primarily used for docker in docker, in most cases it should be possible to remove the `priviliged: true` line from your .drone.yml
+Since priviliged mode was primarily used for docker in docker, you should remove the `priviliged: true` line from your .drone.yml.
+
+You can also use your freshly built image directly and run commands as part of your pipeline.
+
+Example:
+
+```yaml
+pipeline:
+
+  build_image:
+    image: docker:17.09.0-ce
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+      - docker build -t hello_world .
+    when:
+      branch: master
+      event: push
+
+  test_image:
+    image: hello_world
+    commands:
+      - ./run-hello-world.sh
+    when:
+      branch: master
+      event: push
+```
+
 
 ### Services
 
@@ -580,12 +600,44 @@ If you use the `services` section of your `.drone.yml` it is possible to referen
 
 For example, if using the following section:
 
-```
+```yaml
 services:
   database:
     image: mysql
 ```
+
 The mysql server would be available on `tcp://database:3306`
+
+### Secrets
+
+Organisation secrets are no longer available. This means that if you are using any organisation secrets such as `KUBE_TOKEN_DEV`, you will need to add a secret in Drone to replace it.
+
+Pipelines by default do not have access to any Drone secrets that you have added. You must now define which secrets a pipeline is allowed access to in a `secrets` section in your pipeline. Here is an example of a pipeline that has access to the `DOCKER_PASSWORD` secret which will be used to push an image to Quay:
+
+```yaml
+image_to_quay:
+  image: docker:17.09.0-ce
+  environment:
+    - DOCKER_HOST=tcp://172.17.0.1:2375
+  secrets:
+    - docker_password
+  commands:
+    - docker login -u="ukhomeofficedigital+my_robot" -p=$${DOCKER_PASSWORD} quay.io
+    - docker tag my_built_image quay.io/ukhomeofficedigital/my_repo:$${DRONE_COMMIT_SHA}
+    - docker push quay.io/ukhomeofficedigital/my_repo:$${DRONE_COMMIT_SHA}
+  when:
+    branch: master
+    event: push
+```
+
+### Variable Escaping
+
+Any Drone variables (secrets and environment variables) must now be escaped by having two $$ instead of one. Examples:
+
+```yaml
+${DOCKER_PASSWORD} --> $${DOCKER_PASSWORD}
+${DRONE_TAG} --> $${DRONE_TAG}
+${DRONE_COMMIT_SHA} --> $${DRONE_COMMIT_SHA}
 
 ```
 
@@ -593,7 +645,7 @@ The mysql server would be available on `tcp://database:3306`
 
 ### Q: The build fails with _"ERROR: Insufficient privileges to use privileged mode"_
 
-A: Your repository isn't in the trusted list of repositories. Get in touch with Devops and ask them to trust it.
+A: Remove `priviliged: true` from your `.drone.yml`. As explained in the [migrating your pipeline section](migrating-your-pipeline), the primary use of this was for Docker-in-Docker which is not required.
 
 ### Q: The build fails with _"Cannot connect to the Docker daemon. Is the docker daemon running on this host?"_
 
@@ -601,8 +653,7 @@ A: Make sure that your steps contain the environment variable `DOCKER_HOST=tcp:/
 
 ```yaml
 my-build:
-  privileged: true
-  image: docker:1.11
+  image: docker:17.09.0-ce
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
@@ -612,11 +663,11 @@ my-build:
     event: push
 ```
 
-### Q: The build fails when uploading to Quay with the error _"Inappropriate ioctl for device"_
+### Q: The build fails when uploading to Quay with the error _"Error response from daemon: Get https://quay.io/v2/: unauthorized:..."_
 
-A: This suggests that the `docker` executable prompted for credentials instead of reading them from the command line. This is likely because the secret wasn't injected correctly or the password is incorrect.
+A: This is likely because the secret wasn't added correctly or the password is incorrect. Check that the secret has been added to Drone and that you have added it to the pipeline that requires it.
 
-### Q: As part of my build process I have two `Dockerfile`s to produce a Docker image. How can I share files between builds in the same step?
+### Q: As part of my build process I have two `Dockerfiles` to produce a Docker image. How can I share files between builds in the same step?
 
 A: When the pipeline starts, Drone creates a Docker data volume that is passed along all active steps in the pipeline. If the first step creates a `test.txt` file, the second step can use that file. As an example, this pipeline uses a two step build process:
 
