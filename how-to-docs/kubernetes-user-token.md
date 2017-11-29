@@ -22,7 +22,7 @@
 
 4. Once the token is created the requester should be able to see it in their **Connected Identities** section for use in their Kube config.
 
-**Note:** Tokens can take a while to propagate so you may have to wait for up to 5 minutes before using a new token.
+**Note:** Tokens can take a while to propagate so you may have to wait for up to 10 minutes before using a new token.
 
 [platform hub link]: https://hub.acp.homeoffice.gov.uk
 [connected identities]: https://hub.acp.homeoffice.gov.uk/identities
