@@ -14,13 +14,15 @@
 
 1. Log into the [Platform Hub][platform hub link].
 
-2. Go to the [Projects][project list] section and find your project. Click on the **Kube User Tokens** tab and select the requesters name from the list.
+2. Go to the [Projects][project list] section and find your project. Click on the **Kube User Tokens** tab, click **Select a project team member** and select the requesters name from the list.
 
-3. Select the required cluster and RBAC group(s) needed for the token and click **Create**.
+3. Click **CREATE A NEW KUBERNETES USER TOKEN FOR THIS USER**.
+
+4. Select the required cluster and RBAC group(s) needed for the token and click **Create**.
 
 > An explanation of RBAC groups can be found here: [RBAC Groups][rbac groups]
 
-4. Once the token is created the requester should be able to see it in their **Connected Identities** section for use in their Kube config.
+5. Once the token is created the requester should be able to see it in their **Connected Identities** section for use in their Kube config.
 
 [platform hub link]: https://hub.acp.homeoffice.gov.uk
 [connected identities]: https://hub.acp.homeoffice.gov.uk/identities
