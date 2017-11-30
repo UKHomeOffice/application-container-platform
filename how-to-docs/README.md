@@ -6,7 +6,7 @@ This folder contains a collection of how-to guides for both Developers and DevOp
   - [Getting a cert with letsencrypt and ingress](certs.md)
   - [Using Drone](drone-how-to.md)
   - [Getting a Kube Token for a Developer](onboarding.md)
-  - [Requesting S3 Resources](amazon-resources.md)
+  - [Getting Amazon resources](amazon-resources.md)
   - [Platform Setup](platform_setup.md)
   - [Setting up the VPN](vpn.md)
   - [Generating Certs](ca_tls.md)
