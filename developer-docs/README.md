@@ -36,7 +36,7 @@ Updates are also on its way to include more self-service tools, along with docum
 ## Project getting started guide
 Kubernetes resources (including your applications!) are always deployed into a particular namespace.
 These namespaces provide separation between the different projects hosted on the platform.
-We also recommend that each project has one namespace per environment. For example if the project name were *foo* the namespaces might be *foo-dev*, *foo-uat*, *foo-preprod*. For instructions on creating new namespaces and other relevant resources on getting started can be found below on [ACP How-to Docs](#ACP-How-to-Docs)
+A project service can have more than one namespace. For example, you can have namespaces that are different environments but are part of the same project service (e.g. dev and prod namespaces). Or if you have different namespaces that are all related to one project service (e.g. a web-api and an application namespace). For instructions on getting new namespaces and other relevant resources on getting started can be found below: [ACP How-to Docs](#ACP-How-to-Docs)
 
 ## ACP How-to Docs
 The How To Docs within the ACP repo provides a collection of how-to guides for both Developers and DevOps to use:

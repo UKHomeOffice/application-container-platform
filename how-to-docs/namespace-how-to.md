@@ -1,23 +1,13 @@
-## How do I create a namespace in the UK cluster?
-Please visit the [ACP-Kube](https://gitlab.digital.homeoffice.gov.uk/Devops/acp-kube) repo on Gitlab to create a namespace.
+# How to get a new Namespace in a UK cluster
 
-+ Clusters are defined by the folders within the `policies/` directory, with each cluster having a subdirectory labelled `namespaces`.
+1. Log into the [Platform Hub][platform hub link].
 
-+ Namespaces should be defined in the following format within this repository:
-`policies/clusters/<cluster-name>/namespaces/<namespace.yaml>`
+2. Go to [Support Requests][support requests page] and select the [request for a new namespace support request][new namespace support request].
 
-Example namespace creation of **foo** namespace in **bar** cluster:
+3. Fill out the required information and submit your request.
 
-foo.yaml:
-```yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    name: foo
-  name: foo
-```
-to be defined in `policies/clusters/bar/namespaces/foo.yaml`
-- The name of the file must match the label defined in the yaml.
-+ Clone and branch the ACP-Kube repo and create your namespace file
-+ Submit a PR of your branch to master - once your PR is accepted your namespace will be created.
+4. Someone from the ACP team will contact you when your namespace has been created.
+
+[platform hub link]: https://hub.acp.homeoffice.gov.uk
+[support requests page]: https://hub.acp.homeoffice.gov.uk/help/support/requests/overview
+[new namespace support request]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/namespace-request
