@@ -82,19 +82,17 @@ We encourage feedback from all service delivery teams and continue to strive to 
 
 ## Out of scope
 
-* Office 365 account setup. This can be requested through the following process:
+* Licensed Office 365 products should be requested from your programme office. We can, however, request AD-only accounts on your behalf if you raise a ticket on the BAU board as described below:
 
-Email sent to the hodo365team@digital.homeoffice.gov.uk titled "Request for ADUSER - Name (or just USERS if its a list)"
-
-Email needs to be FROM someone on the agreed authority list. The current list is as follows:
-
-Andrew Martin, David McQue, Ben Eustace, Jon Shanks, Thomas Fitzherbert, Geoff Teale and Onur Yelekci 
-
-Email contents:
+Email title: "Request for ADUSER - Name (or just USERS if its a list)". Please include: 
 
 1. Name (as in Firstname and lastname);
 2. POISE email (that the script sends the welcome email and creds to) if not available then we can send it to the requestors email;
 3. Department (as in DSAB, AFTC etc)
 
+AD-only account requests can only be raised by someone on the agreed authority list. The current list is as follows:
+Andrew Martin, David McQue, Ben Eustace, Jon Shanks, Thomas Fitzherbert, Geoff Teale and Onur Yelekci 
+
 * Debugging application code
 * Requests for creation of AWS accounts should be sent to the DMR portal (CTI team)
+
