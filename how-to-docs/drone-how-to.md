@@ -370,7 +370,7 @@ Once the secrets have been added, add a new step to your drone pipeline that wil
 
 ```yaml
 deploy_to_uat:
-  image: quay.io/ukhomeofficedigital/kd:v0.2.3
+  image: quay.io/ukhomeofficedigital/kd:v0.5.0
   secrets:
     - kube_server
     - kube_token
@@ -393,7 +393,7 @@ Kubernetes secrets can be loaded in your environment using a configuration (yaml
 
 ```yaml
   deploy_to_ci:
-    image: quay.io/ukhomeofficedigital/kd:v0.2.3
+    image: quay.io/ukhomeofficedigital/kd:v0.5.0
     commands:
       - |
         export KUBE_NAMESPACE="<your-project-name-temp>"
@@ -414,7 +414,7 @@ Kubernetes secrets can be loaded in your environment using a configuration (yaml
       event: push
 
   tidy_up:
-    image: quay.io/ukhomeofficedigital/kd:v0.2.3
+    image: quay.io/ukhomeofficedigital/kd:v0.5.0
     commands:
       - |
         export KUBE_NAMESPACE=`cat namespace.txt`
@@ -435,7 +435,7 @@ You can run tests or any other task that interacts with the deployed service by 
 
 ```yaml
   deploy_to_ci:
-    image: quay.io/ukhomeofficedigital/kd:v0.2.3
+    image: quay.io/ukhomeofficedigital/kd:v0.5.0
     ...
 
   test_all_the_things:
@@ -458,7 +458,7 @@ You can run tests or any other task that interacts with the deployed service by 
       event: push
 
   tidy_up:
-    image: quay.io/ukhomeofficedigital/kd:v0.2.3
+    image: quay.io/ukhomeofficedigital/kd:v0.5.0
     ...
 ```
 
@@ -542,7 +542,7 @@ predeploy_to_uat:
     event: deployment
 
 deploy_to_uat:
-  image: quay.io/ukhomeofficedigital/kd:v0.2.3
+  image: quay.io/ukhomeofficedigital/kd:v0.5.0
   secrets:
     - kube_server
     - kube_token

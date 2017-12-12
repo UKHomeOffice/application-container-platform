@@ -52,7 +52,7 @@ pipeline:
       event: push
 
   deploy_to_dev:
-    image: quay.io/ukhomeofficedigital/kd:v0.2.2
+    image: quay.io/ukhomeofficedigital/kd:v0.5.0
     environment:
       - KUBE_NAMESPACE=<your_namespace>
     secrets:
@@ -80,7 +80,7 @@ pipeline:
       event: deployment
 
   deploy_to_prod:
-    image: quay.io/ukhomeofficedigital/kd:v0.2.2
+    image: quay.io/ukhomeofficedigital/kd:v0.5.0
     environment:
       - KUBE_NAMESPACE=<dev-induction>
     secrets:
