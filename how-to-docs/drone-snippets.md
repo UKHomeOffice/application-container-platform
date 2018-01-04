@@ -6,7 +6,7 @@
 pipeline:
 
   build:
-    image: docker:17.09.0-ce
+    image: docker:17.09.1
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
@@ -15,7 +15,7 @@ pipeline:
       event: push
       
   image_to_quay:
-    image: docker:17.09.0-ce
+    image: docker:17.09.1
     secrets:
       - docker_password
     environment:
@@ -31,7 +31,7 @@ pipeline:
       event: push
       
   tagged_image_to_quay:
-    image: docker:17.09.0-ce
+    image: docker:17.09.1
     secrets:
       - docker_password
     environment:
@@ -101,7 +101,7 @@ pipeline:
 pipeline:
 
   pr-builder:
-    image: docker:17.09.0-ce
+    image: docker:17.09.1
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
