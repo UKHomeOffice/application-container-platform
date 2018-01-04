@@ -101,7 +101,7 @@ In the root folder of your project, create a `.drone.yml` file with the followin
 pipeline:
 
   my-build:
-    image: docker:17.09.0-ce
+    image: docker:17.09.1
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
@@ -146,7 +146,7 @@ Add the step to publish the docker image to Quay in your Drone pipeline with the
 
 ```yaml
 image_to_quay:
-  image: docker:17.09.0-ce
+  image: docker:17.09.1
   secrets:
     - docker_password
   environment:
@@ -183,7 +183,7 @@ You can do this through the Drone UI by going to your repo, clicking the menu ic
 Alternatively, you can use the Drone CLI to add the secret:
 
 ```
-$ drone secret add --image="docker:17.09.0-ce" --repository ukhomeoffice/<your_github_repo> --name DOCKER_PASSWORD --value <your_robot_token>
+$ drone secret add --image="docker:17.09.1" --repository ukhomeoffice/<your_github_repo> --name DOCKER_PASSWORD --value <your_robot_token>
 ```
 
 Restarting the build should be enough to make it pass.
@@ -203,14 +203,14 @@ If your repository is hosted publicly on GitHub, you shouldn't publish your imag
 You can inject the robot's token that has been supplied to you with:
 
 ```
-$ drone secret add --image="docker:17.09.0-ce" --repository <gitlab_repo_group>/<your_gitlab_repo> --name DOCKER_ARTIFACTORY_PASSWORD --value <your_robot_token>
+$ drone secret add --image="docker:17.09.1" --repository <gitlab_repo_group>/<your_gitlab_repo> --name DOCKER_ARTIFACTORY_PASSWORD --value <your_robot_token>
 ```
 
 You can add the following step in your `.drone.yml`:
 
 ```yaml
 image_to_artifactory:
-  image: docker:17.09.0-ce
+  image: docker:17.09.1
   secrets:
     - docker_artifactory_password
   environment:
@@ -313,7 +313,7 @@ Drone pipelines are triggered when events occurs. Event triggers can be as simpl
 
 ```yaml
 pr-builder:
-  image: docker:17.09.0-ce
+  image: docker:17.09.1
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
@@ -575,7 +575,7 @@ Example:
 pipeline:
 
   build_image:
-    image: docker:17.09.0-ce
+    image: docker:17.09.1
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
@@ -616,7 +616,7 @@ Pipelines by default do not have access to any Drone secrets that you have added
 
 ```yaml
 image_to_quay:
-  image: docker:17.09.0-ce
+  image: docker:17.09.1
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   secrets:
@@ -653,7 +653,7 @@ A: Make sure that your steps contain the environment variable `DOCKER_HOST=tcp:/
 
 ```yaml
 my-build:
-  image: docker:17.09.0-ce
+  image: docker:17.09.1
   environment:
     - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
