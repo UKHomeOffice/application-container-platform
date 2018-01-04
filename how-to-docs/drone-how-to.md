@@ -5,42 +5,52 @@
   - [Activate your pipeline](#activate-your-pipeline)
 - Adding a repository to Drone
   - [Configure your pipeline](#configure-your-pipeline)
-  - [Signature](#signature)
 - Publishing Docker images to
   - [Quay](#publishing-to-quay)
   - [Artifactory](#publishing-to-artifactory)
 - Deployments
   - [Deployments and promotions](#deployments-and-promotions)
-  - [Deploying to DSP](#deploying-to-dsp)
-  - [Versioned deployments](#versioned-deployments)
+  - [Drone as a pull request builder](#drone-as-a-pull-request-builder)
+  - [Deploying to ACP](#deploying-to-acp)
   - [Ephemeral deployments](#ephemeral-deployments)
-- Pull requests
-  - [PR Builder](#drone-as-a-pull-request-builder)
+  - [Using Another Repo](#using-another-repo)
+  - [Versioned deployments](#versioned-deployments)
+- Migrating your Pipeline
+  - [Secrets and Signing](#secrets-and-signing)
+  - [Docker in Docker](#docker-in-docker)
+  - [Services](#services)
+  - [Secrets](#secrets)
+  - [Variable Escaping](#variable-escaping)
 - [QAs](#qas)
 - [Snippets](drone-snippets.md)
 
-## Install Drone CLI
+## Setup
 
-- [Github drone instance](https://drone.digital.homeoffice.gov.uk): https://drone.digital.homeoffice.gov.uk
-- [Gitlab drone instance](https://drone-gitlab.digital.homeoffice.gov.uk/): https://drone-gitlab.digital.homeoffice.gov.uk/
+### Install Drone CLI
 
-Download and install the [Drone CLI](http://readme.drone.io/0.5/install/cli/) from the official website.
+- Github drone instance: https://drone.acp.homeoffice.gov.uk/
+- Gitlab drone instance: https://drone-gitlab.acp.homeoffice.gov.uk/
 
-> **Please don't install Drone CLI with `brew`** .
-> At the time of writing `brew` installs an old version of Drone that is not compatible with Drone 0.5.
+Download and install the [Drone CLI](http://docs.drone.io/cli-installation/).
+
+> At the time of writing, we are using version 0.8 of Drone.
+
+You can also install a release from [Drone CLI's GitHub repo](https://github.com/drone/drone-cli/releases).
+Once you have downloaded the relevant file, extract it and move it to the `/usr/local/bin` directory.
+
 
 Verify it works as expected:
 
 ```bash
 $ drone --version
-drone version 0.5.0+dev
+drone version 0.8.0
 ```
 
-Export the `DRONE_SERVER` and `DRONE_TOKEN` variables. You can find your token on the top left corner in your [account page](https://drone.digital.homeoffice.gov.uk/account).
+Export the `DRONE_SERVER` and `DRONE_TOKEN` variables. You can find your token on Drone by clicking the icon in the top right corner and going to [Token](https://drone.acp.homeoffice.gov.uk/account/token).
 
 ```bash
-export DRONE_SERVER=https://drone.digital.homeoffice.gov.uk
-export DRONE_TOKEN=123_your_token
+export DRONE_SERVER=https://drone.acp.homeoffice.gov.uk
+export DRONE_TOKEN=<your_drone_token>
 ```
 
 If your installation is successful, you should be able to query the current Drone instance:
@@ -65,21 +75,25 @@ Email: youremail@gmail.com
 >
 >  Please make sure that you have exported the `DRONE_SERVER` and `DRONE_TOKEN` variables properly.
 
-## Activate your pipeline
+### Activate your pipeline
 
-Once you are logged in, navigate to your [Account](https://drone.digital.homeoffice.gov.uk/account) from the top right corner.
+Once you are logged in to Drone, you will find a list of repos by clicking the icon in the top right corner and going to [Repositories](https://drone.acp.homeoffice.gov.uk/account/repos).
 
 Select the repo you want to activate.
 
 Navigate to your repository's settings in Github (or Gitlab) and you will see a webhook has been created. You need to update the url for the newly created web hook so that it matches this pattern:
 
 ```
-https://drone-external.digital.homeoffice.gov.uk/hook?access_token=some_token
+https://drone-external.acp.homeoffice.gov.uk/hook?access_token=some_token
 ```
 
+> If it is already in that format there is no need to change anything.
+>
+> The token in the payload url will not be the same as the personal token that you exported and it should be left unchanged.
+>
+> **Please note that this does not apply to Gitlab. When you activate the repo in Drone, you should not change anything for a Gitlab repo.**
 
-
-## Configure your pipeline
+### Configure your pipeline
 
 In the root folder of your project, create a `.drone.yml` file with the following content:
 
@@ -87,23 +101,14 @@ In the root folder of your project, create a `.drone.yml` file with the followin
 pipeline:
 
   my-build:
-    privileged: true
-    image: docker:1.11
+    image: docker:17.09.0-ce
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - docker build -t <image_name> .
     when:
       branch: master
       event: push
-
-services:
-  dind:
-    image: docker:1.11-dind
-    privileged: true
-    command:
-      - "-s"
-      - "overlay"
 ```
 
 Commit and push your changes:
@@ -116,44 +121,18 @@ $ git push origin master
 
 > **Please note** you should replace the name <...> with the name of your app.
 
-After you pushed, you should be able to see the build failing in Drone with the following message:
+You should be able to watch your build succeed in the Drone UI.
 
-```bash
-ERROR: Insufficient privileges to use privileged mode
-```
+## Publishing Docker images
 
-The current configuration requires extended privileges to run, but you're repository is not trusted. With a little help from Devops you should get your repository whitelisted.
-
-Once you are good to go, you can trigger a new build by pushing a new commit or through the Drone UI.
-
-This time the build will succeed.
-
-## Signature
-
-Drone requires you to sign the Yaml file before injecting secrets into your build environment. You can generate a signature for a named repository like this:
-
-```bash
-$ drone sign UKHomeOffice/<your_repo>
-```
-
-This will create a `.drone.yml.sig` in the current directory. You should commit this file:
-
-```bash
-$ git add .drone.yml.sig
-$ git commit
-$ git push origin master
-```
-
-You must re-sign your `.drone.yml` every time you change it.
-
-## Publishing to Quay
+### Publishing to Quay
 
 If your repository is hosted on Gitlab, you don't want to publish your images to Quay. Images published to Quay are public and can be inspected and downloaded by anyone. [You should publish your private images to Artifactory](#publishing-to-artifactory).
 
 Register for a free [Quay account](https://quay.io) using your Github account linked to the Home Office organisation.
 
 Once you've logged into Quay check that you have `ukhomeofficedigital` under Users and Organisations.  
-If you do not, [make a request by adding an issue to the Platform Access column](https://github.com/UKHomeOffice/application-container-platform-bau/projects/1)
+If you do not, [submit a support request on the platform hub for access to the ukhomeoffice organisation](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/quay-add-to-org).
 
 Once you have access to view the `ukhomeofficedigital` repositories, click repositories and
 click the `+ Create New Repositories` that is:
@@ -161,112 +140,103 @@ click the `+ Create New Repositories` that is:
 - public
 - empty - no need to create a repo from a Dockerfile or link it to an existing repository
 
-Add your project to the UKHomeOffice Quay account
-
-[Raise a ticket for a new UKHomeOffice Quay robot in the Platform Access column](https://github.com/UKHomeOffice/application-container-platform-bau/projects/1). You have to pick a name for it.  You should be supplied a robot password in response.
+Add your project to the UKHomeOffice Quay account and [submit a support request on the platform hub for a new Quay robot](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/quay-robot-request).
 
 Add the step to publish the docker image to Quay in your Drone pipeline with the supplied docker login but NOT the password:
 
 ```yaml
 image_to_quay:
-  image: docker:1.11
+  image: docker:17.09.0-ce
+  secrets:
+    - docker_password
   environment:
-    - DOCKER_HOST=tcp://127.0.0.1:2375
+    - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
-    - docker login -u="ukhomeofficedigital+drone_demo" -p=${DOCKER_PASSWORD} quay.io
-    - docker tag <image_name> quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
-    - docker push quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
+    - docker login -u="ukhomeofficedigital+<your_robot_username>" -p=$${DOCKER_PASSWORD} quay.io
+    - docker tag <image_name> quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA}
+    - docker push quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA}
   when:
     branch: master
     event: push
 ```
 
-Where the `image_name` in:
+Where the `<image_name>` in:
 
 ```yaml
-docker tag image_name quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
+docker tag <image_name> quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA}
 ```
 
 is the name of the image you tagged previously in the build step.
 
-Since your `.drone.yml`  has changed, you have to sign it before you can push the repository to the remote:
-
-```
-$ drone sign UKHomeOffice/<your_repo>
-$ git add .drone.yml.sig
-$ git add .drone.yml
-$ git commit
-$ git push origin master
-```
+> Note: $${DRONE_COMMIT_SHA} is a Drone environment variable that is passed to the container at runtime.
 
 The build should fail with the following error:
 
 ```bash
-docker login -u="ukhomeofficedigital+<drone>" -p=${DOCKER_PASSWORD} quay.io
-inappropriate ioctl for device
+Error response from daemon: Get https://quay.io/v2/: unauthorized: Could not find robot with username: ukhomeofficedigital+<your_robot_username> and supplied password.
 ```
 
-The error points to the missing `DOCKER_PASSWORD` environment variable.
+The error points to the missing `DOCKER_PASSWORD` environment variable. You will need to add this as a drone secret.
 
-You can inject the robot's password supplied to you in your raised ticket to the Platform team with:
+You can do this through the Drone UI by going to your repo, clicking the menu icon in the top right and then clicking **Secrets**. You should be presented with a list of the secrets for that repo (if there are any) and you should be able to add secrets giving them a name and value. Add a secret with the name **DOCKER_PASSWORD** and with the value being the robot token that was supplied to you.
+
+Alternatively, you can use the Drone CLI to add the secret:
 
 ```
-$ drone secret add --conceal --image="<your_image>" UKHomeOffice/<your_repo> DOCKER_PASSWORD your_robot_token
+$ drone secret add --image="docker:17.09.0-ce" --repository ukhomeoffice/<your_github_repo> --name DOCKER_PASSWORD --value <your_robot_token>
 ```
 
 Restarting the build should be enough to make it pass.
 
-## Publishing to Artifactory
+> The Drone CLI allows for more control over the secret as opposed to the UI. For example, the CLI allows you to specify the image and the events that the secret will be allowed to be used with.
+>
+> Also note that the secret was specified in the `secrets` section of the pipeline to give it access to the secret. Without this, the pipeline would not be able to use the secret and it would fail.
+
+### Publishing to Artifactory
 
 Images hosted on [Artifactory](https://docker.digital.homeoffice.gov.uk) are private.
 
 If your repository is hosted publicly on GitHub, you shouldn't publish your images to Artifactory. Artifactory is only used to publish private images. [You should use Quay to publish your public images](#publishing-to-quay).
 
-[Raise a ticket for a new Artifactory robot](https://github.com/UKHomeOffice/application-container-platform-bau/). You have to pick a name for it.  You should be supplied a robot token in response.
+[Submit a support request for a new Artifactory robot](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/artifactory-bot). You should be supplied a robot token in response.
 
-You can inject the robot's token supplied to you in your raised ticket to the Platform team with:
+You can inject the robot's token that has been supplied to you with:
 
 ```
-$ drone secret add --image="<your_image>" UKHomeOffice/<your_repo> DOCKER_ARTIFACTORY_PASSWORD your_robot_token
+$ drone secret add --image="docker:17.09.0-ce" --repository <gitlab_repo_group>/<your_gitlab_repo> --name DOCKER_ARTIFACTORY_PASSWORD --value <your_robot_token>
 ```
 
 You can add the following step in your `.drone.yml`:
 
 ```yaml
 image_to_artifactory:
-  image: docker:1.11
+  image: docker:17.09.0-ce
+  secrets:
+    - docker_artifactory_password
   environment:
-    - DOCKER_HOST=tcp://127.0.0.1:2375
+    - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
-    - docker login -u="<your_robot_user>" -p=${DOCKER_ARTIFACTORY_PASSWORD} docker.digital.homeoffice.gov.uk
-    - docker tag image_name docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
-    - docker push docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
+    - docker login -u="<your_robots_username>" -p=$${DOCKER_ARTIFACTORY_PASSWORD} docker.digital.homeoffice.gov.uk
+    - docker tag <image_name> docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<your_artifactory_repo>:$${DRONE_COMMIT_SHA}
+    - docker push docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<your_artifactory_repo>:$${DRONE_COMMIT_SHA}
   when:
     branch: master
     event: push
 ```
 
-Where the `image_name` in:
+Where the `<image_name>` in:
 
 ```yaml
-docker tag image_name quay.io/ukhomeofficedigital/<node-hello-world>:${DRONE_COMMIT_SHA}
+docker tag <image_name> docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<your_artifactory_repo>:$${DRONE_COMMIT_SHA}
 ```
 
 is the name of the image you tagged previously in the build step.
 
-Since your `.drone.yml`  has changed, you have to sign it before you can push the repository to the remote:
-
-```bash
-$ drone sign UKHomeOffice/<your_repo>
-$ git add .drone.yml.sig
-$ git add .drone.yml
-$ git commit
-$ git push origin master
-```
-
 The image should now be published on Artifactory.
 
-## Deployments and promotions
+## Deployments
+
+### Deployments and promotions
 
 Create a step that runs only on deployments:
 
@@ -280,29 +250,29 @@ deploy-to-preprod:
     event: deployment
 ```
 
-Sign your build and push the changes to your remote repository.
+Push the changes to your remote repository.
 
 You can deploy the build you just pushed with the following command:
 
 ```bash
-$ drone deploy UKHomeOffice/<your_repo> 16 preprod
+$ drone deploy ukhomeoffice/<your_repo> 16 preprod
 ```
 
-Where `16` is the successful build number you wish to deploy to the `preprod` environment.
+Where `16` is the successful build number on drone that you wish to deploy to the `preprod` environment.
 
-You can pass additional arguments to your deployment as environment variables:
+You can pass additional parameters to your deployment as environment variables:
 
 ```bash
-$ drone deploy UKHomeOffice/<your_repo> 16 preprod -p DEBUG=1 -p NAME=Dan
+$ drone deploy ukhomeoffice/<your_repo> 16 preprod -p DEBUG=1 -p NAME=Dan
 ```
 
-and use from the step like this:
+and use them in the step like this:
 
 ```yaml
 deploy-to-preprod:
   image: busybox
   commands:
-    - /bin/echo hello ${NAME}
+    - /bin/echo hello $${NAME}
   when:
     environment: preprod
     event: deployment
@@ -331,182 +301,125 @@ deploy-to-prod:
 And deploy them accordingly:
 
 ```bash
-$ drone deploy UKHomeOffice/<your_repo> 15 preprod
-$ drone deploy UKHomeOffice/<your_repo> 16 prod
+$ drone deploy ukhomeoffice/<your_repo> 16 preprod
+$ drone deploy ukhomeoffice/<your_repo> 16 prod
 ```
 
-[Read more on environment and constraints](http://readme.drone.io/0.5/usage/constraints/#environment)
+Read more on [environments](http://docs.drone.io/environment/).
 
-## Drone as a Pull Request builder
+### Drone as a Pull Request builder
 
-Drone pipelines are triggered when events occurs. Event triggers can be as simple as a _push_, _a tagged commit_ or _a pull request_ or as granular as _only for pull request with a named branch `test`_. You can limit the execution of build steps at runtime using the `when` block. As an example, this block executes only on pull requests:
+Drone pipelines are triggered when events occurs. Event triggers can be as simple as a _push_, _a tagged commit_, _a pull request_ or as granular as _only for pull requests for a branch named `test`_. You can limit the execution of build steps at runtime using the `when` block. As an example, this block executes only on pull requests:
 
 ```yaml
 pr-builder:
-  privileged: true
-  image: docker:1.11
+  image: docker:17.09.0-ce
   environment:
-    - DOCKER_HOST=tcp://127.0.0.1:2375
+    - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
-    - docker build -t <node-hello-world> .
+    - docker build -t <image_name> .
   when:
     event: pull_request
 ```
 
-Drone will automatically execute that step when a new pull request is raised.
+Drone will only execute that step when a new pull request is raised (and when pushes are made to the branch while a pull request is open).
 
-[> Read more about Drone conditions](http://readme.drone.io/0.5/usage/conditions/)
+[Read more about Drone conditions](http://docs.drone.io/conditional-steps/).
 
-## Deploying to DSP
+### Deploying to ACP
 
-> Please note that this section assumes you have a separate repository containing your kube files as explained [here](https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/platform_introduction.md#define-a-deployment-for-your-application).
-
-You can clone your kube repo as part of your pipeline with:
-
-```yaml
-predeploy_to_uat:
-  image: plugins/git
-  commands:
-    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
-  when:
-    environment: uat
-    event: deployment
+Add a deployment script with the following:
+ 
+```bash
+#!/bin/bash
+export KUBE_NAMESPACE=<dev-induction>
+export KUBE_SERVER=${KUBE_SERVER}
+export KUBE_TOKEN=${KUBE_TOKEN}
+  
+kd --insecure-skip-tls-verify \
+    -f deployment.yaml \
+    -f service.yaml \
+    -f ingress.yaml
 ```
 
-from now on, the repository is part of the workspace and is ready to be accessed by other steps in the pipeline.
+> Please note that this is only an example script and it will need to be changed to fit your particular application's needs.
 
-You can execute the deployment script in a new step with:
-
-```yaml
-deploy_to_uat:
-  image: quay.io/ukhomeofficedigital/kd:v0.2.3
-  environment:
-    - KUBE_NAMESPACE=<dev-induction>
-  commands:
-    - cd <kube-node-hello-world>
-    - ./deploy.sh
-  when:
-    environment: uat
-    event: deployment
-```
-
-The build will fail with the following error:
+If you deployed this now you would likely receive an error similar to this:
 
 ```bash
-[INFO] 2016/10/20 10:17:40 main.go:158: deploying deployment/induction-hello-world
-[ERROR] 2016/10/20 10:17:40 main.go:160: error: You must be logged in to the server (the server has asked for the client to provide credentials)
-[ERROR] 2016/10/20 10:17:40 main.go:130: exit status 1
+error: You must be logged in to the server (the server has asked for the client to provide credentials)
 ```
 
-This suggests that you are not authorised to deploy to the kubernetes cluster. You can fix this by setting your `KUBE_TOKEN` to a valid value. But before you do this, let's recap the environment variables needed to deploy successfully to DSP.
+This error appears because [kd](https://github.com/UKHomeOffice/kd) needs 3 environment variables to be set before deploying:
 
-The kube `deploy.sh` scripts relies on 3 environment variables:
+- `KUBE_NAMESPACE` - The kubernetes namespace you wish to deploy to. **You need to provide the kubernetes namespace as part of the deployment job**.
 
-- `KUBE_NAMESPACE` - the kubernetes namespace you wish to deploy to. **You need to provide the kubernetes namespace as part of the deployment job**.
+- `KUBE_TOKEN` - This is the token used to authenticate against the kubernetes cluster. **If you do not already have a kube token, [here are docs explaining how to get one](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/kubernetes-token.md)**.
 
-- `KUBE_TOKEN` - this is the token used to authenticate against the kubernetes cluster. **You need to add this as a secret to your build step. You can [request a kubernetes token here](https://github.com/UKHomeOffice/application-container-platform-bau/issues/new)**. In this particular case, the secret was added with:
+- `KUBE_SERVER` - This is the address of the kubernetes cluster that you want to deploy to.
 
-  ```bash
-  $ drone secret add --image=quay.io/ukhomeofficedigital/kd:v0.2.3 --conceal  UKHomeOffice/<your_repo> KUBE_TOKEN <your_token>
-  ```
+You will need to add `KUBE_TOKEN` and `KUBE_SERVER` as drone secrets. Infomation about how to add Drone secrets can be found in the [publishing to Quay section](#publishing-to-quay).
 
-- `KUBE_SERVER` - this is the address of the kubernetes cluster. There are four environment variables set as an organisational secret in Drone: `KUBE_SERVER_DEV`,  `KUBE_SERVER_OPS`, `KUBE_SERVER_PROD` and `KUBE_SERVER_CI`. You can verify that the secrets are present with:
+You can verify that the secrets for your repo are present with:
 
-  ```
-  $ drone org secret ls UKHomeOffice
-  ```
-
-  _Please note that you need to be an admin to issue this command._
-
-You need to reassign one of those four variables to `KUBE_SERVER` before your script runs, [like in this case](https://github.com/UKHomeOffice/kube-node-hello-world/blob/99af304ce0b894e8f0db1c05780cf6512741516d/deploy.sh#L4).
-
-Restarting the build should be enough to see it succeed.
-
-## Versioned deployments
-
-In the previous step you learnt how to `git checkout` another repository and deploy your app to DSP. Since there's no tag nor commit on the repository url, the `predeploy_uat` step always checks out the latest code:
-
-```yaml
-predeploy_to_uat:
-  image: plugins/git
-  commands:
-    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
-  when:
-    environment: uat
-    event: deployment
+```bash
+$ drone secret ls --repository ukhomeoffice/<your-repo>
 ```
 
-This is convenient if you change your deployment repository frequently, since drone will checkout the latest code every time you restart the build.
-
-However always using the latest version of the deployment configuration can cause major issues and isn't recommended. For example when promoting from preprod to prod you want to use the preprod version of the deployment configuration. If you use the latest it could potentially break your production environment, especially as it won't necessarily have been tested.
-
-To counteract this you should use a specific version of your deployment scripts. In fact, you should  `git checkout` the tag or sha as part of your deployment step.
-
-This is how the new pipeline would look:
+Once the secrets have been added, add a new step to your drone pipeline that will execute the deployment script:
 
 ```yaml
-predeploy_generic:
-  image: plugins/git
-  commands:
-    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
-  when:
-    event: deployment
-
 deploy_to_uat:
-  image: quay.io/ukhomeofficedigital/kd:v0.2.3
-  environment:
-    - KUBE_NAMESPACE=<dev-induction>
+  image: quay.io/ukhomeofficedigital/kd:v0.5.0
+  secrets:
+    - kube_server
+    - kube_token
   commands:
-    - cd <kube-node-hello-world>
-    - git checkout v1.1
     - ./deploy.sh
   when:
     environment: uat
     event: deployment
 ```
 
-## Ephemeral deployments
+### Ephemeral deployments
 
 Sometimes you might want to start more than one service and test how those services interact with each other. This is particularly useful when you want to run integration or end-to-end tests as part of your pipeline.
 
 You can deploy your application to a temporary namespace in the cluster, run the test and dispose of the environment as part of your pipeline.
 
-You should already have kubernetes configs for deployment, service and ingress. In order to create an environment from scratch you need all your kubernetes secrets to be loaded as part of the startup process.
+You should already have Kubernetes configs for deployment, service and ingress. In order to create an environment from scratch you need all your Kubernetes secrets to be loaded as part of the startup process.
 
 Kubernetes secrets can be loaded in your environment using a configuration (yaml) file or inline. You can find more information setting secrets [here](https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/platform_introduction.md#create-a-kubernetes-secret). We recommend you create a `secrets.yaml` as a template for your secrets.
 
 ```yaml
   deploy_to_ci:
-    image: quay.io/ukhomeofficedigital/kd:v0.2.3
+    image: quay.io/ukhomeofficedigital/kd:v0.5.0
     commands:
       - |
-        export KUBE_NAMESPACE="<your-project-name>-$(head /dev/urandom | tr -dc a-z0-9 | head -c 13)"
-        export KUBE_SERVER=${KUBE_SERVER_CI}
-        export KUBE_TOKEN=${KUBE_TOKEN_CI}
-        export MY_SECRET=$(head /dev/urandom | tr -dc a-z0-9 | head -c 13 | base64)
+        export KUBE_NAMESPACE="<your-project-name-temp>"
+        export KUBE_SERVER=${KUBE_SERVER}
+        export KUBE_TOKEN=${KUBE_TOKEN}
 
         echo ${KUBE_NAMESPACE} > namespace.txt
 
         kubectl create namespace ${KUBE_NAMESPACE} --insecure-skip-tls-verify=true --server=${KUBE_SERVER} --token=${KUBE_TOKEN}
-        cd kube-node-hello-world
 
-        cd kube
         kd --insecure-skip-tls-verify \
-           --file example-secrets.yaml \
-           --file example-deployment.yaml \
-           --file example-service.yaml \
-           --file example-ingress.yaml
+           --file secrets.yaml \
+           --file deployment.yaml \
+           --file service.yaml \
+           --file ingress.yaml
     when:
       branch: master
       event: push
 
   tidy_up:
-    image: quay.io/ukhomeofficedigital/kd:v0.2.3
+    image: quay.io/ukhomeofficedigital/kd:v0.5.0
     commands:
       - |
         export KUBE_NAMESPACE=`cat namespace.txt`
-        export KUBE_SERVER=${KUBE_SERVER_CI}
-        export KUBE_TOKEN=${KUBE_TOKEN_CI}
+        export KUBE_SERVER=${KUBE_SERVER}
+        export KUBE_TOKEN=${KUBE_TOKEN}
         kubectl delete namespace ${KUBE_NAMESPACE} --insecure-skip-tls-verify=true --server=${KUBE_SERVER} --token=${KUBE_TOKEN}
     when:
       branch: master
@@ -514,98 +427,247 @@ Kubernetes secrets can be loaded in your environment using a configuration (yaml
       status: [ success, failure ]
 ```
 
-These are the variables used:
+The `tidy_up` step is configured to run on both successful and failed builds and removes the generated namespace.
 
-- `KUBE_TOKEN_CI` is provided to you as global secret. This is used to authenticate to the Kubernetes cluster. There's no need to set this yourself.
-- `KUBE_SERVER_CI` is the url for one of the four clusters (the other three being DEV, PREPROD & PROD). This is a global secret and there's no need to set this yourself.
-- `KUBENAMESPACE` is the name for the Kubernetes namespace. The name is created dynamically using `uuidgen`, but you could use any function you wish as long as the string is unique _enough_.
-- `DB_USERNAME` and `DB_PASSWORD` are base64 strings used to store username and password for the database. Those secrets are passed into the `example-secrets.yml` and deployed to the namespace. Since we don't care about the value for those secrets, the content is created pseudo randomly with `uuidgen`.
+> Please note that this is only an example. Parts of this will need to be modified depending on your application. `KUBE_SERVER` AND `KUBE_TOKEN` will need to be set as Drone secrets similar to how they were set in the [Deploying to ACP section](#deploying-to-acp). Also note that these commands do not have to be in the Drone yaml; they can be put into a seperate file and called as normal in the pipeline.
 
-The `tidy_up` step is configured to run on successful and failed builds and removes the generated namespace.
+You can run tests or any other task that interacts with the deployed service by adding a step in the pipeline between the `deploy_to_ci` and `tidy_up`. As an example, you can use `wget` to check that your service works:
 
-You can run tests or any other task that interacts with the deployed service by adding a step in the pipeline between the `deploy_to_ci` and `tidy_up`. As an example, you can `curl` the service to probe its liveness:
-
-```
+```yaml
   deploy_to_ci:
-    image: quay.io/ukhomeofficedigital/kd:v0.2.3
+    image: quay.io/ukhomeofficedigital/kd:v0.5.0
     ...
 
   test_all_the_things:
     image: busybox
-    network_mode: "default"
-    dns:
-      - 10.200.0.10
     commands:
       - |
-        export KUBE_NAMESPACE=`cat namespace.txt`
-        wget -O- "<your-service>-${KUBE_NAMESPACE}.svc.cluster.local"
+        start=$SECONDS
+        timeout=60
+        (exit 9)
+        while [ $? -ne 0  ]
+        do
+          if [ (( $SECONDS - $start )) -ge $timeout ]
+          then
+            break
+          fi
+          wget -O- "<your-service-host-url>"
+        done
     when:
       branch: master
       event: push
 
   tidy_up:
-    image: quay.io/ukhomeofficedigital/kd:v0.2.3
+    image: quay.io/ukhomeofficedigital/kd:v0.5.0
     ...
 ```
 
-Please note that `network_mode` and `dns` are required to resolve the name of the service from within the Drone agent.
+### Using Another Repo
 
-You can find the name of your service at the very top of your service kube file:
+It is possible to access files or deployment scripts from another repo, there are two ways of doing this.
 
-````Yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    name: <name-of-your-service>
-  name: <name-of-your-service>
-...
-````
+The recommended method is to clone another repo in the current repo (since this only requires maintaining one .drone.yml) using the following step:
+
+```yaml
+predeploy_to_uat:
+  image: plugins/git
+  commands:
+    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
+  when:
+    environment: uat
+    event: deployment
+```
+
+Your repository is saved in the workspace, which in turn is shared among all steps in the pipeline.
+
+However, if you decide that you want to trigger a completely different pipeline on a separate repository, you can leverage the [drone-trigger](https://github.com/UKHomeOffice/drone-trigger) plugin. If you have a secondary repository, you can setup Drone on that repository like so:
+
+```yaml
+pipeline:
+  deploy_to_uat:
+    image: busybox
+    commands:
+      - echo ${SHA}
+    when:
+      event: deployment
+      environment: uat
+```
+
+Once you are ready, you can push the changes to the remote repository. In your main repository you can add the following step:
+
+```yaml
+trigger_deploy:
+  image: quay.io/ukhomeofficedigital/drone-trigger:latest
+  drone_server: https://drone.acp.homeoffice.gov.uk
+  repo: UKHomeOffice/<deployment_repo>
+  branch: <master>
+  deploy_to: <uat>
+  params: SHA=${DRONE_COMMIT_SHA}
+  when:
+    event: deployment
+    environment: uat
+```
+
+The settings are very similar to the `drone deploy` command:
+
+- `deploy_to` is the [environment constraint](http://docs.drone.io/conditional-steps/#environment)
+- `params` is a list of comma separated list of arguments. In the command line tool, this is equivalent to `-p PARAM1=ONE -p PARAM2=TWO`
+- `repo` the repository where the deployment scripts are located
+
+The next time you trigger a deployment on the main repository with:
+
+```bash
+$ drone deploy UKHomeOffice/<your_repo> 16 uat
+```
+
+This will trigger a new deployment on the second repository.
+
+Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
+
+### Versioned deployments
+
+When you restart your build, Drone will automatically use the latest version of the code. However always using the latest version of the deployment configuration can cause major issues and isn't recommended. For example when promoting from preprod to prod you want to use the preprod version of the deployment configuration. If you use the latest it could potentially break your production environment, especially as it won't necessarily have been tested.
+
+To counteract this you should use a specific version of your deployment scripts. In fact, you should  `git checkout` the tag or sha as part of your deployment step.
+
+Here is an example of this:
+
+```yaml
+predeploy_to_uat:
+  image: plugins/git
+  commands:
+    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
+  when:
+    environment: uat
+    event: deployment
+
+deploy_to_uat:
+  image: quay.io/ukhomeofficedigital/kd:v0.5.0
+  secrets:
+    - kube_server
+    - kube_token
+  commands:
+    - apk update && apk add git
+    - git checkout v1.1
+    - ./deploy.sh
+  when:
+    environment: uat
+    event: deployment
+```
+
+## Migrating your pipeline
+
+### Secrets and Signing
+
+It is no longer necessary to sign your `.drone.yml` so the `.drone.yml.sig` can be deleted. Secrets can be defined in the Drone UI and can be restricted to selected events, for example deployments or pull requests.
+
+### Docker-in-Docker
+
+The Docker-in-Docker (dind) service is no longer required. Instead, change Docker host to `DOCKER_HOST=tcp://172.17.0.1:2375` in the `environment` section of your pipline, and you will be able to access the shared Docker server on the drone agent. Note that it is only possible to run one Docker build at a time per Drone agent.
+
+Since priviliged mode was primarily used for docker in docker, you should remove the `priviliged: true` line from your .drone.yml.
+
+You can also use your freshly built image directly and run commands as part of your pipeline.
+
+Example:
+
+```yaml
+pipeline:
+
+  build_image:
+    image: docker:17.09.0-ce
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+      - docker build -t hello_world .
+    when:
+      branch: master
+      event: push
+
+  test_image:
+    image: hello_world
+    commands:
+      - ./run-hello-world.sh
+    when:
+      branch: master
+      event: push
+```
+
+
+### Services
+
+If you use the `services` section of your `.drone.yml` it is possible to reference them using the DNS name of the service. 
+
+For example, if using the following section:
+
+```yaml
+services:
+  database:
+    image: mysql
+```
+
+The mysql server would be available on `tcp://database:3306`
+
+### Secrets
+
+Organisation secrets are no longer available. This means that if you are using any organisation secrets such as `KUBE_TOKEN_DEV`, you will need to add a secret in Drone to replace it.
+
+Pipelines by default do not have access to any Drone secrets that you have added. You must now define which secrets a pipeline is allowed access to in a `secrets` section in your pipeline. Here is an example of a pipeline that has access to the `DOCKER_PASSWORD` secret which will be used to push an image to Quay:
+
+```yaml
+image_to_quay:
+  image: docker:17.09.0-ce
+  environment:
+    - DOCKER_HOST=tcp://172.17.0.1:2375
+  secrets:
+    - docker_password
+  commands:
+    - docker login -u="ukhomeofficedigital+my_robot" -p=$${DOCKER_PASSWORD} quay.io
+    - docker tag my_built_image quay.io/ukhomeofficedigital/my_repo:$${DRONE_COMMIT_SHA}
+    - docker push quay.io/ukhomeofficedigital/my_repo:$${DRONE_COMMIT_SHA}
+  when:
+    branch: master
+    event: push
+```
+
+### Variable Escaping
+
+Any Drone variables (secrets and environment variables) must now be escaped by having two $$ instead of one. Examples:
+
+```yaml
+${DOCKER_PASSWORD} --> $${DOCKER_PASSWORD}
+${DRONE_TAG} --> $${DRONE_TAG}
+${DRONE_COMMIT_SHA} --> $${DRONE_COMMIT_SHA}
+
+```
 
 ## Q&As
 
 ### Q: The build fails with _"ERROR: Insufficient privileges to use privileged mode"_
 
-A: Your repository isn't in the trusted list of repositories. Get in touch with Devops and ask them to trust it.
+A: Remove `priviliged: true` from your `.drone.yml`. As explained in the [migrating your pipeline section](migrating-your-pipeline), the primary use of this was for Docker-in-Docker which is not required.
 
 ### Q: The build fails with _"Cannot connect to the Docker daemon. Is the docker daemon running on this host?"_
 
-A: Make sure that your steps contain the environment variable `DOCKER_HOST=tcp://127.0.0.1:2375` like in this case:
+A: Make sure that your steps contain the environment variable `DOCKER_HOST=tcp://172.17.0.1:2375` like in this case:
 
-````
+```yaml
 my-build:
-  privileged: true
-  image: docker:1.11
+  image: docker:17.09.0-ce
   environment:
-    - DOCKER_HOST=tcp://127.0.0.1:2375
+    - DOCKER_HOST=tcp://172.17.0.1:2375
   commands:
     - docker build -t <image_name> .
   when:
     branch: master
     event: push
-````
-
-Also make sure that you have `dind` as a service in your `.drone.yml`:
-
-```
-services:
-  dind:
-    image: docker:1.11-dind
-    privileged: true
-    command:
-      - "-s"
-      - "overlay"
 ```
 
-### Q: The build fails when uploading to Quay with the error _"Inappropriate ioctl for device"_
+### Q: The build fails when uploading to Quay with the error _"Error response from daemon: Get https://quay.io/v2/: unauthorized:..."_
 
-A: This suggests that the `docker` executable prompted for credentials instead of reading them from the command line. This might be caused by:
+A: This is likely because the secret wasn't added correctly or the password is incorrect. Check that the secret has been added to Drone and that you have added it to the pipeline that requires it.
 
-- Your `.drone.yml` not being signed. When you want to inject environment variables in your build you must sign your `.drone.yml`.
-- The secret wasn't injected correctly or the password is incorrect.
-
-### Q: As part of my build process I have two `Dockerfile`s to produce a Docker image. How can I share files between builds in the same step?
+### Q: As part of my build process I have two `Dockerfiles` to produce a Docker image. How can I share files between builds in the same step?
 
 A: When the pipeline starts, Drone creates a Docker data volume that is passed along all active steps in the pipeline. If the first step creates a `test.txt` file, the second step can use that file. As an example, this pipeline uses a two step build process:
 
@@ -629,75 +691,7 @@ pipeline:
       event: push
 ```
 
-### Q : What shall I do when my deployment scripts are in another repo?
-
-A: You can clone another repo in the current repo using the following step:
-
-```yaml
-predeploy_to_uat:
-  image: plugins/git
-  commands:
-    - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo>.git
-  when:
-    environment: uat
-    event: deployment
-```
-
-Your repository is saved in the workspace, which in turn is shared among all steps in the pipeline.
-
-This is the preferred way to deploy our code since you need to maintain one single `.drone.yml`.
-
-However, if you decide that you want to trigger a completely different pipeline on a separate repository, you can leverage the [drone-trigger](https://github.com/UKHomeOffice/drone-trigger) plugin. If you have a secondary repository, you can setup Drone on that repository like so:
-
-```yaml
-pipeline:
-  deploy_to_uat:
-    image: busybox
-    commands:
-      - echo ${SHA}
-    when:
-      event: deployment
-      environment: uat
-```
-
-Once you are ready, you can sign the `.drone.yml` and push the changes to the remote repository. In your main repository you can add the following step:
-
-```yaml
-trigger_deploy:
-  image: quay.io/ukhomeofficedigital/drone-trigger:latest
-  drone_server: https://drone.digital.homeoffice.gov.uk
-  repo: UKHomeOffice/<deployment_repo>
-  branch: <master>
-  deploy_to: <uat>
-  params: SHA=${DRONE_COMMIT_SHA}
-  when:
-    event: deployment
-    environment: uat
-```
-
-The settings are very similar to the `drone deploy` command:
-
-- `deploy_to` is the [environment constraint](http://readme.drone.io/0.5/usage/constraints/#environment)
-- `params` is a list of comma separated list of arguments. In the command line tool, this is equivalent to `-p PARAM1=ONE -p PARAM2=TWO`
-- `repo` the repository where the deployment scripts are located
-
-The next time you trigger a deployment on the main repository with:
-
-```bash
-$ drone deploy UKHomeOffice/<your_repo> 16 uat
-```
-
-This will trigger a new deployment on the second repository.
-
-Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
-
-## Q: I can't sign `.drone.yml`
-
-- Make sure that your repository is activated in Drone
-- Make sure your `DRONE_SERVER` and `DRONE_TOKEN` are properly set
-- Make sure you can successfully connect to Drone by typing `drone info`
-
-## Q: Should I use Gitlab with Quay?
+### Q: Should I use Gitlab with Quay?
 
 A: Please don't. If your repository is hosted in Gitlab then use Artifactory to publish your images. Images published to Artifactory are kept private.
 
