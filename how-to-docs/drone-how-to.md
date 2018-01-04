@@ -71,7 +71,7 @@ Once you are logged in, navigate to your [Account](https://drone.digital.homeoff
 
 Select the repo you want to activate.
 
-Navigate to your repository's settings in Github (or Gitlab) and update the payload url in the web hook section so that it matches this pattern:
+Navigate to your repository's settings in Github (or Gitlab) and you will see a webhook has been created. You need to update the url for the newly created web hook so that it matches this pattern:
 
 ```
 https://drone-external.digital.homeoffice.gov.uk/hook?access_token=some_token
