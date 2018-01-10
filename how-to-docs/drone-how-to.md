@@ -12,7 +12,6 @@
   - [Deployments and promotions](#deployments-and-promotions)
   - [Drone as a pull request builder](#drone-as-a-pull-request-builder)
   - [Deploying to ACP](#deploying-to-acp)
-  - [Ephemeral deployments](#ephemeral-deployments)
   - [Using Another Repo](#using-another-repo)
   - [Versioned deployments](#versioned-deployments)
 - Migrating your Pipeline
@@ -381,87 +380,6 @@ deploy_to_uat:
     event: deployment
 ```
 
-### Ephemeral deployments
-
-Sometimes you might want to start more than one service and test how those services interact with each other. This is particularly useful when you want to run integration or end-to-end tests as part of your pipeline.
-
-You can deploy your application to a temporary namespace in the cluster, run the test and dispose of the environment as part of your pipeline.
-
-You should already have Kubernetes configs for deployment, service and ingress. In order to create an environment from scratch you need all your Kubernetes secrets to be loaded as part of the startup process.
-
-Kubernetes secrets can be loaded in your environment using a configuration (yaml) file or inline. You can find more information setting secrets [here](https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/platform_introduction.md#create-a-kubernetes-secret). We recommend you create a `secrets.yaml` as a template for your secrets.
-
-```yaml
-  deploy_to_ci:
-    image: quay.io/ukhomeofficedigital/kd:v0.5.0
-    commands:
-      - |
-        export KUBE_NAMESPACE="<your-project-name-temp>"
-        export KUBE_SERVER=${KUBE_SERVER}
-        export KUBE_TOKEN=${KUBE_TOKEN}
-
-        echo ${KUBE_NAMESPACE} > namespace.txt
-
-        kubectl create namespace ${KUBE_NAMESPACE} --insecure-skip-tls-verify=true --server=${KUBE_SERVER} --token=${KUBE_TOKEN}
-
-        kd --insecure-skip-tls-verify \
-           --file secrets.yaml \
-           --file deployment.yaml \
-           --file service.yaml \
-           --file ingress.yaml
-    when:
-      branch: master
-      event: push
-
-  tidy_up:
-    image: quay.io/ukhomeofficedigital/kd:v0.5.0
-    commands:
-      - |
-        export KUBE_NAMESPACE=`cat namespace.txt`
-        export KUBE_SERVER=${KUBE_SERVER}
-        export KUBE_TOKEN=${KUBE_TOKEN}
-        kubectl delete namespace ${KUBE_NAMESPACE} --insecure-skip-tls-verify=true --server=${KUBE_SERVER} --token=${KUBE_TOKEN}
-    when:
-      branch: master
-      event: push
-      status: [ success, failure ]
-```
-
-The `tidy_up` step is configured to run on both successful and failed builds and removes the generated namespace.
-
-> Please note that this is only an example. Parts of this will need to be modified depending on your application. `KUBE_SERVER` AND `KUBE_TOKEN` will need to be set as Drone secrets similar to how they were set in the [Deploying to ACP section](#deploying-to-acp). Also note that these commands do not have to be in the Drone yaml; they can be put into a seperate file and called as normal in the pipeline.
-
-You can run tests or any other task that interacts with the deployed service by adding a step in the pipeline between the `deploy_to_ci` and `tidy_up`. As an example, you can use `wget` to check that your service works:
-
-```yaml
-  deploy_to_ci:
-    image: quay.io/ukhomeofficedigital/kd:v0.5.0
-    ...
-
-  test_all_the_things:
-    image: busybox
-    commands:
-      - |
-        start=$SECONDS
-        timeout=60
-        (exit 9)
-        while [ $? -ne 0  ]
-        do
-          if [ (( $SECONDS - $start )) -ge $timeout ]
-          then
-            break
-          fi
-          wget -O- "<your-service-host-url>"
-        done
-    when:
-      branch: master
-      event: push
-
-  tidy_up:
-    image: quay.io/ukhomeofficedigital/kd:v0.5.0
-    ...
-```
-
 ### Using Another Repo
 
 It is possible to access files or deployment scripts from another repo, there are two ways of doing this.
@@ -696,3 +614,11 @@ pipeline:
 A: Please don't. If your repository is hosted in Gitlab then use Artifactory to publish your images. Images published to Artifactory are kept private.
 
 If you still want to use Quay, you should consider hosting your repository on the open (Github).
+
+### Q: Can I create a token that has permission to create ephemeral/temporary namespaces?
+
+A: No. This is because there is currently no way to give access to namespaces via regex.
+
+I.e. There is no way to give access to any namespace with the format: `my-temp-namespace-*` (where \* would be build number or something similar).
+
+Alternatively, you can be given a named namespace in the CI cluster.
