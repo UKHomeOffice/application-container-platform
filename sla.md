@@ -20,7 +20,7 @@ We will endeavour to respond to a support ticket or slack query within 8 working
 
 Current BAU support contacts:
 
-Ben Eustace and Onur Yelekci
+Ben Eustace, Onur Yelekci, Vincent Lam and Tasharn Brown
 
 Current issue escalation contacts:
 
@@ -91,7 +91,7 @@ Email title: "Request for ADUSER - Name (or just USERS if its a list)". Please i
 3. Department (as in DSAB, AFTC etc)
 
 AD-only account requests can only be raised by someone on the agreed authority list. The current list is as follows:
-Andrew Martin, David McQue, Ben Eustace, Jon Shanks, Thomas Fitzherbert, Geoff Teale and Onur Yelekci 
+Andrew Martin, David McQue, Ben Eustace, Jon Shanks, Thomas Fitzherbert, Geoff Teale, Onur Yelekci, Vincent Lam and Tasharn Brown
 
 * Debugging application code
 * Requests for creation of AWS accounts should be sent to the DMR portal (CTI team)
