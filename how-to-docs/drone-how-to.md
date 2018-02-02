@@ -327,16 +327,18 @@ Drone will only execute that step when a new pull request is raised (and when pu
 
 ### Deploying to ACP
 
+> Please note that this section assumes that you already have kube files to work with (specifically, deployment, service and ingress files).
+> Examples of these files can be found in the [kube-signed-commit-check](https://github.com/UKHomeOffice/kube-signed-commit-check) project.
+
 Add a deployment script with the following:
- 
+
 ```bash
 #!/bin/bash
 export KUBE_NAMESPACE=<dev-induction>
 export KUBE_SERVER=${KUBE_SERVER}
 export KUBE_TOKEN=${KUBE_TOKEN}
-  
-kd --insecure-skip-tls-verify \
-    -f deployment.yaml \
+
+kd  -f deployment.yaml \
     -f service.yaml \
     -f ingress.yaml
 ```
@@ -514,7 +516,7 @@ pipeline:
 
 ### Services
 
-If you use the `services` section of your `.drone.yml` it is possible to reference them using the DNS name of the service. 
+If you use the `services` section of your `.drone.yml` it is possible to reference them using the DNS name of the service.
 
 For example, if using the following section:
 
