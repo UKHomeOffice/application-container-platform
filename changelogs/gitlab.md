@@ -2,6 +2,10 @@
 
 You can find full Gitlab Release changelog [here](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/CHANGELOG.md).
 
+## v10.4.2
+
+- https://gitlab.com/gitlab-org/gitlab-ce/blob/master/CHANGELOG.md#1042-2018-01-30
+
 ## v10.2.5
 
 - https://gitlab.com/gitlab-org/gitlab-ce/blob/master/CHANGELOG.md#1025-2017-12-15
