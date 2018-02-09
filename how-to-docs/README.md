@@ -15,6 +15,5 @@ This folder contains a collection of how-to guides for both Developers and DevOp
   - [How to get a new Namespace in a UK cluster](namespace-how-to.md)
   - [Getting a Kubernetes Token for a UK cluster](kubernetes-user-token.md)
   - [Getting a Kubernetes Robot Token for a UK cluster](kubernetes-robot-token.md)
-  - [How to get a DNS record for my service](DNS-how-to.md)
   - [Using an Ingress](ingress.md)
   - [Network Policies](network-policies.md)
