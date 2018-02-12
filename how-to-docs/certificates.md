@@ -147,6 +147,8 @@ spec:
 
 The above example requires that the DNS zone of the ingress hostname you are adding is located in the AWS account that kube-cert-manager resides. Assuming this is not the case you will need to use a HTTP challenge rather than the default DNS one. You wil need to change your DNS name to a CNAME of ingress-external / ingress-internal ENVIRONMENT.acp.homeoffice.gov.uk i.e assuming notprod environment mysite.domain.com -> ingress-external.notprod.acp.homeoffice.gov.uk
 
+#### **Note: the HOSTED domains are linked to the cluster i.e. notprod.acp.homeoffice.gov.uk is in notprod and prod is prod.acp.homeoffice.gov.uk etc etc. So if the domain you are requesting for in your ingress IS NOT the specific cluster domain YOU NEED to use the http challenge and update the DNS first to point our external ingress by default DNS points to the internal ingress**
+
 
 ```shell
 kind: Ingress
