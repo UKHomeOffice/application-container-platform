@@ -31,7 +31,7 @@ spec:
       - name: mysql-pvc
         mountPath: /var/lib/mysql
   securityContext:
-    runAsUser: 1000
+    runAsUser: 999
     fsGroup: 1000
   volumes:
   - name: mysql-pvc
