@@ -1,6 +1,6 @@
 # Application Container Platform
 
-This page will give you an overview of HOD DSP, the services it entails and the ways to get access to them. This is a general overview. Developers should check out the [Developer Docs](https://github.com/UKHomeOffice/application-container-platform/tree/master/developer-docs).
+This page will give you an overview of ACP, the services it entails and the ways to get access to them. This is a general overview. Developers should check out the [Developer Docs](https://github.com/UKHomeOffice/application-container-platform/tree/master/developer-docs).
 
 ## Service Status
 
@@ -8,7 +8,7 @@ For an overview of the platform services we provide and their current status i.e
 
 ## **Must Read**
 Everyone using our platform **MUST** adhere to [technical service standards](https://github.com/UKHomeOffice/technical-service-requirements/blob/master/docs/ci.md).
-All Services will be under a review process
+All Services will be under a review process.
 
 ## Services
 These are the core services which we provide across our platform.
@@ -28,7 +28,7 @@ When trying to get onto the platform for the first time you will need to get acc
 
 ## Support
 [You can find more information about support here](sla.md)
-If you require support you can talk to us on our Slack Channel or raise an issue on our [bau board](https://github.com/UKHomeOffice/application-container-platform-bau).
+If you require support you can talk to us on our Slack Channel or raise an issue on our [BAU Board](https://github.com/UKHomeOffice/application-container-platform-bau).
 
 ## How-to-docs
 We have a bunch of handy how-to guides located in this repository, find the list of them [here](how-to-docs/README.md)
