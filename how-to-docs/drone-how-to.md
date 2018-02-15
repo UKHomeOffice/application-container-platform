@@ -479,7 +479,7 @@ deploy_to_uat:
 
 ### Secrets and Signing
 
-It is no longer necessary to sign your `.drone.yml` so the `.drone.yml.sig` can be deleted. Secrets can be defined in the Drone UI and can be restricted to selected events, for example deployments or pull requests.
+It is no longer necessary to sign your `.drone.yml` so the `.drone.yml.sig` can be deleted. Secrets can be defined in the Drone UI or using the CLI. Secrets created using the UI will be available to push, tag and deployment events. To restrict to selected events, or to allow pull request builds to access secrets you must use the CLI.
 
 ### Docker-in-Docker
 
