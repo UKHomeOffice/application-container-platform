@@ -1,215 +1,126 @@
 # Developer setup guide
 
-## Pre-requisites
-
-You should already have access to Github with membership of the UKHomeOffice org.
-
 ## Introduction
 
-This guide is aimed at developers that want to start using the platform to host their application.
+This guide aims to prepare developers to use the Application Container Platform. It is mandatory to work through this setup guide before attending the Developer Induction.
 
-1. [Connect to VPN](#connect-to-vpn)
-2. [Install docker](#install-docker)
-3. [Install and configure kubectl](#install-and-configure-kubectl)
-4. [Install minikube](#install-minikube)
-5. [Quay access](#quay-access)
-6. [Artifactory access](#artifactory-access)
+  1. [Set up GovWifi credentials](#connecting-to-govwifi)
+  2. [Office 365](#office-365)
+  3. [Connecting to ACP VPN](#connecting-to-acp-vpn)
+  4. [Required binaries](#required-binaries)
+  5. [Platform Hub registration](#platform-hub-registration)
+  6. [User agreement](#user-agreement)
 
-## Connect to the VPN
 
-Once you've got an Office 365 Account you can now navigate to [https://authd.digital.homeoffice.gov.uk](https://authd.digital.homeoffice.gov.uk) and login with your Office 365 account by clicking on the 365 link on the right.
+## Connecting to GovWifi
 
-Once you're logged in please download the VPN profile called _"DSP Platform Dev, CI, Ops"_ from under VPN Profiles.
+Please refer to [Connect to GovWifi] to obtain your credentials and set up wireless internet access via GovWifi. 
 
->For access to the Platform Hub please download the _"ACP Platform"_ VPN profile located at https://access-acp.digital.homeoffice.gov.uk
+## Office 365
 
-You can connect to the vpn using `openvpn`.  You can follow the instruction to install `openvpn` from the [OpenVPN website](https://openvpn.net/index.php/open-source/downloads.html).
+Platform users must have Office 365 Single Sign-On (SSO) credentials for the `digital.homeoffice.gov.uk` domain. Please get in touch with your Programme Management Office to request an account or raise an issue on the [BAU] Board. If you can't access the Board, please ask a colleague to raise a request on your behalf. You will not be able to follow through the rest of this guide unless you have Office 365 credentials. 
 
-You can verify the installation was successful with:
+## Connecting to ACP VPN
 
-```bash
-$ openvpn --version
-OpenVPN 2.3.13 x86_64-apple-darwin16.1.0 [SSL (OpenSSL)] [LZO] [MH] [IPv6] built on Nov  5 2016
-```
+Most of ACP's services operate behind a VPN which is accessible with an `openvpn` client. Instructions on installing `openvpn` for your OS can be found at [OpenVPN]
 
-You can connect to the VPN using the profile downloaded at the previous step with:
+>Note: All examples in this document are for Linux distributions; instructions for other operating systems will vary.
 
-```bash
-$ sudo openvpn --config <vpn_profile_file>
-Tue Dec  6 11:24:04 2016 Initialization Sequence Completed
-```
+Once you've got your Office 365 SSO credentials, you can now navigate to [Access ACP] and login with your Office 365 account by clicking on the link on the right.
 
-The profile expires after 12 hours. You'll need to download and connect to a new VPN Profile when it expires.
+Please download the VPN profile named **"ACP Platform (Ops, Dev, Ci, Test)"** and use the `openvpn` client to connect. Verify that you can resolve the [Platform Hub] before continuing on.
 
-## Install Docker
+VPN profiles expire after 12 hours. You'll need to download and connect with a new VPN Profile when it expires.
 
-You can follow the instructions to install `docker` from the [Docker website](https://docs.docker.com/engine/installation/). You can verify the installation is successful with:
+## Required binaries
+
+Before joining the Developer Induction, we kindly ask you to install binaries which are used for the deployment of applications in ACP - instructions on how to install these are shown below:
+
+  - [Docker](#install-docker)
+  - [Kubectl](#install-kubectl)
+  - [Drone](#drone)
+  - [KD](#kd)
+
+#### Install Docker
+
+You can follow the instructions to install `docker` from the [Docker website]. You can verify the installation is successful with:
 
 ```bash
 $ docker --version
-Docker version 1.12.3, build 6b644ec
+Docker version 17.12.0-ce, build c97c6d6
+```
+#### Drone
+
+Drone CLI can be downloaded from the [Drone CI website]. Instructions installing on multiple operating systems are shown on the webpage.
+
+Verify that the installation is successful:
+
+```bash
+$ drone --version
+drone version 0.8.0
 ```
 
-## Install and configure kubectl
+#### KD
 
-### Install kubectl
+`kd` is minimalistic Kubernetes resource deployment tool that we use. You can get the latest version of kd on its [releases page].
 
-You can follow the instructions to install `kubectl` from the [Kubernetes website](http://kubernetes.io/docs/user-guide/prereqs/). You can verify the installation is successful with:
+Verify that the installation is successful:
+
+```bash
+$ kd -v
+kd version v0.7.0
+```
+
+## Platform Hub Registration
+> **Please note** that you need to have your VPN running to access the Platform Hub and also talk to cluster APIs.
+
+You will need to register with the Platform Hub in order to gain access tokens for our Kubernetes clusters.
+Head to [Platform Hub], you will need your O365 credentials to login/sign up. You will be asked to connect your Github account to your Platform Hub account - this will give you access to our [BAU] board, which is used to raise requests and issues regarding the Platform or your project. More information can be found in the [developer documentation].
+
+Click on [Support Requests] under the`Help & Support` heading on the navigation bar after connecting your Github identity to the Hub. Create a support request for [Request access to Developer Induction]. The support request will be sent and reviewed by a member of ACP team. Updates on the request will be seen as a notification on your Github account.
+
+Once created, your token will be shown under `Kubernetes` section of the [Connected Identities] tab on the sidebar. You can view all of your tokens by pressing the `Show Tokens` button.
+
+
+#### Install kubectl
+
+You can follow the instructions to install `kubectl` from the [Kubernetes website]. You can verify the installation is successful with:
 
 ```bash
 $ kubectl version
-Client Version: version.Info{Major:"1", Minor:"4", GitVersion:"v1.4.6+e569a27", GitCommit:"e569a27d02001e343cb68086bc06d47804f62af6", GitTreeState:"not a git tree", BuildDate:"2016-11-12T09:26:56Z", GoVersion:"go1.7.3", Compiler:"gc", Platform:"darwin/amd64"}
-Server Version: version.Info{Major:"1", Minor:"4", GitVersion:"v1.4.5", GitCommit:"5a0a696437ad35c133c0c8493f7e9d22b0f9b81b", GitTreeState:"clean", BuildDate:"1970-01-01T00:00:00Z", GoVersion:"go1.7.1", Compiler:"gc", Platform:"linux/amd64"}
+Client Version: version.Info{Major:"1", Minor:"7", GitVersion:"v1.7.3", GitCommit:"2c2fe6e8278a5db2d15a013987b53968c743f2a1", GitTreeState:"clean", BuildDate:"2017-08-03T07:00:21Z", GoVersion:"go1.8.3", Compiler:"gc", Platform:"linux/amd64"}
 ```
 
-### Configure kubectl
+#### Connecting to the cluster
 
-You will need to configure the `kubectl` client with the appropriate details to be able to talk to the kubernetes cluster.
-We recommend copying the [example kubectl config](resources/kubeconfig) to `~/.kube/config`. Note that you may need to create this directory and file.
+In order to access a namespace you will need to configure `kubectl` to connect to our clusters - instructions on setting it up can be found on the `Set up Kube Config` button on the [Connected Identities] page.
 
-The only change you will need to make is to replace _"XXXXXXXXXX"_ with your kubernetes token.
-
-You can submit a request to obtain a kubernetes token by adding an issue to the Hosting Platform Bau project on Github [here](https://github.com/UKHomeOffice/application-container-platform-bau/issues).
-
-Please use the below template for your request:
-
-```
-Please can I have a kubernetes token with access to my teams namespaces.  
-Email: xxx.xxx@digital.homeoffice.gov.uk  
-Name: xxx xxx  
-Team: My Project Team  
-Public GPG Key: xxxxxxxxx
-Namespace: dev-induction
-```
-
-You need to provide your public gpg key as the kube token you receive back will be encrypted using it.
-If you need to, you can [generate a gpg key](https://help.github.com/articles/generating-a-new-gpg-key/).
-
-When you've received back the token, you will need to decrypt it and use the resulting token string
-as your token in your `~/.kube/config` file.
-
-To do this run the following command with the file you received back.
+Verify that your `kubectl` is configured properly by trying to list pods and secrets in the `developer-induction` namespace:
 
 ```bash
-$ gpg -d <your encrypted_token.gpg>
+$ kubectl --context=acp-notprod_ACP --namespace=developer-induction get pods
+No resources found.
+$ kubectl --context=acp-notprod_ACP --namespace=developer-induction get secrets
+NAME                  TYPE                                  DATA      AGE
+default-token-dcnmg   kubernetes.io/service-account-token   3         105d
 ```
+>The output of the command above may differ if there are other pods or extra secrets deployed to the namespace.
 
-Then enter the passphrase you entered when creating the initial gpg key that was sent in the issue to the Hosting Platform Bau project.
+## User agreement
 
-Following this you should have some information printed to the console that follows this example:
+Finally, please head over and read through our [SLA] documentation to familiarise yourself with the level of service ACP provides to its users including the level and hours of support on offer and issue escalation procedures.
 
-```bash
-You need a passphrase to unlock the secret key for
-user: "John Smith <john.smith@xxxxxxx.xxxxxxxxxx.xxx.xx>"
-4096-bit RSA key, ID AAAAAAAA, created 2000-01-01 (main key ID BBBBBBBB)
-
-gpg: encrypted with 4096-bit RSA key, ID BBBBBBBB, created 2000-01-01
-      "John Smith <john.smith@xxxxxxx.xxxxxxxxxx.xxx.xx>"
-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
-```
-
-The last printed line in the console, below the 2nd iteration of your name and 365 email address,
-is the token you need to include in your kubectl config file. Once you have included it in the relevant place in the config file, you should be all setup! ^_^
-
-### Use kubectl
-
-You can verify the installation is successful with:
-
-```bash
-$ kubectl get pods
-```
-
-> **Please note** that you need to have your VPN running to talk to the kubernetes cluster.
-
-You should get an empty reply with just some column headers. The config file by default looks only at the *dev-induction* namespace.
-To look at other namespace you can, for example do:
-
-```bash
-$ kubectl --namespace=my-namespace get pods
-```
-You can also edit your kubernetes config, either by editing the file directly or by running:
-
-```bash
-$ kubectl config
-```
-
-## Install minikube
-
-You can follow the instruction to install `minikube` from the [Minikube website](https://github.com/kubernetes/minikube/releases).
-
-> **Please note** that you have to have kubectl installed before you can run minikube.
-
-If the installation is successful, you can run minikube locally with:
-
-```bash
-$ minikube start
-Starting local Kubernetes cluster...
-Kubectl is now configured to use the cluster.
-```
-
-### Setting up minikube ingress
-
-```bash
-$ minikube addons enable ingress
-```
-
-And issue a request for the default backend:
-
-```bash
-$ curl $(minikube ip)
-default backend - 404
-$ curl -k https://$(minikube ip)
-default backend - 404
-```
-
-## Quay access
-
-We use [quay](https://www.quay.io) for storing public docker images. Please login to quay with your Github account and create a password for your account (accounts created by signing in with Github don't have a password by default). You are not able to publish docker images to the UKHomeOffice organisation unless you request access to it.
-
-You can submit a request to be part of the UKHomeOffice organisation on quay by adding an issue to the Hosting Platform Bau project on Github [here](https://github.com/UKHomeOffice/application-container-platform-bau/issues).
-
-Please use the below template for your request:
-
-```
-Please can I be added to the UKHomeOffice organisation in quay.  
-Quay username: xxx
-Name: xxx xxx
-Team: My Project Team  
-```
-
-You have to login to be able to push docker images from your local machine to quay:
-
-```bash
-$ docker login quay.io
-```
-
-> **Please note** that quay doesn't create a password by default when you log in using Github. You need to create a password in order to log in into quay.
-
-As all of our repositories are public you can then pull any of them. [Here are our Home Office quay repos](https://quay.io/organization/ukhomeofficedigital).
-
-## Artifactory access
-
-[Our private Artifactory is available here](https://artifactory.digital.homeoffice.gov.uk/artifactory/webapp/#/login).
-We use this for storing private docker images and other private artefacts (e.g. JARs, node modules, etc).
-
-When logging in please use the **HOD SSO** sign in option. To pull images from Artifactory you will need to do a docker login.
-Your username will be your digital email address and you can
-[generate an API key to use as your password here](https://artifactory.digital.homeoffice.gov.uk/artifactory/webapp/#/profile).
-
-```bash
-$ docker login docker.digital.homeoffice.gov.uk
-```
-
-Images can be pulled with:
-
-```bash
-$ docker pull docker.digital.homeoffice.gov.uk/aws-dsp:v0.4.7
-```
-
-If you get this error instead:
-
-```
-Error: Status 400 trying to pull repository aws-dsp: "{\n  \"errors\" : [ {\n    \"status\" : 400,\n    \"message\" : \"Unsupported docker v1 repository request for 'docker'\"\n  } ]\n}"
-```
-
-You haven't logged in successfully.
+[Access ACP]:https://access-acp.digital.homeoffice.gov.uk
+[Connect to GovWifi]:https://www.gov.uk/government/collections/connect-to-govwifi
+[OpenVPN]:https://openvpn.net/index.php/open-source/downloads.html
+[Docker website]:https://docs.docker.com/engine/installation/
+[Kubernetes website]:http://kubernetes.io/docs/user-guide/prereqs/
+[Drone CI website]:http://docs.drone.io/cli-installation/
+[releases page]:https://github.com/UKHomeOffice/kd/releases
+[Platform Hub]:https://hub.acp.homeoffice.gov.uk/
+[developer documentation]:https://github.com/UKHomeOffice/application-container-platform/tree/master/developer-docs#platform-hub
+[BAU]:https://github.com/UKHomeOffice/application-container-platform-bau/
+[Support Requests]:https://hub.acp.homeoffice.gov.uk/help/support/requests/overview
+[Request access to Developer Induction]:https://hub.acp.homeoffice.gov.uk/help/support/requests/new/dev-induction-token
+[Connected Identities]:https://hub.acp.homeoffice.gov.uk/identities
+[SLA]:https://github.com/UKHomeOffice/application-container-platform/blob/master/sla.md
