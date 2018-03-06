@@ -4,11 +4,11 @@ ACP delivery support will typically begin when a project team has been on-boarde
 
 ## Submitting support tickets/queries
 
-Support tickets can be raised on the [BAU Board](https://github.com/UKHomeOffice/hosting-platform-bau/projects/1) or if your project's hosted in the UK, on the [Platform Hub](https://hub.acp.homeoffice.gov.uk/)
+Support tickets can be raised on the [BAU Board](https://github.com/UKHomeOffice/application-container-platform-bau/issues) or if your project's hosted in the UK, on the [Platform Hub](https://hub.acp.homeoffice.gov.uk/)
 
 All comments relating to a support ticket will be associated with the ticket. This ensures a complete audit trail is available for each ticket.
 
-Guidance on completing support tickets can be found on the [BAU Board](https://github.com/UKHomeOffice/hosting-platform-bau) and the [Platform Hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/overview)
+Guidance on completing support tickets can be found on the [BAU Board](https://github.com/UKHomeOffice/application-container-platform-bau/issues) and the [Platform Hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/overview)
 
 General questions about the hosting platform can be raised on the _HOD-DSP - General_ Slack channel.
 
@@ -43,7 +43,7 @@ The ACP hosting platform provides access to a number of services that can be set
 * Permissions to push images to Artifactory
 * Access to Amazon SES, verification of domains and providing SMTP credentials
 * Publishing Sender Policy Framework (SPF) records for SES
-* Provisioning of SQS (Simple queuing Service) and access credentials
+* Provisioning of SQS (Simple Queue Service) and SNS (Simple Notification Service) 
 * Accepting peering requests and creating routes to other AWS accounts
 * Creating VPN profiles for accessing other AWS accounts
 * Creating DNS entries for production services
