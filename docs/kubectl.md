@@ -1,6 +1,6 @@
 #### **Kubectl Command**
 
-Below is a sample kubeconfig file with two contexts for dev and prod clusters, the file is placed / located at ~/.kube/config by default. You can find a cheat-sheet for the kubectl command [here](https://github.com/kubernetes/kubernetes/blob/master/docs/user-guide/kubectl-cheatsheet.md)
+Below is a sample kubeconfig file with two contexts for dev and prod clusters, the file is placed / located at ~/.kube/config by default. You can find a cheat-sheet for the kubectl command [here](https://kubernetes.io/docs/reference/kubectl/cheatsheet)
 
 ```YAML
 ---
