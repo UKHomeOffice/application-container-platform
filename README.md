@@ -13,7 +13,6 @@ All Services will be under a review process.
 ## Services
 These are the core services which we provide across our platform.
 
-* [Hosting](docs/hosting.md)
 * [VPN](docs/authd.md)
 * [Code Management](docs/code.md)
 * [Artifact Storage](docs/artifacts.md)
@@ -22,6 +21,7 @@ These are the core services which we provide across our platform.
 * [Platform Composition](docs/platformcomp.md)
 * [Logging](docs/logging.md)
 * [Monitoring](docs/metrics.md)
+* [Security](docs/dr.md)
 
 ## Accessing the Services
 When trying to get onto the platform for the first time you will need to get access to a various things that will allow you to get to other things. The full flow for this can be found [here](docs/newuser.md)
