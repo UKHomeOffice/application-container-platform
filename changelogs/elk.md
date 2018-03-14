@@ -1,5 +1,9 @@
 # **ELK Release notes**
 
+## v0.4.1
+
+* Enables X-Pack RBAC
+
 ## v0.3.3
 
 * Enabled X-Pack
