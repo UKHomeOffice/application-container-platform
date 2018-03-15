@@ -14,11 +14,11 @@ This guide aims to prepare developers to use the Application Container Platform.
 
 ## Connecting to GovWifi
 
-Please refer to [Connect to GovWifi] to obtain your credentials and set up wireless internet access via GovWifi. 
+Please refer to [Connect to GovWifi] to obtain your credentials and set up wireless internet access via GovWifi.
 
 ## Office 365
 
-Platform users must have Office 365 Single Sign-On (SSO) credentials for the `digital.homeoffice.gov.uk` domain. Please get in touch with your Programme Management Office to request an account or raise an issue on the [BAU] Board. If you can't access the Board, please ask a colleague to raise a request on your behalf. You will not be able to follow through the rest of this guide unless you have Office 365 credentials. 
+Platform users must have Office 365 Single Sign-On (SSO) credentials for the `digital.homeoffice.gov.uk` domain. Please get in touch with your Programme Management Office to request an account or raise an issue on the [BAU] Board. If you can't access the Board, please ask a colleague to raise a request on your behalf. You will not be able to follow through the rest of this guide unless you have Office 365 credentials.
 
 ## Connecting to ACP VPN
 
@@ -36,10 +36,20 @@ VPN profiles expire after 12 hours. You'll need to download and connect with a n
 
 Before joining the Developer Induction, we kindly ask you to install binaries which are used for the deployment of applications in ACP - instructions on how to install these are shown below:
 
+  - [Git](#git)
   - [Docker](#install-docker)
   - [Kubectl](#install-kubectl)
   - [Drone](#drone)
   - [KD](#kd)
+
+#### Git
+
+Verify if you have Git installed by:
+```
+$ git --version
+git version 2.16.2
+```
+If Git is not installed, instructions on how to download and install it can be found over at the [Git website].
 
 #### Install Docker
 
@@ -113,6 +123,7 @@ Finally, please head over and read through our [SLA] documentation to familiaris
 [Access ACP]:https://access-acp.digital.homeoffice.gov.uk
 [Connect to GovWifi]:https://www.gov.uk/government/collections/connect-to-govwifi
 [OpenVPN]:https://openvpn.net/index.php/open-source/downloads.html
+[Git website]:https://git-scm.com/
 [Docker website]:https://docs.docker.com/engine/installation/
 [Kubernetes website]:http://kubernetes.io/docs/user-guide/prereqs/
 [Drone CI website]:http://docs.drone.io/cli-installation/
