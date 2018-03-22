@@ -105,12 +105,12 @@ Client Version: version.Info{Major:"1", Minor:"7", GitVersion:"v1.7.3", GitCommi
 
 In order to access a namespace you will need to configure `kubectl` to connect to our clusters - instructions on setting it up can be found on the `Set up Kube Config` button on the [Connected Identities] page.
 
-Verify that your `kubectl` is configured properly by trying to list pods and secrets in the `developer-induction` namespace:
+Verify that your `kubectl` is configured properly by trying to list pods and secrets in the `acp-induction` namespace:
 
 ```bash
-$ kubectl --context=acp-notprod_ACP --namespace=developer-induction get pods
+$ kubectl --context=acp-notprod_ACP --namespace=acp-induction get pods
 No resources found.
-$ kubectl --context=acp-notprod_ACP --namespace=developer-induction get secrets
+$ kubectl --context=acp-notprod_ACP --namespace=acp-induction get secrets
 NAME                  TYPE                                  DATA      AGE
 default-token-dcnmg   kubernetes.io/service-account-token   3         105d
 ```
