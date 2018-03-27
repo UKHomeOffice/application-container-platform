@@ -131,7 +131,7 @@ If your repository is hosted on Gitlab, you don't want to publish your images to
 Register for a free [Quay account](https://quay.io) using your Github account linked to the Home Office organisation.
 
 Once you've logged into Quay check that you have `ukhomeofficedigital` under Users and Organisations.  
-If you do not, [submit a support request on the platform hub for access to the ukhomeoffice organisation](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/quay-add-to-org).
+If you do not, [submit a support request on the platform hub for access to the ukhomeoffice organisation][add to quay support request].
 
 Once you have access to view the `ukhomeofficedigital` repositories, click repositories and
 click the `+ Create New Repositories` that is:
@@ -197,9 +197,9 @@ Images hosted on [Artifactory](https://docker.digital.homeoffice.gov.uk) are pri
 
 If your repository is hosted publicly on GitHub, you shouldn't publish your images to Artifactory. Artifactory is only used to publish private images. [You should use Quay to publish your public images](#publishing-to-quay).
 
-[Submit a support request for a new Artifactory robot](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/artifactory-bot). You should be supplied a robot token in response.
+[Submit a support request for a new Artifactory access token][artifactory support request]. You should be supplied an access token in response.
 
-You can inject the robot's token that has been supplied to you with:
+You can inject the token that has been supplied to you with:
 
 ```
 $ drone secret add --image="docker:17.09.1" --repository <gitlab_repo_group>/<your_gitlab_repo> --name DOCKER_ARTIFACTORY_PASSWORD --value <your_robot_token>
@@ -624,3 +624,6 @@ A: No. This is because there is currently no way to give access to namespaces vi
 I.e. There is no way to give access to any namespace with the format: `my-temp-namespace-*` (where \* would be build number or something similar).
 
 Alternatively, you can be given a named namespace in the CI cluster.
+
+[add to quay support request]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/add-to-quay-org
+[artifactory support request]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/artifactory-bot
