@@ -2,7 +2,7 @@
 This folder contains a collection of how-to guides for both Developers and DevOps to use.
 
 - Contents:
-  - [Making an Artifactory access token](artifactory-token.md)
+  - [Making an Artifactory access token (For ACP team)](artifactory-token.md)
   - [Getting a cert with letsencrypt and ingress](certificates.md)
   - [Using SSL passthtough](ssl-passthrough.md)
   - [Using Drone](drone-how-to.md)

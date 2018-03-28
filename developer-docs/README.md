@@ -25,7 +25,7 @@ In addition, new developers should look at the [new user flow](../docs/newuser.m
 ## Platform Hub
   [The Platform Hub](https://hub.acp.homeoffice.gov.uk) serves as a central portal for users of ACP. It acts as an all-in-one place to find information, requests and also support for the platform. The hub also provides tools to develop, build, deploy and manage all your projects.
 
-  You can submit [support requests via the hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/overview) located in `Support Requests` under the `Help & Support` tab on the sidebar. These request templates cover a wide majority of general requests that users normally need. If your issue/request is not listed, please get in touch with us using the [Contact Us](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/contact-us) support request.
+  You can submit [support requests via the hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/overview) located in `Support Requests` under the `Help & Support` tab on the sidebar. These request templates cover a wide majority of general requests that users normally need. If your issue/request is not listed, please use the [General Request][general request form] support request.
 
 Updates are also on its way to include more self-service tools, along with documentation, FAQs and live status updates.
 > Access to the Platform Hub requires the `ACP Platform` VPN profile. Please make sure you have followed the [Developer getting started guide](#Developer-getting-started-guide) for instructions on connecting to VPNs.
@@ -47,3 +47,5 @@ Drone is what we use for Continuous Integration in ACP. [This guide](https://git
 
 ## Writing Dockerfiles
 [This guide](./writing_dockerfiles.md) covers best practice for building Dockerfiles, and lists our standard base images.
+
+[general request form]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/general-request
