@@ -2,7 +2,7 @@
 ## Providing Access to Third Party Services (WIP)
 #
 
-> *The Problem*: we want to provides services running in ACP access to the third party services as well as the ability to have user-based access controls. At present network access in ACP is provided via Calico, but this becomes redundent when the traffic egresses the cluster. So simply peering networks together either through VPC peering or VPN connections doesn't provide the controls we want. We could rely on user-authentication on third-party service but not all services are authenticated (take POISE) and beyond that peering networks provide's no means of auditing traffic that is traversing the bridged networks.
+> *The Problem*: we want to provides services running in ACP access to the third party services as well as the ability to have user-based access controls. At present network access in ACP is provided via Calico, but this becomes redundant when the traffic egresses the cluster. So simply peering networks together either through VPC peering or VPN connections doesn't provide the controls we want. We could rely on user-authentication on third-party service but not all services are authenticated (take POISE) and beyond that peering networks provides no means of auditing traffic that is traversing the bridged networks.
 
 One pattern we are exploring is the use of a proxy cluster with an authenticated side-kick to route traffic and provide end-to-end encryption. Both ACP Notprod and Prod are peered to an respective proxy cluster which is running a [Chisel](https://github.com/jpillora/chisel) server. Below is rough idea of how the chisel service works.
 
@@ -12,8 +12,8 @@ The workflow for this is as follows, note the following example is assuming we h
 
 * A request via BAU the provisioning of a service on the Chisel server.
 * Once done user is provided credentials for service.
-* You add into your deployment a chisel container running in client mode and add the configuration as describe to route the traffic. In regard to DNS and hostname's, kubernetes pods permit the user to add host entries into the container DNS, enabling you to override.
-* The traffic is picked up, encrypted using an over an ssh tunnel and pushed to the Chisel server where the user credentials evaluated. Assuming everything is ok the traffic is then proxied on to destination.
+* You add into your deployment a chisel container running in client mode and add the configuration as described to route the traffic. In regard to DNS and hostnames, kubernetes pods permit the user to add host entries into the container DNS, enabling you to override.
+* The traffic is picked up, encrypted over an ssh tunnel and pushed to the Chisel server where the user credentials are evaluated. Assuming everything is ok the traffic is then proxied on to destination.
 
 ### A Working Example
 
@@ -75,7 +75,7 @@ spec:
           readOnly: true
 ```
 
-The above embeds the sidekick into the Pod and requests the client to listen on localhost:10443 and 10444 to redirect traffic via the Chisel service. The one annoying here is the port requirements, placing things on different ports, but unfortunately this is required. You should be able to call the service via `curl https://another-service.example.com:10443` at this point.
+The above embeds the sidekick into the Pod and requests the client to listen on localhost:10443 and 10444 to redirect traffic via the Chisel service. The one annoying point here is the port requirements, placing things on different ports, but unfortunately this is required. You should be able to call the service via `curl https://another-service.example.com:10443` at this point.
 
 
 
