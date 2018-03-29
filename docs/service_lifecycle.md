@@ -23,7 +23,7 @@ SLA's, SLO's and availability may not meet the user expectation of a live servic
 ## Live
 
 Once the products have gone through the beta process, (which is to identify that the MVP is viable), the service will transition to live.
-In live, we are happy that the service has undergone enough evaluation to meet user expectations as well as being able to commit confidentally to SLA's and SLO's.  
+In live, we are happy that the service has undergone enough evaluation to meet user expectations as well as being able to commit confidentially to SLA's and SLO's.  
 
 ## Production-Ready Criteria
 

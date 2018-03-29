@@ -190,7 +190,7 @@ $ cd ..; rm -rf tmp
 
 * **Create a default keypair for the environment**
 
-The config.yaml should have a ssh_key_name: [NAME] varaible e.g. dev-defaut or prod-default, ensure you have created the keypair in your AWS account.
+The config.yaml should have a ssh_key_name: [NAME] variable e.g. dev-defaut or prod-default, ensure you have created the keypair in your AWS account.
 
 ## Launch AWS CloudFormation Stacks
 

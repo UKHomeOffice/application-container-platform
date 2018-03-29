@@ -2,9 +2,9 @@
 ## Providing Access to Third Party Services (WIP)
 #
 
-> *The Problem*: we want to provides services running in ACP access to the third party services as well as the ability to have user-based access controls. At present network access in ACP is provided via Calico, but this becomes redundant when the traffic egresses the cluster. So simply peering networks together either through VPC peering or VPN connections doesn't provide the controls we want. We could rely on user-authentication on third-party service but not all services are authenticated (take POISE) and beyond that peering networks provides no means of auditing traffic that is traversing the bridged networks.
+> *The Problem*: we want to provide services running in ACP access to the third party services as well as the ability to have user-based access controls. At present network access in ACP is provided via Calico, but this becomes redundant when the traffic egresses the cluster. Simply peering networks together either through VPC peering or VPN connections doesn't provide the controls we want. We could rely on user-authentication on third-party service but not all services are authenticated (take POISE) and beyond that peering networks provides no means of auditing traffic that is traversing the bridged networks.
 
-One pattern we are exploring is the use of a proxy cluster with an authenticated side-kick to route traffic and provide end-to-end encryption. Both ACP Notprod and Prod are peered to an respective proxy cluster which is running a [Chisel](https://github.com/jpillora/chisel) server. Below is rough idea of how the chisel service works.
+One pattern we are exploring is the use of a proxy cluster with an authenticated side-kick to route traffic and provide end-to-end encryption. Both ACP Notprod and Prod are peered to an respective proxy cluster that is running a [Chisel](https://github.com/jpillora/chisel) server. Below is rough idea of how the chisel service works.
 
 ![alt text](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/pics/chisel.png "Chisel")
 
@@ -17,7 +17,7 @@ The workflow for this is as follows, note the following example is assuming we h
 
 ### A Working Example
 
-We have a two services called `example-api.internal.homeoffice.gov.uk` and `another-service.example.com` and we wish to consume the API from the pods. Lets assume the service as already been provisioned on the Chisel server and we have the credentials at hand.
+We have a two services called `example-api.internal.homeoffice.gov.uk` and `another-service.example.com` and we wish to consume the API from the pods. Lets assume the service has already been provisioned on the Chisel server and we have the credentials at hand.
 
 ```YAML
 kind: Deployment

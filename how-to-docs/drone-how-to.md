@@ -359,7 +359,7 @@ This error appears because [kd](https://github.com/UKHomeOffice/kd) needs 3 envi
 
 - `KUBE_SERVER` - This is the address of the kubernetes cluster that you want to deploy to.
 
-You will need to add `KUBE_TOKEN` and `KUBE_SERVER` as drone secrets. Infomation about how to add Drone secrets can be found in the [publishing to Quay section](#publishing-to-quay).
+You will need to add `KUBE_TOKEN` and `KUBE_SERVER` as drone secrets. Information about how to add Drone secrets can be found in the [publishing to Quay section](#publishing-to-quay).
 
 You can verify that the secrets for your repo are present with:
 
@@ -485,7 +485,7 @@ It is no longer necessary to sign your `.drone.yml` so the `.drone.yml.sig` can 
 
 The Docker-in-Docker (dind) service is no longer required. Instead, change Docker host to `DOCKER_HOST=tcp://172.17.0.1:2375` in the `environment` section of your pipline, and you will be able to access the shared Docker server on the drone agent. Note that it is only possible to run one Docker build at a time per Drone agent.
 
-Since priviliged mode was primarily used for docker in docker, you should remove the `priviliged: true` line from your .drone.yml.
+Since privileged mode was primarily used for docker in docker, you should remove the `privileged: true` line from your .drone.yml.
 
 You can also use your freshly built image directly and run commands as part of your pipeline.
 
@@ -565,7 +565,7 @@ ${DRONE_COMMIT_SHA} --> $${DRONE_COMMIT_SHA}
 
 ### Q: The build fails with _"ERROR: Insufficient privileges to use privileged mode"_
 
-A: Remove `priviliged: true` from your `.drone.yml`. As explained in the [migrating your pipeline section](migrating-your-pipeline), the primary use of this was for Docker-in-Docker which is not required.
+A: Remove `privileged: true` from your `.drone.yml`. As explained in the [migrating your pipeline section](migrating-your-pipeline), the primary use of this was for Docker-in-Docker which is not required.
 
 ### Q: The build fails with _"Cannot connect to the Docker daemon. Is the docker daemon running on this host?"_
 
