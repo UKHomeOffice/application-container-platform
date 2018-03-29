@@ -9,7 +9,7 @@ The requester should state the name of the token, how they would like to receive
 curl -u<username>:<api-key> -XPOST "https://artifactory.digital.homeoffice.gov.uk/artifactory/api/security/token" -d "username=<robot-username>" -d "scope=member-of-groups:<appropriate-groups>" -d "expires_in=0"
 ```
 
-where `<robot-username>` is the name of the access token and `<appropriate-groups>` is a comma seperated list of the groups the token should be in (normally this will only be `ci`).
+where `<robot-username>` is the name of the access token and `<appropriate-groups>` is a comma separated list of the groups the token should be in (normally this will only be `ci`).
 
 > Note: If you set the `expires_in` time higher than 0, you will not be able to revoke the token via the UI.
 

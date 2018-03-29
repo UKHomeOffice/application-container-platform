@@ -173,7 +173,7 @@ The certificates for authentication are issues via Vault, thus we need to create
 # create the vault pki backend
 $ vault mount -path=openvpn-authd/ pki
 
-# add the openvpn ca we created at the begining - NOTE, the order key -> cert is important
+# add the openvpn ca we created at the beginning - NOTE, the order key -> cert is important
 $ cat ca-key.pem ca.pem | vault write openvpn-authd/config/ca pem_bundle="-"
 
 # create a policy for the ca

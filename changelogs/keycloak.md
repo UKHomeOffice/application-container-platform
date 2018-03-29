@@ -196,7 +196,7 @@ You can find the Keycloak Release pages [here](https://issues.jboss.org/projects
 * [KEYCLOAK-4008] - Add checksums to file downloads
 * [KEYCLOAK-4195] - Keycloak adapter and SPI bom
 * [KEYCLOAK-4360] - Add OneTimeUse condition to SAMLResponse
-* [KEYCLOAK-4501] - Federated identity managment
+* [KEYCLOAK-4501] - Federated identity management
 * [KEYCLOAK-4504] - SAML Broker: Support redirect logout, even when using POST for SAML response
 * [KEYCLOAK-4537] - Adapter for Jetty 9.4
 * [KEYCLOAK-4565] - Javadocument the adapter properties and add the metadata generator
