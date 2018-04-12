@@ -1,5 +1,12 @@
 # **ELK Release notes**
 
+## v0.4.3
+
+* Enables Watcher SMTP
+* Enables PDF export for reporting
+* Improvements to Elasticsearch monitoring
+* ELK components run with set UID
+
 ## v0.4.1
 
 * Enables X-Pack RBAC
