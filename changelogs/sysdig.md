@@ -1,5 +1,10 @@
 # Sysdig Release Notes
 
+## 886
+
+- Update to 886 (Release notes not available)
+- Includes hotfix for AWS CloudWatch metrics
+
 ## 858
 
 - Update to: https://github.com/draios/sysdigcloud-kubernetes/releases/tag/858
