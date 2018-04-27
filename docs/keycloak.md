@@ -42,7 +42,7 @@ At this point you should take the DNS name of the RDS instance keycloakdb-ENV.DN
 ```bash
 # Ensure you update the keycloak environment variables are updated and populated with the credentials
 $ cd kube/namespace/platform/
-$ kubectl create -f keyclock/
+$ kubectl create -f keycloak/
 ```
 
 * **Create the ELB**
