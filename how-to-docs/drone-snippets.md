@@ -6,53 +6,54 @@
 pipeline:
 
   build:
-    image: docker:17.09.1
+    image: docker:18.03
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - docker build -t <image_name>:$${DRONE_COMMIT_SHA} .
     when:
       event: push
-      
+
   image_to_quay:
-    image: docker:17.09.1
+    image: ukhomeoffice/drone-docker
     secrets:
       - docker_password
     environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker login -u="ukhomeofficedigital+<your_robot_username>" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag <image_name>:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA}
-      - docker tag <image_name>:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/<your_quay_repo>:latest
-      - docker push quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_COMMIT_SHA}
-      - docker push quay.io/ukhomeofficedigital/<your_quay_repo>:latest
+      - DOCKER_USERNAME=ukhomeofficedigital+<your_robot_username>
+    registry: quay.io
+    repo: quay.io/ukhomeofficedigital/<your_quay_repo>
+    tags:
+      - ${DRONE_COMMIT_SHA}
+      - latest
     when:
       branch: master
       event: push
-      
+
   tagged_image_to_quay:
-    image: docker:17.09.1
+    image: ukhomeoffice/drone-docker
     secrets:
       - docker_password
     environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker login -u="ukhomeofficedigital+<your_robot_username>" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag <image_name>:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_TAG}
-      - docker push quay.io/ukhomeofficedigital/<your_quay_repo>:$${DRONE_TAG}
+      - DOCKER_USERNAME=ukhomeofficedigital+<your_robot_username>
+    registry: quay.io
+    repo: quay.io/ukhomeofficedigital/<your_quay_repo>
+    tags:
+      - ${DRONE_TAG}
     when:
       event: tag
 
   clone_deployment_scripts:
     image: plugins/git
+    secrets:
+      - github_token
     commands:
-      - git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo_name>.git kube
+      - git clone https://$${GITHUB_TOKEN}:x-oauth-basic@github.com/UKHomeOffice/<your_repo_name>.git kube
     when:
       branch: master
       event: push
 
   deploy_to_dev:
-    image: quay.io/ukhomeofficedigital/kd:v0.5.0
+    image: quay.io/ukhomeofficedigital/kd:v0.13.0
     environment:
       - KUBE_NAMESPACE=<your_namespace>
     secrets:
@@ -80,7 +81,7 @@ pipeline:
       event: deployment
 
   deploy_to_prod:
-    image: quay.io/ukhomeofficedigital/kd:v0.5.0
+    image: quay.io/ukhomeofficedigital/kd:v0.13.0
     environment:
       - KUBE_NAMESPACE=<dev-induction>
     secrets:
@@ -101,7 +102,7 @@ pipeline:
 pipeline:
 
   pr-builder:
-    image: docker:17.09.1
+    image: docker:18.03
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
