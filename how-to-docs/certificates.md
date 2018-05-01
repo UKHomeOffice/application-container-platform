@@ -31,7 +31,8 @@ spec:
     spec:
       containers:
       - name: certs
-        image: quay.io/ukhomeofficedigital/cfssl-sidekick:v0.0.4
+        # PLEASE do not use latest, but check for the latest tag in the releases page of https://github.com/UKHomeOffice/cfssl-sidekick
+        image: quay.io/ukhomeofficedigital/cfssl-sidekick:latest
         securityContext:
           runAsNonRoot: true
         args:
