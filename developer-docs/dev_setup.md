@@ -28,7 +28,7 @@ Most of ACP's services operate behind a VPN which is accessible with an `openvpn
 
 Once you've got your Office 365 SSO credentials, you can now navigate to [Access ACP] and login with your Office 365 account by clicking on the link on the right.
 
-Please download the VPN profile named **"ACP Platform (Ops, Dev, Ci, Test)"** and use the `openvpn` client to connect. Verify that you can resolve the [Platform Hub] before continuing on.
+Please download the VPN profile named **"ACP Platform (Ops, Dev, CI, Test)"** and use the `openvpn` client to connect. Verify that you can resolve the [Platform Hub] before continuing on.
 
 VPN profiles expire after 12 hours. You'll need to download and connect with a new VPN Profile when it expires.
 
@@ -51,13 +51,15 @@ git version 2.16.2
 ```
 If Git is not installed, instructions on how to download and install it can be found over at the [Git website].
 
+> **Please note** We assume a basic knowledge of Git for the ACP Induction. If you've not used git before, or need to brush up on your skills please see [Git basics].
+
 #### Install Docker
 
 You can follow the instructions to install `docker` from the [Docker website]. You can verify the installation is successful with:
 
 ```bash
 $ docker --version
-Docker version 17.12.0-ce, build c97c6d6
+Docker version 18.03.1-ce, build 9ee9f40
 ```
 #### Drone
 
@@ -78,7 +80,7 @@ Verify that the installation is successful:
 
 ```bash
 $ kd -v
-kd version v0.7.0
+kd version v0.13.0
 ```
 
 ## Platform Hub Registration
@@ -87,7 +89,7 @@ kd version v0.7.0
 You will need to register with the Platform Hub in order to gain access tokens for our Kubernetes clusters.
 Head to [Platform Hub], you will need your O365 credentials to login/sign up. You will be asked to connect your Github account to your Platform Hub account - this will give you access to our [BAU] board, which is used to raise requests and issues regarding the Platform or your project. More information can be found in the [developer documentation].
 
-Click on [Support Requests] under the`Help & Support` heading on the navigation bar after connecting your Github identity to the Hub. Create a support request for [Request access to Developer Induction]. The support request will be sent and reviewed by a member of ACP team. Updates on the request will be seen as a notification on your Github account.
+Click on [Support Requests] under the `Help & Support` heading on the navigation bar after connecting your Github identity to the Hub. Create a support request for [Request access to Developer Induction]. The support request will be sent and reviewed by a member of ACP team. Updates on the request will be seen as a notification on your Github account.
 
 Once created, your token will be shown under `Kubernetes` section of the [Connected Identities] tab on the sidebar. You can view all of your tokens by pressing the `Show Tokens` button.
 
@@ -98,7 +100,7 @@ You can follow the instructions to install `kubectl` from the [Kubernetes websit
 
 ```bash
 $ kubectl version
-Client Version: version.Info{Major:"1", Minor:"7", GitVersion:"v1.7.3", GitCommit:"2c2fe6e8278a5db2d15a013987b53968c743f2a1", GitTreeState:"clean", BuildDate:"2017-08-03T07:00:21Z", GoVersion:"go1.8.3", Compiler:"gc", Platform:"linux/amd64"}
+Client Version: version.Info{Major:"1", Minor:"8", GitVersion:"v1.8.4", GitCommit:"9befc2b8928a9426501d3bf62f72849d5cbcd5a3", GitTreeState:"clean", BuildDate:"2017-11-20T05:28:34Z", GoVersion:"go1.8.3", Compiler:"gc", Platform:"linux/amd64"}
 ```
 
 #### Connecting to the cluster
@@ -124,6 +126,7 @@ Finally, please head over and read through our [SLA] documentation to familiaris
 [Connect to GovWifi]:https://www.gov.uk/government/collections/connect-to-govwifi
 [OpenVPN]:https://openvpn.net/index.php/open-source/downloads.html
 [Git website]:https://git-scm.com/
+[Git basics]:https://git-scm.com/book/en/v2/Getting-Started-Git-Basics
 [Docker website]:https://docs.docker.com/engine/installation/
 [Kubernetes website]:http://kubernetes.io/docs/user-guide/prereqs/
 [Drone CI website]:http://docs.drone.io/cli-installation/
