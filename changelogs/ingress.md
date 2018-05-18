@@ -1,5 +1,9 @@
 # Ingress Release Notes
 
+## 0.15.0
+
+- Update to Ingress-nginx 0.15.0: https://github.com/kubernetes/ingress-nginx/blob/master/Changelog.md#0150
+
 ## 0.13.0
 
 - Update to Ingress-nginx 0.13.0: https://github.com/kubernetes/ingress-nginx/blob/master/Changelog.md#0130
