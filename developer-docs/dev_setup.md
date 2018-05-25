@@ -2,14 +2,17 @@
 
 ## Introduction
 
-This guide aims to prepare developers to use the Application Container Platform. It is mandatory to work through this setup guide before attending the Developer Induction.
+This guide aims to prepare developers to use the Application Container Platform. You must complete the steps below before attending the ACP Induction. 
+
+All examples in this document are for Linux distributions and instructions for other operating systems will vary. If you choose to use a Windows device, please ensure that [Windows Subsystem for Linux] is installed.
 
   1. [Set up GovWifi credentials](#connecting-to-govwifi)
   2. [Office 365](#office-365)
   3. [Connecting to ACP VPN](#connecting-to-acp-vpn)
-  4. [Required binaries](#required-binaries)
-  5. [Platform Hub registration](#platform-hub-registration)
-  6. [User agreement](#user-agreement)
+  4. [Platform Hub registration](#platform-hub-registration)
+  5. [Add a ssh key to Gitlab](#add-a-ssh-key-to-gitlab)
+  6. [Required binaries](#required-binaries)
+  7. [User agreement](#user-agreement)
 
 
 ## Connecting to GovWifi
@@ -24,7 +27,6 @@ Platform users must have Office 365 Single Sign-On (SSO) credentials for the `di
 
 Most of ACP's services operate behind a VPN which is accessible with an `openvpn` client. Instructions on installing `openvpn` for your OS can be found at [OpenVPN]
 
->Note: All examples in this document are for Linux distributions; instructions for other operating systems will vary.
 
 Once you've got your Office 365 SSO credentials, you can now navigate to [Access ACP] and login with your Office 365 account by clicking on the link on the right.
 
@@ -32,17 +34,30 @@ Please download the VPN profile named **"ACP Platform (Ops, Dev, CI, Test)"** an
 
 VPN profiles expire after 12 hours. You'll need to download and connect with a new VPN Profile when it expires.
 
+## Platform Hub registration
+> **Please note** that you need to have your VPN running to access the Platform Hub and also talk to cluster APIs.
+
+You will need to register with the Platform Hub in order to gain access tokens for our Kubernetes clusters.
+Head to [Platform Hub], you will need your O365 credentials to login/sign up. You will be asked to connect your Github account to your Platform Hub account - this will give you access to our [BAU] board, which is used to raise requests and issues regarding the Platform or your project. More information can be found in the [developer documentation].
+
+Click on [Support Requests] under the `Help & Support` heading on the navigation bar after connecting your Github identity to the Hub. Create a support request for [Request access to Developer Induction]. The support request will be sent and reviewed by a member of ACP team. Updates on the request will be seen as a notification on your Github account.
+
+Once created, your token will be shown under `Kubernetes` section of the [Connected Identities] tab on the sidebar. You can view all of your tokens by pressing the `Show Tokens` button.
+
+## Add a ssh key to Gitlab
+
+You will need to add a ssh public key to your Gitlab profile before attending the Induction. Please sign into [Gitlab] with Office 365 and add a ssh public key to your profile. Instructions for generating a ssh keypair can be found in [Gitlab Docs]. 
+
 ## Required binaries
 
 Before joining the Developer Induction, we kindly ask you to install binaries which are used for the deployment of applications in ACP - instructions on how to install these are shown below:
 
-  - [Git](#git)
+  - [Git](#install-git)
   - [Docker](#install-docker)
+  - [Drone](#install-drone)
   - [Kubectl](#install-kubectl)
-  - [Drone](#drone)
-  - [KD](#kd)
-
-#### Git
+ 
+#### Install Git
 
 Verify if you have Git installed by:
 ```
@@ -61,7 +76,7 @@ You can follow the instructions to install `docker` from the [Docker website]. Y
 $ docker --version
 Docker version 18.03.1-ce, build 9ee9f40
 ```
-#### Drone
+#### Install Drone
 
 Drone CLI can be downloaded from the [Drone CI website]. Instructions installing on multiple operating systems are shown on the webpage.
 
@@ -72,31 +87,9 @@ $ drone --version
 drone version 0.8.0
 ```
 
-#### KD
+#### Install Kubectl
 
-`kd` is minimalistic Kubernetes resource deployment tool that we use. You can get the latest version of kd on its [releases page].
-
-Verify that the installation is successful:
-
-```bash
-$ kd -v
-kd version v0.13.0
-```
-
-## Platform Hub Registration
-> **Please note** that you need to have your VPN running to access the Platform Hub and also talk to cluster APIs.
-
-You will need to register with the Platform Hub in order to gain access tokens for our Kubernetes clusters.
-Head to [Platform Hub], you will need your O365 credentials to login/sign up. You will be asked to connect your Github account to your Platform Hub account - this will give you access to our [BAU] board, which is used to raise requests and issues regarding the Platform or your project. More information can be found in the [developer documentation].
-
-Click on [Support Requests] under the `Help & Support` heading on the navigation bar after connecting your Github identity to the Hub. Create a support request for [Request access to Developer Induction]. The support request will be sent and reviewed by a member of ACP team. Updates on the request will be seen as a notification on your Github account.
-
-Once created, your token will be shown under `Kubernetes` section of the [Connected Identities] tab on the sidebar. You can view all of your tokens by pressing the `Show Tokens` button.
-
-
-#### Install kubectl
-
-You can follow the instructions to install `kubectl` from the [Kubernetes website]. You can verify the installation is successful with:
+You can follow the instructions to install version 1.8 of `kubectl` from the [Kubernetes website]. You can verify the installation is successful with:
 
 ```bash
 $ kubectl version
@@ -123,10 +116,13 @@ default-token-dcnmg   kubernetes.io/service-account-token   3         105d
 Finally, please head over and read through our [SLA] documentation to familiarise yourself with the level of service ACP provides to its users including the level and hours of support on offer and issue escalation procedures.
 
 [Access ACP]:https://access-acp.digital.homeoffice.gov.uk
+[Windows Subsystem for Linux]:https://docs.microsoft.com/en-us/windows/wsl/about
 [Connect to GovWifi]:https://www.gov.uk/government/collections/connect-to-govwifi
 [OpenVPN]:https://openvpn.net/index.php/open-source/downloads.html
 [Git website]:https://git-scm.com/
 [Git basics]:https://git-scm.com/book/en/v2/Getting-Started-Git-Basics
+[Gitlab]:https://gitlab.digital.homeoffice.gov.uk
+[Gitlab Docs]:https://docs.gitlab.com/ee/ssh/
 [Docker website]:https://docs.docker.com/engine/installation/
 [Kubernetes website]:http://kubernetes.io/docs/user-guide/prereqs/
 [Drone CI website]:http://docs.drone.io/cli-installation/
