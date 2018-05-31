@@ -15,3 +15,4 @@ This folder contains a collection of how-to guides for both Developers and DevOp
   - [Getting a Kubernetes Robot Token for a UK cluster](kubernetes-robot-token.md)
   - [Using an Ingress](ingress.md)
   - [Network Policies](network-policies.md)
+  - [Pod Security Policies](pod-security-policies.md)
