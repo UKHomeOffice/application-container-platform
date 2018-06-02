@@ -15,7 +15,7 @@ pipeline:
       event: push
 
   image_to_quay:
-    image: ukhomeoffice/drone-docker
+    image: quay.io/ukhomeofficedigital/drone-docker
     secrets:
       - docker_password
     environment:
@@ -30,7 +30,7 @@ pipeline:
       event: push
 
   tagged_image_to_quay:
-    image: ukhomeoffice/drone-docker
+    image: quay.io/ukhomeofficedigital/drone-docker
     secrets:
       - docker_password
     environment:
