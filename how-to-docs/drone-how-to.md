@@ -144,7 +144,7 @@ Add the step to publish the docker image to Quay in your Drone pipeline:
 
 ```yaml
 image_to_quay:
-  image: ukhomeoffice/drone-docker
+  image: quay.io/ukhomeofficedigital/drone-docker
   secrets:
     - docker_password
   environment:
@@ -195,7 +195,7 @@ You can also push specifically tagged images by using the `DRONE_TAG` Drone envi
 
 ```yaml
 tagged_image_to_quay:
-  image: ukhomeoffice/drone-docker
+  image: quay.io/ukhomeofficedigital/drone-docker
   secrets:
     - docker_password
   environment:
@@ -230,7 +230,7 @@ You can add the following step in your `.drone.yml`:
 
 ```yaml
 image_to_artifactory:
-  image: ukhomeoffice/drone-docker
+  image: quay.io/ukhomeofficedigital/drone-docker
   secrets:
     - docker_artifactory_password
   environment:
@@ -507,7 +507,7 @@ Pipelines by default do not have access to any Drone secrets that you have added
 
 ```yaml
 image_to_quay:
-  image: ukhomeoffice/drone-docker
+  image: quay.io/ukhomeofficedigital/drone-docker
   secrets:
     - docker_password
   environment:
