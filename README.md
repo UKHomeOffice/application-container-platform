@@ -17,6 +17,7 @@ These are the core services which we provide across our platform.
 * [Code Management](docs/code.md)
 * [Artifact Storage](docs/artifacts.md)
 * [CI](docs/ci.md)
+* [DNS](docs/dns.md)
 * [Application Composition](docs/application.md)
 * [Platform Composition](docs/platformcomp.md)
 * [Logging](docs/logging.md)
