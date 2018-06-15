@@ -1,13 +1,34 @@
 ### **Application Certificates**
 -----
+Before reading about certificates and how you can create and manage them. [Please familiarise yourself with our DNS naming convention first](../docs/dns.md)
 
-The platform provide's an in-house certificate authority to provide local hostname.namespace.svc.cluster.local certificates. Note: the CA is setup only to serve certificates under hostname.namespace.svc.clutser.local, ip addresses and single named hostnames, i.e. localhost, myservice etc.
+The platform provides two ways of managing [HTTPS certificates](https://en.wikipedia.org/wiki/HTTPS):
+- [Internal based certificates](#internal-certificates) i.e. `hostname.namespace.svc.cluster.local` using CFSSL
+- [External based certificates](#external-certificates) for external services i.e. `service.homeoffice.gov.uk` using kube-cert-manager and letsencrypt
+
+In most systems, it's likely that your service will have a user facing service, that will be served through an external endpoint i.e. it can be routed to externally by users as well as having non-external facing services i.e. internal services.
+
+You would want all communication between the user, through to the service and service dependencies to be encrypted, so that the traffic flow has encryption and that all endpoints trust who they are speaking to.
+
+### Internal Certificates
+
+If your service is not external facing i.e. there is no external routing to your application,  then you will want an internal certificates for  services that want encryption of traffic between one another, but with an internal trusted CA. This means that serviceA can talk to serviceB securely and trust the authority that has issued the certificates for both of those services. We use CFSSL to sign the CSR's and have tools that you will place with your deployment, that will enable the creation and storage of the certificate for your webserver or application.
+
 
 #### **CA Bundle**
 
 By default, in the all namespaces a CA bundle has been added which can been mounted into the /etc/ssl/certs of the container and which contains the root CA used to verify authenticity of the certificates. An example of using it is given below.
 
-#### **Example Deployment**
+### External Certificates
+
+If your service has an application that has to be routed to externally i.e. users or other services will need to connect into your application that isn't hosted locally in the platform; then you will want to offer TLS to encrypt the traffic flow.
+
+`kube-cert-manager` and `ingress` are services that will enable automated fetching and load balancing of your service dynamically, based on the information you provide.
+
+**Note** That there are restrictions around the DNS name you can use on your namespace to prevent using domains the project is not authorative for.
+
+
+#### **Deployment Examples**
 
 Although technically the certificates aren't exclusively for ingress, the following show's a common deployment of external service via [ingress](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/ingress.md) with backend services / pods using tls between ingress controller and themselves.
 
@@ -182,4 +203,4 @@ spec:
 
 **LetsEncrypt Limits**
 
-Note Letscrypt while a free service does come with a number of service limits detailed [here](https://letsencrypt.org/docs/rate-limits/). Probably one of the most crucial for projects is the max certificate requests per week; currently standing at 20. In addition, there is a max 5 failures for per hostname with a freeze of 1 hour, so if you accidently mess up configuration you might hit this.
+Note Letsencrypt while a free service does come with a number of service limits detailed [here](https://letsencrypt.org/docs/rate-limits/). Probably one of the most crucial for projects is the max certificate requests per week; currently standing at 20. In addition, there is a max 5 failures for per hostname with a freeze of 1 hour, so if you accidently mess up configuration you might hit this.
