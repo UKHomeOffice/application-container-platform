@@ -12,5 +12,5 @@ All logs are sent through to [Kibana](https://kibana.acp.homeoffice.gov.uk) wher
 
 ### Log Retention Policy
 - Logs are searchable within kibana for 5 days and remain within elasticsearch for 12 days.
-- Snapshots of logs are stored within s3 indefinitely and migrated to the infrequent access storage class and then glacier storage after 60 and 180 days respectively.
+- Snapshots of logs are stored within s3 indefinitely and migrated to the infrequent access storage class and then glacier storage after 60 and 180 days respectively. To obtain access to logs in S3 [raise a ticket in the BAU board](https://github.com/UKHomeOffice/application-container-platform-bau/issues/new).
 - The same policy is applied to all logs within ELK
