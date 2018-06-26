@@ -232,7 +232,7 @@ You can add the following step in your `.drone.yml`:
 image_to_artifactory:
   image: quay.io/ukhomeofficedigital/drone-docker
   secrets:
-    - docker_artifactory_password
+    - docker_password
   environment:
     - DOCKER_USERNAME=<your_robots_username>
   registry: docker.digital.homeoffice.gov.uk
