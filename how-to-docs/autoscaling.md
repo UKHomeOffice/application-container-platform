@@ -16,5 +16,37 @@ spec:
     apiVersion: extensions/v1beta1
     kind: Deployment
     name: web
-  targetCPUUtilizationPercentage: 40
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 50
+```
+
+**Sysdig Metrics - Experimental**
+
+The autoscaler can also consume and make scaling decisions from [sysdig](https://sysdig.digital.homeoffice.gov.uk) metrics. Note, this feature is currently experimental but tested as working.
+
+An example of sysdig would be scaling on http_request
+
+```YAML
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: autoscaler
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: myapplication
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Object
+    object:
+      target:
+        kind: Service
+        name: myservice
+      metricName: net.http.request.count
+      targetValue: 100
 ```
