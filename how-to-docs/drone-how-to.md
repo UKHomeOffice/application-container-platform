@@ -223,7 +223,7 @@ If your repository is hosted publicly on GitHub, you shouldn't publish your imag
 You can inject the token that has been supplied to you with:
 
 ```
-$ drone secret add --repository <gitlab_repo_group>/<your_gitlab_repo> --name DOCKER_ARTIFACTORY_PASSWORD --value <your_robot_token>
+$ drone secret add --repository <gitlab_repo_group>/<your_gitlab_repo> --name DOCKER_PASSWORD --value <your_robot_token>
 ```
 
 You can add the following step in your `.drone.yml`:
