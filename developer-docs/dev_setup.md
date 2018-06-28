@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This guide aims to prepare developers to use the Application Container Platform. You must complete the steps below before attending the ACP Induction. 
+This guide aims to prepare developers to use the Application Container Platform. You must complete the steps below before attending the ACP Induction.
 
 All examples in this document are for Linux distributions and instructions for other operating systems will vary. If you choose to use a Windows device, please ensure that [Windows Subsystem for Linux] is installed.
 
@@ -27,8 +27,7 @@ Platform users must have Office 365 Single Sign-On (SSO) credentials for the `di
 
 Most of ACP's services operate behind a VPN which is accessible with an `openvpn` client. Instructions on installing `openvpn` for your OS can be found at [OpenVPN]
 
-
-Once you've got your Office 365 SSO credentials, you can now navigate to [Access ACP] and login with your Office 365 account by clicking on the link on the right.
+Once you've got your Office 365 SSO credentials, you can now navigate to [Remote Access] and login with your Office 365 account by clicking on the link on the right.
 
 Please download the VPN profile named **"ACP Platform (Ops, Dev, CI, Test)"** and use the `openvpn` client to connect. Verify that you can resolve the [Platform Hub] before continuing on.
 
@@ -46,7 +45,7 @@ Once created, your token will be shown under `Kubernetes` section of the [Connec
 
 ## Add a ssh key to Gitlab
 
-You will need to add a ssh public key to your Gitlab profile before attending the Induction. Please sign into [Gitlab] with Office 365 and add a ssh public key to your profile. Instructions for generating a ssh keypair can be found in [Gitlab Docs]. 
+You will need to add a ssh public key to your Gitlab profile before attending the Induction. Please sign into [Gitlab] with Office 365 and add a ssh public key to your profile. Instructions for generating a ssh keypair can be found in [Gitlab Docs].
 
 ## Required binaries
 
@@ -56,7 +55,7 @@ Before joining the Developer Induction, we kindly ask you to install binaries wh
   - [Docker](#install-docker)
   - [Drone](#install-drone)
   - [Kubectl](#install-kubectl)
- 
+
 #### Install Git
 
 Verify if you have Git installed by:
@@ -115,7 +114,7 @@ default-token-dcnmg   kubernetes.io/service-account-token   3         105d
 
 Finally, please head over and read through our [SLA] documentation to familiarise yourself with the level of service ACP provides to its users including the level and hours of support on offer and issue escalation procedures.
 
-[Access ACP]:https://access-acp.digital.homeoffice.gov.uk
+[Remote Access]:https://remote-access.vpn.acp.homeoffice.gov.uk
 [Windows Subsystem for Linux]:https://docs.microsoft.com/en-us/windows/wsl/about
 [Connect to GovWifi]:https://www.gov.uk/government/collections/connect-to-govwifi
 [OpenVPN]:https://openvpn.net/index.php/open-source/downloads.html
