@@ -1,124 +1,123 @@
-### **Keycloak 4.1**
-
+### **Keycloak v4.1.0**
 
 **Enhancement**
-[KEYCLOAK-3063] - Check if keycloak-osgi-thirdparty can be removed
-[KEYCLOAK-3370] - Choose Theme by Client
-[KEYCLOAK-4937] - Convert time units in emails into human-friendly format
-[KEYCLOAK-5166] - Setup CI jobs to test RH-SSO quickstarts
-[KEYCLOAK-5578] - The javascript adapter should use native Promises
-[KEYCLOAK-5791] - Add support for multi-valued attributes in ScriptBasedOIDCProtocolMapper
-[KEYCLOAK-5811] - OIDC Client Authentication by JWS Client Assertion in client_secret_jwt
-[KEYCLOAK-5857] - Support for PBKDF2 hashes with different key size
-[KEYCLOAK-5886] - Improvements to Photoz Examples
-[KEYCLOAK-6085] - Allow to customize DB dump download location through a Maven property
-[KEYCLOAK-6222] - Check for script syntax errors on ScriptBasedOIDCProtocolMapper validation
-[KEYCLOAK-6262] - Incorporate new visual design for login pages
-[KEYCLOAK-6298] - SAML adapter script should support offline installation of adapter
-[KEYCLOAK-6299] - Product profile should only include supported JavaDocs
-[KEYCLOAK-6302] - Add support for user defined networks and Docker compose
-[KEYCLOAK-6330] - GitHub social IdP: Use GitHub API for fetching user's private email if no public email is set
-[KEYCLOAK-6335] - Per client authentication flows
-[KEYCLOAK-6336] - Per client authentication flows configuration in admin console
-[KEYCLOAK-6339] - Show SAML IdP-initiated client URI
-[KEYCLOAK-6350] - Refactor SAML parsers
-[KEYCLOAK-6355] - Non-browser multi-request cookieless auth flow support
-[KEYCLOAK-6378] - Clean-up node_modules in themes
-[KEYCLOAK-6493] - [SPIKE] Investigate architecture of new account management console
-[KEYCLOAK-6561] - Add account management and update profile to js-console example
-[KEYCLOAK-6578] - Support other OIDC providers with keycloak.js
-[KEYCLOAK-6589] - Performance issues in Users REST API
-[KEYCLOAK-6618] - Update German Translation
-[KEYCLOAK-6664] - Fix performance testsuite shell scripts to run on macOS
-[KEYCLOAK-6700] - Financial API Read and Write API Security Profile : State hash value (s_hash) to protect state parameter
-[KEYCLOAK-6871] - Make sending a request object mandatory for certain clients
-[KEYCLOAK-4134] - Update paths in adapters when new resources are created on the server
-[KEYCLOAK-5457] - Context accessibility for JS base policies
-[KEYCLOAK-5830] - Automated stress test
-[KEYCLOAK-6448] - Instagram social broker
-[KEYCLOAK-6494] - Address load-time of new account management console
-[KEYCLOAK-6495] - Address number of requests for new account management console
-[KEYCLOAK-6496] - Cleanup and polish current code base for new account management console
-[KEYCLOAK-6699] - Add more recipes to Admin CLI documentation
-[KEYCLOAK-6815] - Use htmlunit browser in adapter tests
-[KEYCLOAK-6838] - Update RH-SSO logo style
-[KEYCLOAK-6857] - [RH-SSO] Remove support for RH-SSO 7.1 from the documentation
-[KEYCLOAK-6992] - Proxy: Configure Request Timeout
-[KEYCLOAK-7033] - Server rendered "Login Success/Failure" for kcinit/KeycloakInstalled browser
-[KEYCLOAK-7044] - kcadm --token support
-[KEYCLOAK-7147] - Support obtaining a buffered input stream in HttpFacade.Request
-[KEYCLOAK-7162] - Expose WWW-Authenticate Header when using CORS
-[KEYCLOAK-7204] - Make sure that sso.redhatkeynote.com route is used just for "sso" project
-[KEYCLOAK-7223] - Increase count of connections at datasource
-[KEYCLOAK-6655] - Javascript Adapter - Allow users to provide cordova-specific options to login and register
-[KEYCLOAK-6656] - Javascript Adapter - Reject 'login' promise when users close their cordova in-app-browser on purpose
-[KEYCLOAK-7274] - Hardcoded config in offline adapter installation scripts
-[KEYCLOAK-7354] - Split ticket management and permission endpoint
-[KEYCLOAK-4828] - LDAP: default groups are not automatically added during user registration
-[KEYCLOAK-6883] - Add "scope" as claim to the access token.
-[KEYCLOAK-7334] - Update vertical nav/Integrate patternfly-ng
-[KEYCLOAK-7356] - Code to Token flow fails if initial redirect_uri contains a session_state parameter
-[KEYCLOAK-7504] - Update Node.js adapter dependencies and deprecate support to Node 4
-[KEYCLOAK-7523] - PathBasedKeycloakConfigResolver uses wrong context path
-[KEYCLOAK-7531] - Javascript Adapter - Typescript definition of login.cordovaOptions
-[KEYCLOAK-7593] - Add setter for httpContext to Fuse 7 adapters' PaxWebIntegrationService
-[KEYCLOAK-7633] - Improve support for DEBUG level logging, including runtime level change
-[KEYCLOAK-7701] - Refactor key providers to support additional algorithms
-[KEYCLOAK-7722] - Move configuration files specific to EAP6 to app-server-eap6 module
+* [KEYCLOAK-3063] - Check if keycloak-osgi-thirdparty can be removed
+* [KEYCLOAK-3370] - Choose Theme by Client
+* [KEYCLOAK-4937] - Convert time units in emails into human-friendly format
+* [KEYCLOAK-5166] - Setup CI jobs to test RH-SSO quickstarts
+* [KEYCLOAK-5578] - The javascript adapter should use native Promises
+* [KEYCLOAK-5791] - Add support for multi-valued attributes in ScriptBasedOIDCProtocolMapper
+* [KEYCLOAK-5811] - OIDC Client Authentication by JWS Client Assertion in client_secret_jwt
+* [KEYCLOAK-5857] - Support for PBKDF2 hashes with different key size
+* [KEYCLOAK-5886] - Improvements to Photoz Examples
+* [KEYCLOAK-6085] - Allow to customize DB dump download location through a Maven property
+* [KEYCLOAK-6222] - Check for script syntax errors on ScriptBasedOIDCProtocolMapper validation
+* [KEYCLOAK-6262] - Incorporate new visual design for login pages
+* [KEYCLOAK-6298] - SAML adapter script should support offline installation of adapter
+* [KEYCLOAK-6299] - Product profile should only include supported JavaDocs
+* [KEYCLOAK-6302] - Add support for user defined networks and Docker compose
+* [KEYCLOAK-6330] - GitHub social IdP: Use GitHub API for fetching user's private email if no public email is set
+* [KEYCLOAK-6335] - Per client authentication flows
+* [KEYCLOAK-6336] - Per client authentication flows configuration in admin console
+* [KEYCLOAK-6339] - Show SAML IdP-initiated client URI
+* [KEYCLOAK-6350] - Refactor SAML parsers
+* [KEYCLOAK-6355] - Non-browser multi-request cookieless auth flow support
+* [KEYCLOAK-6378] - Clean-up node_modules in themes
+* [KEYCLOAK-6493] - [SPIKE] Investigate architecture of new account management console
+* [KEYCLOAK-6561] - Add account management and update profile to js-console example
+* [KEYCLOAK-6578] - Support other OIDC providers with keycloak.js
+* [KEYCLOAK-6589] - Performance issues in Users REST API
+* [KEYCLOAK-6618] - Update German Translation
+* [KEYCLOAK-6664] - Fix performance testsuite shell scripts to run on macOS
+* [KEYCLOAK-6700] - Financial API Read and Write API Security Profile : State hash value (s_hash) to protect state parameter
+* [KEYCLOAK-6871] - Make sending a request object mandatory for certain clients
+* [KEYCLOAK-4134] - Update paths in adapters when new resources are created on the server
+* [KEYCLOAK-5457] - Context accessibility for JS base policies
+* [KEYCLOAK-5830] - Automated stress test
+* [KEYCLOAK-6448] - Instagram social broker
+* [KEYCLOAK-6494] - Address load-time of new account management console
+* [KEYCLOAK-6495] - Address number of requests for new account management console
+* [KEYCLOAK-6496] - Cleanup and polish current code base for new account management console
+* [KEYCLOAK-6699] - Add more recipes to Admin CLI documentation
+* [KEYCLOAK-6815] - Use htmlunit browser in adapter tests
+* [KEYCLOAK-6838] - Update RH-SSO logo style
+* [KEYCLOAK-6857] - [RH-SSO] Remove support for RH-SSO 7.1 from the documentation
+* [KEYCLOAK-6992] - Proxy: Configure Request Timeout
+* [KEYCLOAK-7033] - Server rendered "Login Success/Failure" for kcinit/KeycloakInstalled browser
+* [KEYCLOAK-7044] - kcadm --token support
+* [KEYCLOAK-7147] - Support obtaining a buffered input stream in HttpFacade.Request
+* [KEYCLOAK-7162] - Expose WWW-Authenticate Header when using CORS
+* [KEYCLOAK-7204] - Make sure that sso.redhatkeynote.com route is used just for "sso" project
+* [KEYCLOAK-7223] - Increase count of connections at datasource
+* [KEYCLOAK-6655] - Javascript Adapter - Allow users to provide cordova-specific options to login and register
+* [KEYCLOAK-6656] - Javascript Adapter - Reject 'login' promise when users close their cordova in-app-browser on purpose
+* [KEYCLOAK-7274] - Hardcoded config in offline adapter installation scripts
+* [KEYCLOAK-7354] - Split ticket management and permission endpoint
+* [KEYCLOAK-4828] - LDAP: default groups are not automatically added during user registration
+* [KEYCLOAK-6883] - Add "scope" as claim to the access token.
+* [KEYCLOAK-7334] - Update vertical nav/Integrate patternfly-ng
+* [KEYCLOAK-7356] - Code to Token flow fails if initial redirect_uri contains a session_state parameter
+* [KEYCLOAK-7504] - Update Node.js adapter dependencies and deprecate support to Node 4
+* [KEYCLOAK-7523] - PathBasedKeycloakConfigResolver uses wrong context path
+* [KEYCLOAK-7531] - Javascript Adapter - Typescript definition of login.cordovaOptions
+* [KEYCLOAK-7593] - Add setter for httpContext to Fuse 7 adapters' PaxWebIntegrationService
+* [KEYCLOAK-7633] - Improve support for DEBUG level logging, including runtime level change
+* [KEYCLOAK-7701] - Refactor key providers to support additional algorithms
+* [KEYCLOAK-7722] - Move configuration files specific to EAP6 to app-server-eap6 module
 
 **Feature Request**
-[KEYCLOAK-943] - Account Management REST api
-[KEYCLOAK-1942] - Magic link authenticator prototype
-[KEYCLOAK-3736] - Add display name to clients
-[KEYCLOAK-4547] - Allow deploying themes to deployments dir
-[KEYCLOAK-4721] - Consider Session Language of Realm Also In ReCaptcha
-[KEYCLOAK-4743] - Running keycloak behind web proxy
-[KEYCLOAK-5372] - Add warm-up, test-time, ramp-down times
-[KEYCLOAK-5574] - Add edit this page in Github links to docs
-[KEYCLOAK-6041] - SSSD Federation script to be idempotent
-[KEYCLOAK-6147] - Ability to add nonce attribute to idp request
-[KEYCLOAK-6228] - Client Storage SPI
-[KEYCLOAK-6289] - Add Theme Selector SPI
-[KEYCLOAK-6519] - Theme resource provider
-[KEYCLOAK-4102] - Allow policy enforcer to load paths on demand when no path is provider
-[KEYCLOAK-4538] - Possiblity to allow clock skew between client and server
-[KEYCLOAK-4903] - Pushed Claims
-[KEYCLOAK-5098] - Spring Boot 2 Adapter
-[KEYCLOAK-6305] - Slovak translation
-[KEYCLOAK-6497] - Profile page
-[KEYCLOAK-6498] - Welcome page
-[KEYCLOAK-6499] - Add password update - HTML
-[KEYCLOAK-6500] - Add device activity - HTML
-[KEYCLOAK-6501] - Applications page - wireframe
-[KEYCLOAK-6505] - Authenticator page - wireframe review
-[KEYCLOAK-6622] - admin console support for client storage SPI
-[KEYCLOAK-6798] - Keycloak.js - allow to provide custom adapters
-[KEYCLOAK-6813] - CLI SSO Utility `kcinit`
-[KEYCLOAK-7000] - kcinit whoami
-[KEYCLOAK-7004] - kcinit browser mode
-[KEYCLOAK-7039] - Add support for MariaDB to Docker image
-[KEYCLOAK-7072] - Extended user attributes on Profile Page
-[KEYCLOAK-7196] - Add kc_locale to keycloak.js
-[KEYCLOAK-7197] - Response design for welcome page
-[KEYCLOAK-7090] - Applications page - HTML
-[KEYCLOAK-7148] - Associate sub resources to a parent resource
-[KEYCLOAK-7206] - Search by user id on admin console
-[KEYCLOAK-349] - Scope query parameter support
-[KEYCLOAK-5579] - Change Client Templates to Client Scope
-[KEYCLOAK-6720] - Display promise error massage in GrantManager.prototype.validateToken
-[KEYCLOAK-6771] - Holder of Key mechanism: OAuth 2.0 Certificate Bound Access Tokens
-[KEYCLOAK-7382] - Application Response HTML Update
-[KEYCLOAK-7451] - OAuth Authorization Server Metadata for Proof Key for Code Exchange
-[KEYCLOAK-7500] - Upgrade MySQL driver to 5.1.46
-[KEYCLOAK-6663] - Support OAuth2 installed / native apps using a custom redirect uri
-[KEYCLOAK-7384] - Federated Identity (linked accounts) HTML
-[KEYCLOAK-7641] - Introduce a profile to allow building only server
-[KEYCLOAK-7651] - Docker image support to build Keycloak from source
-[KEYCLOAK-7688] - Offline Session Max for Offline Token
-[KEYCLOAK-7689] - Authenticator - Mobile Setup HTML (including the responsive code)
-[KEYCLOAK-7690] - Authenticator - SMS Code Setup HTML (including the responsive code)
-[KEYCLOAK-7691] - Authenticator - Backup Code Setup HTML (including the responsive code)
-[KEYCLOAK-7705] - Added hardcoded-ldap-group-mapper for user federation
+* [KEYCLOAK-943] - Account Management REST api
+* [KEYCLOAK-1942] - Magic link authenticator prototype
+* [KEYCLOAK-3736] - Add display name to clients
+* [KEYCLOAK-4547] - Allow deploying themes to deployments dir
+* [KEYCLOAK-4721] - Consider Session Language of Realm Also In ReCaptcha
+* [KEYCLOAK-4743] - Running keycloak behind web proxy
+* [KEYCLOAK-5372] - Add warm-up, test-time, ramp-down times
+* [KEYCLOAK-5574] - Add edit this page in Github links to docs
+* [KEYCLOAK-6041] - SSSD Federation script to be idempotent
+* [KEYCLOAK-6147] - Ability to add nonce attribute to idp request
+* [KEYCLOAK-6228] - Client Storage SPI
+* [KEYCLOAK-6289] - Add Theme Selector SPI
+* [KEYCLOAK-6519] - Theme resource provider
+* [KEYCLOAK-4102] - Allow policy enforcer to load paths on demand when no path is provider
+* [KEYCLOAK-4538] - Possiblity to allow clock skew between client and server
+* [KEYCLOAK-4903] - Pushed Claims
+* [KEYCLOAK-5098] - Spring Boot 2 Adapter
+* [KEYCLOAK-6305] - Slovak translation
+* [KEYCLOAK-6497] - Profile page
+* [KEYCLOAK-6498] - Welcome page
+* [KEYCLOAK-6499] - Add password update - HTML
+* [KEYCLOAK-6500] - Add device activity - HTML
+* [KEYCLOAK-6501] - Applications page - wireframe
+* [KEYCLOAK-6505] - Authenticator page - wireframe review
+* [KEYCLOAK-6622] - admin console support for client storage SPI
+* [KEYCLOAK-6798] - Keycloak.js - allow to provide custom adapters
+* [KEYCLOAK-6813] - CLI SSO Utility `kcinit`
+* [KEYCLOAK-7000] - kcinit whoami
+* [KEYCLOAK-7004] - kcinit browser mode
+* [KEYCLOAK-7039] - Add support for MariaDB to Docker image
+* [KEYCLOAK-7072] - Extended user attributes on Profile Page
+* [KEYCLOAK-7196] - Add kc_locale to keycloak.js
+* [KEYCLOAK-7197] - Response design for welcome page
+* [KEYCLOAK-7090] - Applications page - HTML
+* [KEYCLOAK-7148] - Associate sub resources to a parent resource
+* [KEYCLOAK-7206] - Search by user id on admin console
+* [KEYCLOAK-349] - Scope query parameter support
+* [KEYCLOAK-5579] - Change Client Templates to Client Scope
+* [KEYCLOAK-6720] - Display promise error massage in GrantManager.prototype.validateToken
+* [KEYCLOAK-6771] - Holder of Key mechanism: OAuth 2.0 Certificate Bound Access Tokens
+* [KEYCLOAK-7382] - Application Response HTML Update
+* [KEYCLOAK-7451] - OAuth Authorization Server Metadata for Proof Key for Code Exchange
+* [KEYCLOAK-7500] - Upgrade MySQL driver to 5.1.46
+* [KEYCLOAK-6663] - Support OAuth2 installed / native apps using a custom redirect uri
+* [KEYCLOAK-7384] - Federated Identity (linked accounts) HTML
+* [KEYCLOAK-7641] - Introduce a profile to allow building only server
+* [KEYCLOAK-7651] - Docker image support to build Keycloak from source
+* [KEYCLOAK-7688] - Offline Session Max for Offline Token
+* [KEYCLOAK-7689] - Authenticator - Mobile Setup HTML (including the responsive code)
+* [KEYCLOAK-7690] - Authenticator - SMS Code Setup HTML (including the responsive code)
+* [KEYCLOAK-7691] - Authenticator - Backup Code Setup HTML (including the responsive code)
+* [KEYCLOAK-7705] - Added hardcoded-ldap-group-mapper for user federation
 
 ### **Keycloak 3.4**
 
