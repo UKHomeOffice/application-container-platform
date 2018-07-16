@@ -1,5 +1,9 @@
 # Kubernetes Platform Release Notes
 
+## v0.2.3 (ACP Build)
+
+- Kubernetes v1.10.3: https://github.com/kubernetes/kubernetes/releases/tag/v1.10.3
+
 ## v0.2.0 (ACP Build)
 
 - Kubernetes v1.10.1: https://github.com/kubernetes/kubernetes/releases/tag/v1.10.1
