@@ -1,12 +1,5 @@
-## **Certificate Management**
+## **Cert Manager**
 ----
-
-The ACP platform presently has two certificate management services, the first contender was [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager). The project due to a forever changing landscape gradually became deprecated and has now been replaced by the [cert-manager](https://github.com/jetstack/cert-manager). Note ACP will continue to support the kube-cert-manager and the internal cfssl service while they are still in use, we do however recommend shifting over to the cert-manager as aside from security fix we won't be performing anymore updates on these services.
-
-Without wishing to duplicate documentation, which are can get from both the [readme](https://github.com/jetstack/cert-manager/blob/master/README.md) or it's official [documentation](https://cert-manager.readthedocs.io/en/latest/), the cert-manager can effectively replace two services
-
-- kube-cert-manager: used to acquire certificates from LetsEncrypyt.
-- cfssl: an internal Cloudflare service used to generate internal certificate _(usaually to encrypt between ingress and pod)_.
 
 ### **How-tos**
 
@@ -24,7 +17,7 @@ spec:
   issuerRef:
     name: platform-tls
     kind: ClusterIssuer
-  commonName: site.svc.project.cluster.local
+  commonName: site.project.svc.cluster.local
   dnsNames:
   - localhost
   - 127.0.0.1
@@ -52,7 +45,7 @@ spec:
     name: project-ca
     # @Note: we have change from ClusterIssuer to a local Issuer
     kind: Issuer
-  commonName: site.svc.project.cluster.local
+  commonName: site.project.svc.cluster.local
   dnsNames:
   - localhost
   - 127.0.0.1
