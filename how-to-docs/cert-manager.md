@@ -65,10 +65,9 @@ Lets assume we have an externally facing site which we wish to expose via ingres
 - the enable annotation `certmanager.k8s.io/enabled` which is a toggle to ask cert-manager to handle this ingress resource.
 - the Letsencrypt challenge `certmanager.k8s.io/acme-challenge-type`; note, technically the challenge is not required as `http01` is the default type, but I'm adding to highlight.
 
-**When to use a HTTP challenge**
+#### **When to use a HTTP challenge**
 
 Assuming the site is externally facing i.e. the ingress class on the ingress is `kubernetes.io/ingress.class: ingress-external` you should always default to using a http01 challenge. Things change, however, when the site is internal / behind the vpn. In order to handle the challenge when behind the VPN you need to switch to using a DNS challenge. In ingress this is done by adding the annotation `certmanager.k8s.io/acme-challenge-type: dns`. **Very Important** this assumes you have contacted the ACP beforehand and we have either added the domain to our route53 or added the dns provider as a challenge provider.
->>>>>>> 178b68a... Certificate Manager
 
 ```YAML
 apiVersion: extensions/v1beta1
