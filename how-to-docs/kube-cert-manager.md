@@ -84,7 +84,7 @@ Assuming you are not bringing your own certificates, LetsEncrypt can be used to 
 
 ##### **The CA bundle**
 
-By default, in the all namespaces a CA bundle has been added which can been mounted into the /etc/ssl/certs of the container and which contains the root CA used to verify authenticity of the certificates. An example of using it is given below.
+By default, in all namespaces a CA bundle has been added which can been mounted into the /etc/ssl/certs of the container and which contains the root CA used to verify authenticity of the certificates. An example of using it is given below.
 
 Below is example of how to acquire a certificate from CloudflareSSL.
 

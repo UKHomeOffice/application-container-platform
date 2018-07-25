@@ -23,7 +23,7 @@ spec:
   - 127.0.0.1
 ```
 
-This would create a kubernetes secret named `tls` in your namespace with the signed certificate. An interesting thing to note here although this is using the ClusterIssuer platform-ca created by the ACP team, there is nothing stopping a project from creating a local Issuer for the own project. So for example.
+This would create a kubernetes secret named `tls` in your namespace with the signed certificate. An interesting thing to note here although this is using the ClusterIssuer platform-ca created by the ACP team, there is nothing stopping a project from creating a local Issuer for their own project. So for example.
 
 ```YAML
 ---
@@ -94,7 +94,7 @@ apiVersion: extensions/v1beta1
       secretName: example-tls
 ```
 
-A few things to note here; the cert-manager works with the custom resource `Certificate` when using ingress annotation what the cert-manager is doing is using another internal controller to pick up the ingress resources and create a Certificate resource on your behalf. Of course you caninstead define this directly yourself.
+A few things to note here; the cert-manager works with the custom resource `Certificate` when using ingress annotation what the cert-manager is doing is using another internal controller to pick up the ingress resources and create a Certificate resource on your behalf. Of course you can instead define this directly yourself.
 
 ```YAML
 apiVersion: certmanager.k8s.io/v1alpha1
