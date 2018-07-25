@@ -1,5 +1,9 @@
 # Sysdig Release Notes
 
+## 987
+
+- Update to: https://github.com/draios/sysdigcloud-kubernetes/releases/tag/987
+
 ## 925
 
 - Update to: https://github.com/draios/sysdigcloud-kubernetes/releases/tag/925
