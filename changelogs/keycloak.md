@@ -1,3 +1,80 @@
+
+### **Keycloak v4.2.1**
+
+**Bug**
+
+* [KEYCLOAK-7984] - RequiredActionProviderEntity priority migration issue
+* [KEYCLOAK-7985] - Version migration the database table names do not match
+* [KEYCLOAK-7986] - Migration test fails for migration from 3.4.3.Final
+* [KEYCLOAK-7998] - File based realm export breaks after migration from Keycloak 3.4.3 to 4.2.1
+
+### **Keycloak v4.2.0**
+
+**Enhancement2**
+
+* [KEYCLOAK-4407] - Ability to restart arquillian containers from test
+* [KEYCLOAK-5609] - An option to create claims with dots (.) in them
+* [KEYCLOAK-6577] - Unable to map claim attributes with dots (.) in them
+* [KEYCLOAK-7703] - PathBasedKeycloakConfigResolver - more generic behavior
+* [KEYCLOAK-7792] - Always preserve URL fragment in redirectUri
+* [KEYCLOAK-7876] - Improve stability of fuse7 hawtio test
+* [KEYCLOAK-7924] - Speed up cross-dc tests
+* [KEYCLOAK-7959] - OAuth 2.0 Certificate Bound Access Tokens in Reverse Proxy Deployed Environment
+* [KEYCLOAK-7973] - Possibility to add classpath elements to KeycloakServer
+
+**Feature Request**
+
+* [KEYCLOAK-1925] - SAML adapter multitenant support
+* [KEYCLOAK-2606] - In-app browser tab support for Cordova
+* [KEYCLOAK-5629] - Add credential endpoints to account service
+* [KEYCLOAK-6313] - Changing execution order of required actions easily feature
+* [KEYCLOAK-7105] - Notification needs to be lower
+* [KEYCLOAK-7201] - OIDC Identity Brokering with Client parameter forward
+* [KEYCLOAK-7294] - Password Page - Angular
+* [KEYCLOAK-7846] - Turn off disallowed features
+
+**Epic*
+* [KEYCLOAK-6176] - Stable and reliable CI that can be used to test PRs, master and releases
+
+**Bug**
+* [KEYCLOAK-2886] - Cluster tests fail when running from IDE
+* [KEYCLOAK-4662] - Keycloak adapter missing configuration attribute "proxy-url"
+* [KEYCLOAK-6308] - Disable 'secret question credentials' fails
+* [KEYCLOAK-6314] - After a terms & conditions rejection, an "internal server error has ocurred" happens
+* [KEYCLOAK-6708] - NullPointerException when integrating with IDP that returns a SAML XML that does not contain the fields Keycloak expects by default
+* [KEYCLOAK-6866] - Error 404 after changing locale while authenticating using X.509
+* [KEYCLOAK-7497] - Remove Babel transpiler
+* [KEYCLOAK-7524] - Vertical Nav Doesn't close on secondary click
+* [KEYCLOAK-7663] - Deleting identity provider does not delete it's mappers
+* [KEYCLOAK-7795] - "Back to <app>" missing from Welcome Page
+* [KEYCLOAK-7802] - Broken HoKTest
+* [KEYCLOAK-7805] - Broken PayPal and Bitbucket Social Login tests
+* [KEYCLOAK-7816] - Tech preview features (like authz) are run by default
+* [KEYCLOAK-7823] - Keycloak returns wrong HTTP status during SPNEGO authentication
+* [KEYCLOAK-7840] - Secret in keycloak.json and client-import.json doesn't match
+* [KEYCLOAK-7860] - proxy-address-forwarding option is not added to https listener in Docker image
+* [KEYCLOAK-7872] - Doesn't remove Identity Provider Mapper after removing identity provider
+* [KEYCLOAK-7881] - Docker image jboss/keycloak doesn't contain jq
+* [KEYCLOAK-7913] - Invalid naming of JPA changelog files
+* [KEYCLOAK-7934] - Dataset generator cannot create "empty" mappings
+* [KEYCLOAK-7965] - Redundant div end tag in base theme login.ftl
+* [KEYCLOAK-7977] - Release failing due the NPE during swagger2markup-maven-plugin execution
+
+**Task**
+* [KEYCLOAK-7101] - Investigate failing Social Login Tests
+* [KEYCLOAK-7269] - [SPIKE] - Investigate how to support resource-less permissions
+* [KEYCLOAK-7310] - Add migration test from 3.4.x to 4.x
+* [KEYCLOAK-7328] - Test the RH-SSO 7.2.z EAP 7 adapter with early builds of EAP 7.2.0
+* [KEYCLOAK-7329] - Test the RH-SSO 7.3.0 EAP 7 adapter with early builds of EAP 7.2.0
+* [KEYCLOAK-7400] - Update Camel / Fuse 7 adapter once CAMEL-12514 is merged to Fuse's Camel component
+* [KEYCLOAK-7498] - Remove unused components.
+* [KEYCLOAK-7599] - Improve handling of test datasets
+* [KEYCLOAK-7620] - Generating performance datasets for authorization services
+* [KEYCLOAK-7666] - Adapter tests - add dynamically loaded container - remove abstract classes - EAP6-fuse6
+* [KEYCLOAK-7817] - Update eap6.version in testsuite
+* [KEYCLOAK-7857] - Fix Notifications - Switch to pf-ng notifications
+* [KEYCLOAK-7888] - Update Fuse adapter examples/guide to new way of CXF servlet registration
+
 ### **Keycloak v4.1.0**
 
 **Enhancement**
