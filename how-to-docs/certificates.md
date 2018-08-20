@@ -12,10 +12,7 @@ You would want all communication between the user, through to the service and se
 
 #### **Certificates**
 
-The ACP platform presently has two certificate management services, the first contender was [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager). The project due to a forever changing landscape gradually became deprecated and has now been replaced by the [cert-manager](https://github.com/jetstack/cert-manager). Note ACP will continue to support the kube-cert-manager and the internal cfssl service while they are still in use, we do however recommend shifting over to the cert-manager as aside from security fix we won't be performing anymore updates on these services.
-
-- [cert-manager](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/cert-manager.md)
-- [kube-cert-manager and cfssl](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/kube-cert-manager.md). Note, this one is deprecated in favour of the above.
+- [kube-cert-manager and cfssl](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/kube-cert-manager.md)
 
 #### **LetsEncrypt Limits**
 

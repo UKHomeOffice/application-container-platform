@@ -1,9 +1,6 @@
 ## **Kube-Cert-Managaer & Cloudflare SSL**
 -----
-> **Important**: these services have been deprecated. They will remain in the cluster while still in use, but barring a security fix will not be actively maintained.
-
 Services:
-
 - [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager) is used to retrieve Letencrypt certificates.
 - [cfssl](https://github.com/cloudflare/cfssl) is an internal certificate service used to provide internal tls between pods / services.
 
