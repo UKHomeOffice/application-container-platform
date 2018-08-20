@@ -1,5 +1,7 @@
 ## **Application Certificates**
 -----
+> **NOTE: please contact the ACP Team before using the cert-manager, as this is experimental and not available to all projects yet**
+
 Before reading about certificates and how you can create and manage them. [Please familiarise yourself with our DNS naming convention first](../docs/dns.md)
 
 The platform provides two ways of managing [HTTPS certificates](https://en.wikipedia.org/wiki/HTTPS):
