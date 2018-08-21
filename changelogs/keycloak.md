@@ -1,3 +1,41 @@
+### **Keycloak v4.3.0**
+
+**Enhancement**
+
+* [KEYCLOAK-5289] - support hosted domain for Google logins
+
+**Feature Request**
+
+* [KEYCLOAK-7635] - Authenticate clients with x509 certificate
+* [KEYCLOAK-7967] - Hostname SPI
+
+**Epic**
+
+* [KEYCLOAK-5522] - Add support for Fuse 7
+
+**Bug**
+
+* [KEYCLOAK-6818] - Keycloak creates an extra AUTH_SESSION_ID cookie with a path of “/auth” when logging in
+* [KEYCLOAK-6832] - Destination Validation should ignore whether default port is explicitly specified
+* [KEYCLOAK-7528] - Token endpoint doesn't set Cache-Control and Pragma header
+* [KEYCLOAK-7562] - ClientInitiatedAccountLinkTest#testErrorConditions fails
+* [KEYCLOAK-7946] - Variable rather than intended value showing in RH-SSO doc
+* [KEYCLOAK-7954] - OIDC Provider doesn't skip token validation if URL is empty
+* [KEYCLOAK-7974] - Fix typo in remove credentials alert
+* [KEYCLOAK-7984] - RequiredActionProviderEntity priority migration issue
+* [KEYCLOAK-7985] - Version migration the database table names do not match
+* [KEYCLOAK-7986] - Migration test fails for migration from 3.4.3.Final
+* [KEYCLOAK-7988] - New keycloak-bot commands convention is not mentioned in README.md
+* [KEYCLOAK-7989] - Running server config migration fails due the Hostname SPI
+* [KEYCLOAK-7994] - Move Fuse examples into test-apps
+* [KEYCLOAK-8002] - Cannot build new Account Console
+* [KEYCLOAK-8003] - Migration to 4.2.1 extracting RESOURCE_URIs fails with fine-grained admin permissions
+* [KEYCLOAK-8007] - Cannot compile Console UI and Welcome Page tests
+* [KEYCLOAK-8015] - Migration into 4.2.1.Final fails from version 3.4.3.Final
+* [KEYCLOAK-8035] - Failing GitLab Social Login test
+* [KEYCLOAK-8036] - Misplaced IdPs buttons on the Login Page
+* [KEYCLOAK-8046] - X509 Client Authenticator sends Client entity twice
+* [KEYCLOAK-8048] - Testsuite does not compile due to cross-PR interference
 
 ### **Keycloak v4.2.1**
 
