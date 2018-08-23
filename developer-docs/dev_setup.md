@@ -102,9 +102,9 @@ In order to access a namespace you will need to configure `kubectl` to connect t
 Verify that your `kubectl` is configured properly by trying to list pods and secrets in the `acp-induction` namespace:
 
 ```bash
-$ kubectl --context=acp-notprod_ACP --namespace=acp-induction get pods
+$ kubectl --context=acp-notprod_acp-induction --namespace=acp-induction get pods
 No resources found.
-$ kubectl --context=acp-notprod_ACP --namespace=acp-induction get secrets
+$ kubectl --context=acp-notprod_acp-induction --namespace=acp-induction get secrets
 NAME                  TYPE                                  DATA      AGE
 default-token-dcnmg   kubernetes.io/service-account-token   3         105d
 ```
