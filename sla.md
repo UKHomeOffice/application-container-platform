@@ -16,7 +16,7 @@ We will endeavour to respond to a support ticket or Slack query within 8 working
 
 Current BAU support contacts:
 
-Ben Eustace, Onur Yelekci, Vincent Lam and Tasharn Brown
+Adam Smith, Onur Yelekci, Vincent Lam and Tasharn Brown
 
 Current issue escalation contacts:
 
@@ -67,4 +67,4 @@ We encourage feedback from all service delivery teams and continue to strive to 
 ```
 
 AD-only account requests can only be raised by someone on the agreed authority list. The current list is as follows:
-Andrew Martin, David McQue, Ben Eustace, Jon Shanks, Thomas Fitzherbert, Geoff Teale, Onur Yelekci, Vincent Lam and Tasharn Brown
+Andrew Martin, David McQue, Jon Shanks, Thomas Fitzherbert, Geoff Teale, Onur Yelekci, Vincent Lam and Tasharn Brown
