@@ -1,3 +1,104 @@
+### **Keycloak v4.4.0**
+
+**Enhancement**
+
+* [KEYCLOAK-7161] - Refactor PhotozAuthz tests to not use hard waits
+* [KEYCLOAK-7584] - Doublecheck admin console tests passing after clientScopes added
+* [KEYCLOAK-7594] - Fix cross-dc integration and update Cross-dc integration to ISPN server 9.2.4 and JDG 7.2
+* [KEYCLOAK-7595] - Upgrade aesh to 1.4
+* [KEYCLOAK-7596] - Doublecheck migration scripts and all tests pass for Wildfly 13
+* [KEYCLOAK-7858] - OIDC servlet filter adapter OSGi support
+* [KEYCLOAK-7991] - Role-Resource in the Admin-API-Client is missing pagination params
+* [KEYCLOAK-8054] - Use BOMREST property in product config files
+* [KEYCLOAK-8069] - Fixed hostname provider should read ports from request
+* [KEYCLOAK-8075] - Provide a better error handling for Express when access is denied
+* [KEYCLOAK-8076] - Remove deprecation warning messages from Node.js adapter
+* [KEYCLOAK-8134] - uma-ticket rpt token endpoint does not evaluate policies without permission value(s)
+* [KEYCLOAK-8241] - Use BOMREST property in nodejs-connect product config
+*
+**Feature Request**
+
+* [KEYCLOAK-3334] - Enable authorization services to Node.js adapter
+* [KEYCLOAK-5520] - Script based ProtocolMapper for SAML
+* [KEYCLOAK-7222] - forgot password redirect to account client
+* [KEYCLOAK-7751] - Auth welcome page - HTML code
+* [KEYCLOAK-7891] - Configure SSL certificates in Docker image
+* [KEYCLOAK-8056] - Configure hostname in Docker image
+* [KEYCLOAK-8145] - Configure keystore when running KeycloakServer using TLS
+* [KEYCLOAK-8147] - Support Content-Security-Policy-Report-Only security header
+* [KEYCLOAK-8152] - Allow passing current locale to OAuth2 IdPs
+
+**Epic**
+
+* [KEYCLOAK-6275] - Improve usability of xPaaS images
+* [KEYCLOAK-6781] - Upgrade to WildFly 13 Final
+
+**Bug**
+
+* [KEYCLOAK-5226] - Travis builds fail for default trusty image
+* [KEYCLOAK-6086] - Spring boot app doesn't start with Keycloak and Jetty combination
+* [KEYCLOAK-6411] - Unable to provision database on MariaDB 10.3.4+
+* [KEYCLOAK-6706] - E-mail verification won't let user back into the app
+* [KEYCLOAK-6803] - Sign-up error with custom UserStorageProvider
+* [KEYCLOAK-7087] - Calling admin routes without data crashes NodeJS app
+* [KEYCLOAK-7160] - Completely broken AuthZ Configs in IE
+* [KEYCLOAK-7243] - Link are broken in documentaion
+* [KEYCLOAK-7394] - LDAP Connections can't be tested using UI
+* [KEYCLOAK-7695] - Authorization response with implicit flow should contain token_type and expires_in
+* [KEYCLOAK-7731] - KeycloakUriBuilder removes well known ports (80 / 443) even if the issuer url in the token includes it
+* [KEYCLOAK-7752] - CLIENT_INITIATED_ACCOUNT_LINKING_ERROR with invalid_token
+* [KEYCLOAK-7754] - UMA token introspection endpoint does not conform to specification
+* [KEYCLOAK-7757] - Deleting scopes in account console doesn't work
+* [KEYCLOAK-7782] - keycloak Groups click view all can't query out
+* [KEYCLOAK-7797] - Misplaced question marks
+* [KEYCLOAK-7911] - Wrong version of Node.js adapters - Final missing
+* [KEYCLOAK-7943] - NullPointerException when SAML User Property mapper is empty/blank
+* [KEYCLOAK-7944] - Fail to create a primary key on (USER_SESSION_ID, CLIENT_ID, OFFLINE_FLAG) when migrating to 3.4.3
+* [KEYCLOAK-7970] - Fresh authSession not started for correct client when handling action tokens
+* [KEYCLOAK-7975] - updating execution with Oracle DB causes unique constraint (DBALLO00.CONSTRAINT_AUTH_CFG_PK) violated
+* [KEYCLOAK-8012] - Unable to issue RPT token after server restart - NullPointerException
+* [KEYCLOAK-8068] - IP access control broken in undertow current version
+* [KEYCLOAK-8073] - cli unusable on FreeBSD
+* [KEYCLOAK-8080] - Update Realm Events Config doesn't create an admin event
+* [KEYCLOAK-8095] - Keycloak "SSSD" user federation option doesn't shows up on the drop down menu
+* [KEYCLOAK-8101] - NPE in PathBasedKeycloakConfigResolver when cache is empty
+* [KEYCLOAK-8109] - StaxParserUtil.getDOMElement can return incomplete tree
+* [KEYCLOAK-8119] - Migration tests doesn't reflect if some features are not enabled
+* [KEYCLOAK-8120] - NullPointerException in ClaimInformationPointProviderTest when product profile is used
+* [KEYCLOAK-8132] - Missing type definitions for parsed tokens in Keycloak Javascript Typescript declarations.
+* [KEYCLOAK-8138] - Several tests failing in product profile
+* [KEYCLOAK-8142] - Regression in proper handling of public endpoints in AbstractPolicyEnforcer
+* [KEYCLOAK-8150] - Performance regression between 3.4.3.Final and 4.3.0.Final
+* [KEYCLOAK-8178] - AdminEventTest.testGetRepresentation failing with many databases (mysql, postresql, mariadb, oracle))
+* [KEYCLOAK-8183] - Database is repeatedly queried for resource server if client has authz not enabled
+* [KEYCLOAK-8218] - BaseSAML2BindingBuilder cleans URL parameters in a SAML provider
+*
+**Task**
+
+* [KEYCLOAK-6743] - Adapter tests - update the server maintanance according to e.g. test annotation (cluster, crossdc)
+* [KEYCLOAK-6746] - Adapter tests - execute (or skip) particular tests based on app server-container
+* [KEYCLOAK-6974] - Update to Infinispan 9
+* [KEYCLOAK-6975] - Update configuration files for WF 13
+* [KEYCLOAK-6976] - Refactor to accommodate removed jndi-name in cache-container
+* [KEYCLOAK-7231] - Add Example adapter tests for app-server-undertow (without Photoz test class)
+* [KEYCLOAK-7437] - Support for non-persistent consents through prompt=consent
+* [KEYCLOAK-7470] - Client scope ordering capability
+* [KEYCLOAK-7488] - Keycloak OpenShift template(s)
+* [KEYCLOAK-7770] - Instabilities in the keycloak-pipeline
+* [KEYCLOAK-7925] - Prepare test suite for New Acct Mgt Console Tests
+* [KEYCLOAK-8052] - Change Travis job from Node.js adapter to always build the latest changes from Keycloak server
+* [KEYCLOAK-8067] - Provide an up to date Docker image for the Keycloak server
+* [KEYCLOAK-8093] - Add IDs to HTML elements for better testability
+* [KEYCLOAK-8103] - Remove deprecated images
+* [KEYCLOAK-8116] - Change Travis job from Node.js adapter to use Docker
+* [KEYCLOAK-8127] - Make sure adapter tests are passing and correct adapters tested
+* [KEYCLOAK-8139] - Align tests, documentation and downloads with supported Wildfly adapters
+* [KEYCLOAK-8170] - Add build description to the pipeline
+* [KEYCLOAK-8171] - Limit time execution of the keycloak test pipeline
+* [KEYCLOAK-8174] - Admin console tests for the "Client Scopes" tab of the client
+* [KEYCLOAK-8188] - Add ability to exclude failing or unstable tests from pipeline execution
+* [KEYCLOAK-8246] - Disable Base UI tests by default
+
 ### **Keycloak v4.3.0**
 
 **Enhancement**
