@@ -4,6 +4,13 @@ Services:
 - [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager) is used to retrieve Letencrypt certificates.
 - [cfssl](https://github.com/cloudflare/cfssl) is an internal certificate service used to provide internal tls between pods / services.
 
+#### **Domains and Challenge types**
+
+At present two letsencrypt challenge types are supported for certificates which is controlled via the `stable.k8s.psg.io/kcm.provider` annotation on the Ingress resource; note if no annotation is present the default is `stable.k8s.psg.io/kcm.provider: dns`.
+
+- dns: the domain must be hosted within the ACP route53 account, namely to allow kube-cert-manager to add the service record. If you are unsure if this is the case please check with the ACP team. DNS is optional for external sites but a requirement for sites seated behind the VPN.
+- http: indicates a callback url for authentication. The domain can either be controlled external via yourself or via the ACP team. Either way the dns record must be a CNAME to the external ingress hostname _(please check with the ACP team if you dont know)_. Obviously this challenge type can only be used on external site. Note any IP white-listing on the ingress can still be used.
+
 #### **As a developer I want to grab a certificate from Letsencrypt**
 
 Below is an example of an ingress resource for a HTTPS host reachable over the internet. Note, your ingress resource using IP whitelisting is irrelivant here in regard to Letsencrypt i.e you can still protect the site with and ACL.
