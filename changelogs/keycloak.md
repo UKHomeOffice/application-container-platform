@@ -1,3 +1,84 @@
+### **Keycloak v4.5.0**
+
+**Enhancement**
+
+* [KEYCLOAK-4622] - Use HS256 for refresh tokens
+* [KEYCLOAK-4623] - Use HS256 for client registration tokens
+* [KEYCLOAK-7270] - First Broker Login Link Without Authentication
+* [KEYCLOAK-7604] - SAML test clients have confusing names/entityIDs
+* [KEYCLOAK-8010] - Improve handling of <Conditions> SAML tag
+* [KEYCLOAK-8072] - Investigate if we can drop server-openshift
+* [KEYCLOAK-8265] - Document the default admin credentials when running Test Suite
+
+**Feature Request**
+
+* [KEYCLOAK-6229] - Implement OpenShift Token Review Interface
+* [KEYCLOAK-6285] - WWW-Authenticate challenge flow for 'oc login'
+* [KEYCLOAK-6770] - JWS signatures using ES256 algorithms for signing
+* [KEYCLOAK-7061] - Keycloak Docker image should provide a way to import realm files
+* [KEYCLOAK-7435] - Add logout specific session to session endpoints in account service
+* [KEYCLOAK-7560] - Token Signature SPI
+* [KEYCLOAK-8146] - Add LocaleSelectorSPI to allow custom locale selection
+* [KEYCLOAK-8263] - Allow overriding token expiration time on a client
+* [KEYCLOAK-8264] - Updates to Token Review endpoint
+* [KEYCLOAK-8273] - Failed to evaluate permissions when in permissive mode and using UMA tickets
+* [KEYCLOAK-8416] - Add support for configuring welcome theme in docker image
+
+**Epic**
+
+* [KEYCLOAK-8121] - Add support for additional token algorithms
+
+**Bug**
+
+* [KEYCLOAK-3058] - Validation of "aud" in adapters
+* [KEYCLOAK-6468] - AnonymousAuthenticationToken cannot be cast to KeycloakAuthenticationToken
+* [KEYCLOAK-6962] - No documentation for rpms upgrade
+* [KEYCLOAK-6971] - Requesting a token for same user multiple times concurrently causes 401 errors
+* [KEYCLOAK-7608] - FolderThemeProvider throws NPE when the themes are located on the classpath
+* [KEYCLOAK-7661] - Keycloak does not build on windows environment due “testAllTheZipThings” failure
+* [KEYCLOAK-7987] - Can't set authorization enabled when using kcreg
+* [KEYCLOAK-8016] - Broken new Account Console in Chrome
+* [KEYCLOAK-8070] - wrong expose headers when enable cors and policyenforcer
+* [KEYCLOAK-8133] - Can't Sucessfully inject a custom KeycloakSpringBootConfigResolver in the Keycloak Spring Boot Security Adapter
+* [KEYCLOAK-8168] - PEP is resolving claims twice under certain circumstances
+* [KEYCLOAK-8180] - Welcome Screen sporadically fails to load in Firefox
+* [KEYCLOAK-8189] - Broken Google Social Login test
+* [KEYCLOAK-8190] - Cannot compile Node.js adapter UI tests
+* [KEYCLOAK-8222] - Performance issue when loading user list
+* [KEYCLOAK-8270] - Cannot remove "Not Before" or "Not On or After" from a Time Policy
+* [KEYCLOAK-8274] - Realm export "uma_protection" role not reproducable
+* [KEYCLOAK-8281] - Deletion of client and users with token exchange policy leads to breaking errors
+* [KEYCLOAK-8308] - Deprecate token_introspection_endpoint claim from OIDC discovery document
+* [KEYCLOAK-8315] - Completely broken Node.js adapter
+* [KEYCLOAK-8327] - Token Introspect Test for Refresh Token Mistake
+* [KEYCLOAK-8378] - Infinispan version mismatch in prod-arguments
+* [KEYCLOAK-8425] - AdapterExecutionDecider throws NPE for cluster tests
+* [KEYCLOAK-8440] - QuickStart does not build straight forward from GitHub clone
+
+**Story**
+
+* [KEYCLOAK-8122] - Long lived tokens for OpenShift
+
+**Task**
+
+* [KEYCLOAK-6332] - Switch Firefox driver to GeckoDriver once Firefox ESR 52.x is not supported
+* [KEYCLOAK-6638] - Audience support for Client Scopes
+* [KEYCLOAK-7582] - Clustering support to Keycloak server image
+* [KEYCLOAK-7742] - Investigate failing Admin Console UI tests
+* [KEYCLOAK-7813] - Coordinate the transfer or keycloak-proxy repository to Keycloak organization
+* [KEYCLOAK-7915] - Implement trigger of Test pipeline using UMB
+* [KEYCLOAK-8024] - Install JMS Messaging plugin to keycloak-jenkins
+* [KEYCLOAK-8057] - Investigate React Framework
+* [KEYCLOAK-8206] - Use HS256 for action tokens
+* [KEYCLOAK-8207] - Use HS256 for cookie tokens
+* [KEYCLOAK-8211] - Use HS256 for authorization permission tickets
+* [KEYCLOAK-8236] - Bot command for executing tests (test command) can be without additional paramters
+* [KEYCLOAK-8238] - Create required clients in OpenShift integration script
+* [KEYCLOAK-8285] - Remove user-storage-jpa and user-storage-simple from Keycloak repository
+* [KEYCLOAK-8289] - Remove authorization services from product preview profile
+* [KEYCLOAK-8297] - Docs for audience
+* [KEYCLOAK-8319] - Initial pipeline for product test
+*
 ### **Keycloak v4.4.0**
 
 **Enhancement**
