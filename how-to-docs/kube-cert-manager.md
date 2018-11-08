@@ -6,9 +6,9 @@ Services:
 
 #### **Domains and Challenge types**
 
-At present two Let's Encrypt challenge types are supported for certificates which is controlled via the `stable.k8s.psg.io/kcm.provider` annotation on the Ingress resource; note if no annotation is present the default is `stable.k8s.psg.io/kcm.provider: dns`.
+At present two Let's Encrypt challenge types are supported for certificates which is controlled via the `stable.k8s.psg.io/kcm.provider` annotation on the Ingress resource; note if no annotation is present the default is `stable.k8s.psg.io/kcm.provider: route53`.
 
-- dns: the domain must be hosted within the ACP route53 account, namely to allow kube-cert-manager to add the service record. If you are unsure if this is the case please check with the ACP team. DNS is optional for external sites but a requirement for sites seated behind the VPN.
+- route53: the domain must be hosted within the ACP route53 account, namely to allow kube-cert-manager to add the service record. If you are unsure if this is the case please check with the ACP team. DNS is optional for external sites but a requirement for sites seated behind the VPN.
 - http: indicates a callback url for authentication. The domain can either be controlled externally via yourself or via the ACP team. Either way the dns record must be a CNAME to the external ingress hostname _(please check with the ACP team if you dont know)_. Obviously this challenge type can only be used on an external site. Note any IP white-listing on the ingress can still be used.
 
 #### **As a developer I want to grab a certificate from Letsencrypt**
