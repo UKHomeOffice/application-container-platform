@@ -15,3 +15,4 @@ This folder contains a collection of how-to guides for both Developers and DevOp
   - [Using an Ingress](ingress.md)
   - [Network Policies](network-policies.md)
   - [Pod Security Policies](pod-security-policies.md)
+  - [Provisioned Volumes and Storage Classes](pv-and-storage-classes.md)
