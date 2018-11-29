@@ -17,8 +17,10 @@ metadata:
   annotations:
     # used to select which ingress this resource should be configured on
     kubernetes.io/ingress.class: "nginx-internal"
-    # indicate the ingress SHOULD speak TLS between itself and pods
+    # indicate the ingress SHOULD speak TLS between itself and pods - in version 0.18.0 of ingress this was deprecated.
     ingress.kubernetes.io/secure-backends: "true"
+    # This replaces the old annotation secure-backends
+    ingress.kubernetes.io/backend-protocol: "HTTPS"
   name: myapp-server-internal
 spec:
   rules:
@@ -36,5 +38,4 @@ spec:
     secretName: myapp-github-internal-tls
 ```
 
-> Always ensure you are using TLS between the ingress controller and your pods by placing the annotation: "ingress.kubernetes.io/secure-backends": "true". At the moment; this is not enforced though there are plans to enforce by policy at a later date.
-
+> Always ensure you are using TLS between the ingress controller and your pods by placing the annotation: ingress.kubernetes.io/backend-protocol: "HTTPS". At the moment; this is not enforced though there are plans to enforce by policy at a later date.
