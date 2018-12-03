@@ -1,5 +1,8 @@
 # Artifactory Release Notes
 
+## v6.5.9
+- Update to Artifactory v6.5.9: https://www.jfrog.com/confluence/display/RTF/Release+Notes#ReleaseNotes-Artifactory6.5.9
+
 ## v6.2.0
 - Update to Artifactory v6.2.0: https://www.jfrog.com/confluence/display/RTF/Release+Notes#ReleaseNotes-Artifactory6.2.0
 
