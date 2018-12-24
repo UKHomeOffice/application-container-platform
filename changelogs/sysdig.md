@@ -2,7 +2,7 @@
 
 ## 1472
 
-- Update to: https://github.com/draios/sysdigcloud-kubernetes/releases/tag/1472
+- Update to: https://github.com/draios/sysdigcloud-kubernetes/releases/tag/v1472
 
 ## 987
 
