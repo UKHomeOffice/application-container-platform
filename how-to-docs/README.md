@@ -18,3 +18,4 @@ This folder contains a collection of how-to guides for both Developers and DevOp
   - [Provisioned Volumes and Storage Classes](pv-and-storage-classes.md)
   - [Autoscaling Pods](autoscaling.md)
   - [Downscaling Services Out Of Hours](downscaling.md)
+  - [Using AWS ECR for Private Docker Image Repositories](elastic-container-registry.md)
