@@ -2,6 +2,13 @@
 
 AWS ECR (Elastic Container Registry) is now available as a self-service feature via the Platform Hub. Each project has the capability to create their own Docker Repositories and define individual access to each via the use of IAM Credentials.
 
+#### Contents
+
+* **[Creating a Docker Repository](#creating-a-docker-repository)**
+* **[Generating Access Credentials](#generating-access-credentials)**
+* **[Accessing a Docker Repository](#accessing-a-docker-repository)**
+* **[Managing Image Deployments via Drone CI](#managing-image-deployments-via-drone-ci)**
+
 ## Creating a Docker Repository
 
 Anybody that is part of a Project within the Platform Hub will have the ability to create a new Docker Repository.
@@ -41,14 +48,14 @@ Accessing the AWS Container Registry to Pull & Push images is currently a two-st
 
 > **Note:** The authorisation token generated for docker login is only valid for 12 hours, and so the process above will need to be repeated.
 
-### Pre-Requisites
+#### Pre-Requisites
 
 To follow the below steps you must have:
 * AWS CLI (version 1.11.91 or above, check with `aws --version`)
   * Install Guides: [Linux](https://docs.aws.amazon.com/cli/latest/userguide/install-linux.html), [OSX](https://docs.aws.amazon.com/cli/latest/userguide/install-macos.html), [Windows](https://docs.aws.amazon.com/cli/latest/userguide/install-windows.html)
 * Docker (version 17.06 or above, check with `docker --version`)
 
-### Step 1: Retrieve an authorisation token
+#### Step 1: Retrieve an authorisation token
 
 1. Navigate to the `Connected Identities` page: https://hub.acp.homeoffice.gov.uk/identities
 1. Under `Amazon ECR` you will have access to your own personal IAM Credentials. These credentials will work across multiple projects whose Repositories you have been granted access to.
@@ -72,7 +79,7 @@ $ aws ecr get-login --no-include-email
 docker login -u AWS -p <long-auth-token> https://670930646103.dkr.ecr.eu-west-2.amazonaws.com
 ```
 
-### Step 2: Login with Authorisation Token
+#### Step 2: Login with Authorisation Token
 
 Following a successful `ecr get-login`, a full docker login command should be returned. Copy and paste the command exactly, to login to the ECR endpoint:
 
@@ -86,7 +93,7 @@ Login Succeeded
 > **Note:** If you get an error from Step 1 such as `Unknown options: --no-include-email`, your aws-cli client needs updating. You can omit `--no-include-email` rather than updating your aws-cli client, but the resulting docker login command will include a deprecated `-e none` flag (needs to be removed prior to running the command).
 
 
-### Pulling & Pushing Images
+#### Pulling & Pushing Images
 
 Within the ACP Kubernetes Clusters, you do not need to provide an `imagePullSecret` as was previously required for images in Artifactory. The ACP Clusters will authenticate behind-the-scenes and be able to successfully pull images from any Docker Repositories you create via the Platform Hub.
 
