@@ -128,3 +128,37 @@ Status: Image is up to date for 670930646103.dkr.ecr.eu-west-2.amazonaws.com/acp
 ## Managing Image Deployments via Drone CI
 
 The Docker Authorisation Token generated via the aws-cli command is only valid for 12 hours, and so this can't be used as a Drone Secret for Docker Image builds. Instead, you would need to store the IAM Credentials for a Robot Account as Drone Secrets and perform the `aws ecr get-login` + `docker login ..` step on each build.
+
+Below is an example Drone CI Pipeline, using the AWS IAM Credentials to retrieve an authorisation token for docker login to ECR:
+```yml
+pipeline:
+
+  build:
+    image: docker:18.09.0
+    environment:
+    - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+    - docker build -t hello-world-app:$${DRONE_COMMIT_SHA} .
+
+  ecr_push:
+    image: docker:18.09.0
+    secrets:
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    environment:
+    - AWS_DEFAULT_REGION=eu-west-2
+    - AWSCLI_IMAGE=quay.io/ukhomeofficedigital/aws-cli:latest
+    - DOCKER_HOST=tcp://172.17.0.1:2375
+    - REGISTRY_URL=670930646103.dkr.ecr.eu-west-2.amazonaws.com
+    commands:
+    - authtoken=$(docker run --rm -e "AWS_ACCESS_KEY_ID=$${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=$${AWS_SECRET_ACCESS_KEY}" -e "AWS_DEFAULT_REGION=$${AWS_DEFAULT_REGION}" $${AWSCLI_IMAGE} ecr get-login --no-include-email | cut -d' ' -f6)
+    - docker login -u AWS -p $authtoken https://$${REGISTRY_URL}
+    - docker tag hello-world-app:$${DRONE_COMMIT_SHA} $${REGISTRY_URL}/acp/hello-world-app:$${DRONE_COMMIT_SHA}
+    - docker push $${REGISTRY_URL}/acp/hello-world-app:$${DRONE_COMMIT_SHA}
+```
+
+**Breakdown of the 4 commands:**
+1. Run an aws-cli docker image, using the AWS IAM Credentials from DroneCI Secrets to get an authorisation token. The token is saved to `authtoken` variable, any errors generated from this command are logged to stdout and the Drone Build will fail.
+1. Perform a docker login to the registry with the authorisation token, extracted from step 1. The auth token will not be exposed in the build logs via this method.
+1. Re-tag the docker image built in the `build` step.
+1. Push the docker image to the AWS ECR Repository.
