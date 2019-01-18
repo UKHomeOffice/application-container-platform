@@ -157,3 +157,5 @@ pipeline:
     - latest
     - ${DRONE_COMMIT_SHA}
 ```
+
+> The **[UKHomeOffice ECR image](https://github.com/UKHomeOffice/docker-ecr)** above is based off the official [Docker ECR Plugin](https://hub.docker.com/r/plugins/ecr), with amendments to run in ACP Drone CI.
