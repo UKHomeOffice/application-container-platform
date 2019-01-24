@@ -1,5 +1,9 @@
 # Sysdig Release Notes
 
+## 1586
+
+- Update to: https://github.com/draios/sysdigcloud-kubernetes/releases/tag/v1586
+
 ## 1511
 
 - Update to: https://github.com/draios/sysdigcloud-kubernetes/releases/tag/v1511
