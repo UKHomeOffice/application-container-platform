@@ -1,5 +1,9 @@
 # Sysdig Release Notes
 
+## 1629
+
+- Updated to hotfix to address the dashboards not showing current data issue, lagging x hours behind.
+
 ## 1586
 
 - Update to: https://github.com/draios/sysdigcloud-kubernetes/releases/tag/v1586
