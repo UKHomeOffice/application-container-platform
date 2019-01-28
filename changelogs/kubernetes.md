@@ -1,5 +1,33 @@
 # Kubernetes Platform Release Notes
 
+## v0.2.19
+
+* Added Kubernetes conformance tests, extended the integration tests and use spot instances for E2E runs
+* Calculate and set systemReserved & kubeReserved kubelet flags, based on instance type per IG
+* Mount encrypted docker volume for Master & Compute Nodes
+* Update default instance types for IGs
+* Update CoreOS to stable release v1967.3.0 (including CVE fixes)
+
+## v0.2.18
+
+* Upgrading to kops v0.2.7 due to an issue with the rbac kubelet-api manifest
+
+## v0.2.17
+
+* Updated to the latest custom kops release v0.2.6
+* Added the fix for the kubelet webhook authorization
+* Added kubelet webhook authorization to the kubelet for granular perms
+
+## v0.2.16
+
+* Updates to the Kubernetes APIServer Audit Policy
+
+## v0.2.15
+
+* Updated CoreOS release to v1911.4.0
+* Reduced verbosity of api audit logs
+* Increased default value for master nodes root volumes
+
 ## v0.2.14
 
 * Refined the kubelet pod eviction policies
