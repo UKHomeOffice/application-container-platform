@@ -14,6 +14,8 @@ In the following example the terms "myapp" and "myproject" have been used, these
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
+  labels:
+    stable.k8s.psg.io/kcm.class: "default"
   annotations:
     # used to select which ingress this resource should be configured on
     kubernetes.io/ingress.class: "nginx-internal"
