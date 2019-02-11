@@ -58,6 +58,7 @@ Then add this token to drone as a secret:
 ```
 drone secret add UKHomeOffice/<repo> NPM_AUTH_TOKEN <base64-encoded-token> --event pull_request
 ```
+**Note: You will need to make sure the event types are lowercase. If an event is capitalised, it won't match the standard events inside of drone**
 
 Note: you will need to make the secret available to pull request builds to be able to run npm commands in pull request steps
 
