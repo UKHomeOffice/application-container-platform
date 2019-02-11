@@ -19,6 +19,8 @@
   - [Docker in Docker](#docker-in-docker)
   - [Services](#services)
   - [Variable Escaping](#variable-escaping)
+- Scanning for Vulnerabilities
+  - [Scanning Images](#scanning-images)
 - [QAs](#qas)
 - [Snippets](drone-snippets.md)
 
@@ -129,7 +131,7 @@ If your repository is hosted on Gitlab, you don't want to publish your images to
 
 Register for a free [Quay account][quay link] using your Github account linked to the Home Office organisation.
 
-Once you've logged into Quay check that you have `ukhomeofficedigital` under Users and Organisations.  
+Once you've logged into Quay check that you have `ukhomeofficedigital` under Users and Organisations.
 If you do not, [submit a support request on the platform hub for access to the ukhomeoffice organisation][add to quay support request].
 
 Once you have access to view the `ukhomeofficedigital` repositories, click repositories and
@@ -581,6 +583,37 @@ ${DOCKER_PASSWORD} --> $${DOCKER_PASSWORD}
 ${DRONE_TAG} --> $${DRONE_TAG}
 ${DRONE_COMMIT_SHA} --> $${DRONE_COMMIT_SHA}
 
+```
+
+### Scanning Images
+
+ACP provides Anchore as scanning solution to images built into the Drone pipeline, allowing users to scan both ephemeral _(built within the context of the drone, but not pushed to a repository yet)_ as well and well any public images.
+
+```YAML
+pipeline:
+  build:
+    image: docker:17.09.0-ce
+    environment:
+    - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+    - docker build -t docker.digital.homeoffice.gov.uk/myimage:$${DRONE_BUILD_NUMBER} .
+
+  scan:
+    # The location of the drone plugin
+    image: quay.io/ukhomeofficedigital/anchore-submission:latest
+    # The optional path of a Dockerfile
+    dockerfile: Dockerfile
+    # Note the lack of double $ here (due to the way drone injects variables"
+    image_name: docker.digital.homeoffice.gov.uk/myimage:${DRONE_BUILD_NUMBER}
+    # This indicates we are willing tolerate any vulnerabilities which are below medium
+    tolarates: medium
+    # An optional whitelist (comman separated list of CVE's)
+    whitelist: CVE_SOMENAME_1,CVE_SOMENAME_2
+    # An optional whitelist file containing a list of CSV relative to the repo path
+    whitelist_file: <PATH>
+    # By default the pligin will exit will fail if any vulnerabilities are discovered which are not tolarated,
+    # you change this behaviour by setting the bellow
+    fail_on_detection: false
 ```
 
 ## Q&As
