@@ -14,7 +14,10 @@ You would want all communication between the user, through to the service and se
 
 #### **Certificates**
 
-- [kube-cert-manager and cfssl](kube-cert-manager.md)
+ACP currently supports two modes for certificates, the first one legacy and being deprecated.
+
+- [kube-cert-manager and cfssl](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/kube-cert-manager.md)
+- [cert-mamager](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/cert-manager.md)
 
 #### **LetsEncrypt Limits**
 
