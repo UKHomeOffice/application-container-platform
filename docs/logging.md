@@ -1,16 +1,12 @@
 # Logging
-Our logging is done via the ELK stack (Elasticsearch, Logstash, Kibana).
+Logging stack consists of [Elasticsearch](https://github.com/UKHomeOffice/docker-elasticsearch), [Logstash](https://github.com/UKHomeOffice/docker-logstash-kubernetes), [Kibana](https://github.com/UKHomeOffice/docker-kibana)).
 
-## Logstash
-We have a logstash container that we run on all our CoreOS nodes, it sends all container and systemd logs to Elasticsearch. The container can be found [here](https://github.com/UKHomeOffice/docker-logstash-kubernetes).
+- Logstash agents deployed as a daemonSet will collect all workload logs and index them in Elasticsearch. 
+- Logs are searchable for a period of 5 days through [Kibana UI](https://kibana.acp.homeoffice.gov.uk). Access to view logs can be requested via [Support request](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/kibana-access-request).
 
-## Elasticsearch
-We have an Elasticsearch cluster running in the ops cluster which all logs are sent to. They are all running our Elasticsearch container which can be found [here](https://github.com/UKHomeOffice/docker-elasticsearch).
 
-## Kibana
-All logs are sent through to [Kibana](https://kibana.acp.homeoffice.gov.uk) where they can be viewed and filtered. Kibana is ran using our [kibana container](https://github.com/UKHomeOffice/docker-kibana).
+### Current Log Retention Policy
 
-### Log Retention Policy
-- Logs are searchable within kibana for 5 days and remain within elasticsearch for 12 days.
-- Snapshots of logs are stored within s3 indefinitely and migrated to the infrequent access storage class and then glacier storage after 60 and 180 days respectively. To obtain access to logs in S3 [raise a ticket in the BAU board](https://github.com/UKHomeOffice/application-container-platform-bau/issues/new).
-- The same policy is applied to all logs within ELK
+- Logs are searchable in Kibana for 5 days and remain within Elasticsearch for 10 days.
+- Collected workload logs will be persisted in S3 indefinitely and migrated to the infrequent access storage class and then glacier storage after 60 and 180 days respectively. **NOTE: this may change in the future!**
+- The same policy applies to all logs within ELK
