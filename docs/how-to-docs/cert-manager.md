@@ -1,9 +1,11 @@
 ## **Cert Manager**
 ----
 
-The ACP platform presently has two certificate management services, the first contender was [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager). The project due to a forever changing landscape gradually became deprecated and has now been replaced by the [cert-manager](https://github.com/jetstack/cert-manager). Note ACP will continue to support the kube-cert-manager and the internal cfssl service while they are still in use, we do however recommend shifting over to the cert-manager as aside from security fix we won't be performing anymore updates on these services.
+The ACP platform presently has two certificate management services. The first contender was [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager), however with the forever changing landscape the project gradually became deprecated and now recommends replacement with [cert-manager](https://github.com/jetstack/cert-manager).
 
-Without wishing to duplicate documentation, which are can get from both the [readme](https://github.com/jetstack/cert-manager/blob/master/README.md) or it's official [documentation](https://cert-manager.readthedocs.io/en/latest/), the cert-manager can effectively replace two services
+Note ACP will continue to support the kube-cert-manager and the internal cfssl service while they are still in use, we do however recommend shifting over to the cert-manager as aside from security fixes we won't be performing anymore updates to these services.
+
+Without wishing to duplicate documentation which can be found in the [readme](https://github.com/jetstack/cert-manager/blob/master/README.md) and or official [documentation](https://cert-manager.readthedocs.io/en/latest/), the cert-manager can effectively replace two services.
 
 - kube-cert-manager: used to acquire certificates from LetsEncrypt.
 - cfssl: an internal Cloudflare service used to generate internal certificate _(usaually to encrypt between ingress and pod)_.
@@ -12,11 +14,11 @@ Without wishing to duplicate documentation, which are can get from both the [rea
 
 #### **As a developer I already have a certificate from the legacy kube-cert-manger, can I migrate?**
 
-Migrating from the former [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager) over to [cert-manager](https://github.com/jetstack/cert-manager) means creating the certificate request as below and removing the annotations from the ingress. However, the safety way would be to
+Migrating from the former [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager) over to [cert-manager](https://github.com/jetstack/cert-manager) means creating the certificate request as below and removing the annotations from the ingress. However, the safe way would be to;
 
 - Create a new Certificate resource and point to a **new** secret name _(thus keeping the old one incase)_.
-- Push out the change and wait for the certificate to be furfilled.
-- Once you have the certificate you can update your ingress to use the new secret,**remove** the annotations and use the Certificate resource there after.
+- Push out the change and wait for the certificate to be fulfilled.
+- Once you have the certificate you can update your ingress to use the new secret,**remove** the annotations and use the Certificate resource thereafter.
 
 #### **As a developer I want to retrieve an internal certificate**
 
@@ -68,7 +70,7 @@ spec:
 
 #### **As a developer I want to retrieve a certificate for my external service**
 
-Lets assume we have an externally facing site which we wish to expose via ingress and we want a valid Letsencrypt certificate. Two have two things to note here;
+Lets assume we have an externally facing site which we wish to expose via ingress and we want a valid Letsencrypt certificate. Two things to note here;
 
 - the enable annotation `certmanager.k8s.io/enabled` which is a toggle to ask cert-manager to handle this ingress resource.
 - the Letsencrypt challenge `certmanager.k8s.io/acme-challenge-type`; note, technically the challenge is not required as `http01` is the default type, but I'm adding to highlight.
@@ -88,7 +90,7 @@ apiVersion: extensions/v1beta1
       certmanager.k8s.io/enabled: "true"
       ingress.kubernetes.io/affinity: cookie
       ingress.kubernetes.io/force-ssl-redirect: "true"
-      ingress.kubernetes.io/secure-backends: "true"
+      ingress.kubernetes.io/backend-protocol: "HTTPS"
       ingress.kubernetes.io/session-cookie-name: ingress
       ingress.kubernetes.io/ssl-redirect: "true"
       kubernetes.io/ingress.class: nginx-external
@@ -100,7 +102,7 @@ apiVersion: extensions/v1beta1
         paths:
         - backend:
             serviceName: service_name
-            servicePort: 443
+            servicePort: 10443
           path: /
     tls:
     - hosts:
@@ -150,10 +152,10 @@ In order to handle the http01 challenge the requestor is provided an ephermal to
 
 - creating a order resource within the namespace.
 - a controller pick up the order and creates a challenge resource from it, creating an ephermal pod, service and ingress in your namespace and routing the `/.well-known/acme-challenge/`.
-- the controller checks the path/s has been provision via the ingress beforehand and validates the order, the certificate controller is then free to inform letsencrypt to can call us back.
-- it continues to probe the request and once validate pulls down the certificate.
+- the controller checks the path/s has been provision via the ingress beforehand and validates the order, the certificate controller is then free to inform letsencrypt to call us back.
+- it continues to probe the request and once validated, pulls down the certificate.
 
-**IMPORTANT** All this requires the user's to add a network policy to permit the callback, as ACP by default deny's all traffic.
+**IMPORTANT** All this requires the user's to add a network policy to permit the callback, as ACP by default denies all traffic.
 
 ```YAML
 # This default policy permits access for LetsEncrypt to resolve the http01 challenges from the ACME pods
