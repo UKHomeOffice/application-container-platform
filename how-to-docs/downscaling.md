@@ -12,7 +12,7 @@ To set a schedule for your RDS instances, please use the related Platform Hub su
 
 ## Kubernetes Pods
 
-Automatically scale down Kubernetes Deployments & Statefulsets to 0 replicas during non-working hours for Non-Production Environments.
+Automatically scale down Kubernetes Deployments & Statefulsets to 0 replicas during non-working hours for Non-Production or Production Environments.
 
 Downscaling for Deployments & Statefulsets are managed by an annotation set within the manifest, and are processed every 30 seconds for changes, by a service running within the Kubernetes Clusters.
 
