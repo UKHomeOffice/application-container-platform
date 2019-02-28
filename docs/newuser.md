@@ -1,3 +1,5 @@
+
+# New Users
 # Flow for new users
 This document will go over the flow for getting access to our various services if you are finding difficulties with the specifics of the tasks outlined in this document please see the more detailed [Developer Docs][developer docs link].
 
@@ -8,7 +10,7 @@ Please note that to use SSO, which is using your Office 365 account to log onto 
 ## VPN
 VPN profiles are used to be able to get through to our multiple AWS environments as well as other data centers. The profiles can be downloaded from [access](https://access-acp.digital.homeoffice.gov.uk) which you can access using your Office 365 SSO. The following services can be only accessed when connected to the ACP Platform VPN profile.
 
-## Platform Hub 
+## Platform Hub
 [The Platform Hub](https://hub.acp.homeoffice.gov.uk) serves as a central portal for users of ACP. It acts as an all-in-one place to find information, requests and also support for the platform. The Hub also provides tools to develop, build, deploy and manage all your projects.
 
 ## Internally Accessible
@@ -29,7 +31,7 @@ We have two instances; One for [GitHub](https://drone.acp.homeoffice.gov.uk) and
 [Kibana](https://kibana.acp.homeoffice.gov.uk) is accessible to ACP users via the default VPN profile.
 
 ### Sysdig
-[Sysdig](https://sysdig.digital.homeoffice.gov.uk) is also accessible to ACP users via the default VPN profile and requests for specific team views can be made on the [Platform Hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/sysdig-account). 
+[Sysdig](https://sysdig.digital.homeoffice.gov.uk) is also accessible to ACP users via the default VPN profile and requests for specific team views can be made on the [Platform Hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/sysdig-account).
 
 ## AWS Resources (S3 Buckets and RDS Instances)
 If you require an S3 bucket or an RDS instance you can submit a support request on the [Platform Hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/overview).

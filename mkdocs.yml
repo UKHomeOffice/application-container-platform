@@ -1,0 +1,19 @@
+site_name: Application Container Platform
+theme: readthedocs
+use_directory_urls: false
+nav:
+  - Home: index.md
+  - Services: services.md
+  - Release Notes: releases-notes/index.md
+  - How To's: how-to-docs/index.md
+  - Developer Getting Started Guide: developer-docs/index.md
+  - New User Guide: newuser.md
+  - RBAC Guide: rbac.md
+  - ACP External IPs: external-addresses.md
+  - Service Lifecycle: service-lifecycle.md
+
+markdown_extensions:
+  - toc:
+      permalink: "#"
+      toc_depth: 3
+  - markdown_include.include
