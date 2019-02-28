@@ -25,4 +25,5 @@ kube-apiserver.pem
 kube-apiserver.csr
 tmp/*
 /.idea
-
+_site
+site
