@@ -2,8 +2,6 @@
 
 In an effort to reduce costs on running the platform, we've enabled to capability to scale down specific resources Out Of Hours (OOH) for Non-Production environments.
 
-[TOC]
-
 #### AWS RDS (Relational Database Service)
 
 Non-Production RDS resources can be transitioned to a stopped state OOH to save on resource utilisation costs. This is currently managed with the use of tags on the RDS instance defining a cronjob schedule to stop and start the instance.

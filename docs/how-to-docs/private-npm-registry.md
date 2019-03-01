@@ -1,7 +1,5 @@
 ## Using artifactory as a private npm registry
 
-[TOC]
-
 A step-by-step guide.
 
 This guide makes the following assumptions:
