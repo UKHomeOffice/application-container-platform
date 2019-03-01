@@ -1,15 +1,10 @@
-# AWS ECR for Private Docker Images
+## AWS ECR for Private Docker Images
 
 AWS ECR (Elastic Container Registry) is now available as a self-service feature via the Platform Hub. Each project has the capability to create their own Docker Repositories and define individual access to each via the use of IAM Credentials.
 
-#### Contents
+[TOC]
 
-* **[Creating a Docker Repository](#creating-a-docker-repository)**
-* **[Generating Access Credentials](#generating-access-credentials)**
-* **[Accessing a Docker Repository](#accessing-a-docker-repository)**
-* **[Managing Image Deployments via Drone CI](#managing-image-deployments-via-drone-ci)**
-
-## Creating a Docker Repository
+#### Creating a Docker Repository
 
 Anybody that is part of a Project within the Platform Hub will have the ability to create a new Docker Repository.
 
@@ -25,7 +20,7 @@ The request to create a new Docker Repository can take a few seconds to complete
 
 This repository won't automatically refresh, but you can hit the `REFRESH` button above the Repository list or just manually refresh your browser window for updates.
 
-## Generating Access Credentials
+#### Generating Access Credentials
 
 Access to ECR Repositories is managed via AWS IAM. These IAM credentials are generated via the Platform Hub and access can be managed per user, per Docker Repository.
 
@@ -40,7 +35,7 @@ Access to ECR Repositories is managed via AWS IAM. These IAM credentials are gen
 
 Robot Accounts are visible under the Docker Repository, and once they reveal an `active` status the IAM Credentials are displayed alongside it.
 
-## Accessing a Docker Repository
+#### Accessing a Docker Repository
 
 Accessing the AWS Container Registry to Pull & Push images is currently a two-step process:
 1. Use IAM Credentials to generate a temporary authorisation token
@@ -132,7 +127,7 @@ Digest: sha256:0309d2655ecef6b4181ee93edfb91f386fc2ebc7849cc88f6e7a18b0d349c35f
 Status: Image is up to date for 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/hello-world-app@sha256:0309d2655ecef6b4181ee93edfb91f386fc2ebc7849cc88f6e7a18b0d349c35f
 ```
 
-## Managing Image Deployments via Drone CI
+#### Managing Image Deployments via Drone CI
 
 The Docker Authorisation Token generated via the aws-cli command is only valid for 12 hours, and so this can't be used as a Drone Secret for Docker Image builds. Instead, you would need to store the IAM Credentials for a Robot Account as Drone Secrets and perform the `aws ecr get-login` + `docker login ..` step on each build.
 

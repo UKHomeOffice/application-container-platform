@@ -1,4 +1,6 @@
-# Using artifactory as a private npm registry
+## Using artifactory as a private npm registry
+
+[TOC]
 
 A step-by-step guide.
 
@@ -8,19 +10,19 @@ This guide makes the following assumptions:
 * you are using `node@8` and `npm@5` or later
 * you are connected to ACP VPN
 
-## Setting up a local environment
+#### Setting up a local environment
 
-### Get your username and API key from artifactory
+##### Get your username and API key from artifactory
 
 Visit https://artifactory.digital.homeoffice.gov.uk/artifactory/webapp/#/profile, make a note of your username, and if you don't already have an API key then generate one.
 
-### base64 encode your API key
+##### base64 encode your API key
 
 ```
 echo -n <api key> | base64
 ```
 
-### Set local environment variables
+##### Set local environment variables
 
 Copy your encoded password, and set the following environment variables in your bash profile:
 
@@ -31,9 +33,9 @@ export NPM_AUTH_TOKEN=<base64 encoded api key>
 
 You might then need to `source` your profile to load these environment variables.
 
-## Setting up CI in drone
+#### Setting up CI in drone
 
-### Request a bot token for artifactory
+##### Request a bot token for artifactory
 
 You can do this through the [ACP Hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/artifactory-bot). You'll need to provide a username for the bot when you create it.
 
@@ -45,7 +47,7 @@ Decrypt the token
 gpg --decrypt ./path/to/file.gpg
 ```
 
-### Add the token to drone as a secret
+##### Add the token to drone as a secret
 
 First, base64 encode the token:
 
@@ -61,7 +63,7 @@ drone secret add UKHomeOffice/<repo> NPM_AUTH_TOKEN <base64-encoded-token> --eve
 
 Note: you will need to make the secret available to pull request builds to be able to run npm commands in pull request steps
 
-### Expose secret to build steps
+##### Expose secret to build steps
 
 You will need to configure any steps which use npm to be able to access the secret. Do this by adding a `secret` property to those steps as follows:
 
@@ -75,7 +77,7 @@ You will need to configure any steps which use npm to be able to access the secr
       - npm test
 ```
 
-### Expose username to build steps
+##### Expose username to build steps
 
 In addition, you will need to add the username (as you provided when creating your token) as an environment variable. The easiest way to do this is as a "matrix" variable, which makes the username available to all steps without needing to configure them all individually.
 
@@ -85,11 +87,11 @@ matrix:
     - <username>
 ```
 
-## Publishing modules to artifactory
+#### Publishing modules to artifactory
 
 It is generally recommended to use a common namespace to publish your modules under. npm allows namespace specific configuration, which makes it easier to ensure that modules are always installed from artifactory, and will not accidentally try to install a public module with the same name.
 
-### Setting publish registry
+##### Setting publish registry
 
 Add `publishConfig` to package.json. This ensures that the module can only ever be published to the private registry, and misconfiguration won't accidentally make it public
 
@@ -99,7 +101,7 @@ Add `publishConfig` to package.json. This ensures that the module can only ever 
 }
 ```
 
-### Add auth settings
+##### Add auth settings
 
 In your project's `.npmrc` file (create one if it does not already exist) add the following lines:
 
@@ -111,7 +113,7 @@ In your project's `.npmrc` file (create one if it does not already exist) add th
 
 The email address can be anything, it just needs to be set.
 
-### Add publish step to drone
+##### Add publish step to drone
 
 Add the following step to your `.drone.yml` file to publish a new version whenever you release a tag.
 
@@ -128,9 +130,9 @@ Add the following step to your `.drone.yml` file to publish a new version whenev
 
 Now, when you push new tags to github then drone should publish them to the artifactory npm registry automatically.
 
-## Using modules from artifactory as dependencies
+#### Using modules from artifactory as dependencies
 
-### Configure your project to use artifactory
+##### Configure your project to use artifactory
 
 In the project which is has private modules as dependencies, add the following line to `.npmrc` in the root of the project (create this file if it does not exist).
 
@@ -153,7 +155,7 @@ You should then add the following line to your project's `.npmrc` if they are no
 
 You should now be able to install modules from artifactory into your local development environment.
 
-## Installing dependencies in docker
+#### Installing dependencies in docker
 
 If you build a docker image as part of your CI pipeline, you will need to copy the `.npmrc` file into your image before installing there.
 

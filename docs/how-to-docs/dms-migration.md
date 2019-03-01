@@ -1,13 +1,13 @@
-# DMS Migration
+## DMS Migration
 
-### **Prerequisite**
+#### **Prerequisite**
 
 The following need to be true before you follow this guide:
 * AWS console logon
 * Access to the DMS service from console
 * A region where STS has been activated
 
-### **DMS Setup**
+#### **DMS Setup**
 
 Login to the AWS console using your auth, switch to a role with the correct access policies and verify you're in the right region. Next, select DMS from the services on the main dashboard to access the data migration home screen. Under the "Get started" section click on the "create migration" button then next to the Replication instance. You should see the following screen:
 

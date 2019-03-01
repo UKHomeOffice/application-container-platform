@@ -1,5 +1,5 @@
 
-# Create an Artifactory access token
+## Create an Artifactory access token
 
 > Note: These instructions are intended for the ACP team. If you would like to request an Artifactory token, please use the relevant support request on the [Platform Hub][artifactory support request].
 

@@ -1,4 +1,4 @@
-# Kube-Cert-Managaer & Cloudflare SSL
+## Kube-Cert-Managaer & Cloudflare SSL
 
 Services:
 - [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager) is used to retrieve Letencrypt certificates.

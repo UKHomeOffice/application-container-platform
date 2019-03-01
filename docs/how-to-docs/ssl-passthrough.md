@@ -1,4 +1,4 @@
-# TLS Passthrough
+## TLS Passthrough
 
 There are occasions when you don't want the TLS to be terminated on the ingress and prefer to terminate in the pod instead. Note, by terminating in the pod the ingress will no longer be able to perform any L7 actions, so all of the feature set is lost (effectively it's become a TLS proxy using SNI to route the traffic)
 

@@ -1,6 +1,6 @@
 
 # New Users
-# Flow for new users
+## Flow for new users
 This document will go over the flow for getting access to our various services if you are finding difficulties with the specifics of the tasks outlined in this document please see the more detailed [Developer Docs][developer docs link].
 
 ## Office 365 Account

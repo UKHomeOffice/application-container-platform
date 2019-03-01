@@ -1,4 +1,4 @@
-# Kubernetes Pod Autoscaling
+## Kubernetes Pod Autoscaling
 
 For full documentation on kubernetes autoscaling feature please go [here](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/). As of writing the ACP cluster supports standard autoscaling based on a CPU metric, there are however plans to support custom-metrics in the near future.
 
