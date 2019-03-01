@@ -559,7 +559,7 @@ ${DRONE_COMMIT_SHA} --> $${DRONE_COMMIT_SHA}
 
 ```
 
-#### Scanning Images
+## Scanning Images in Drone
 
 ACP provides Anchore as scanning solution to images built into the Drone pipeline, allowing users to scan both ephemeral _(built within the context of the drone, but not pushed to a repository yet)_ as well and well any public images.
 
