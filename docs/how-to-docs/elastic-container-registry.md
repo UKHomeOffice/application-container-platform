@@ -2,8 +2,6 @@
 
 AWS ECR (Elastic Container Registry) is now available as a self-service feature via the Platform Hub. Each project has the capability to create their own Docker Repositories and define individual access to each via the use of IAM Credentials.
 
-[TOC]
-
 #### Creating a Docker Repository
 
 Anybody that is part of a Project within the Platform Hub will have the ability to create a new Docker Repository.

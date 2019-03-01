@@ -1,7 +1,5 @@
 ## Drone How To
 
-[TOC]
-
 #### Install Drone CLI
 
 - Github drone instance: https://drone.acp.homeoffice.gov.uk/
