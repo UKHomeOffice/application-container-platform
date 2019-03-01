@@ -1,6 +1,6 @@
-# Debug Issues with your deployments
+## Debug Issues with your deployments
 
-### Debug with secrets
+#### Debug with secrets
 
 Sometimes your app doesn't want to talk to an API or a DB and you've stored the credentials or just the details of that in secret.
 
@@ -19,12 +19,12 @@ $ [[ -z $DBHOST ]]; echo $?
 ## if it returns 1 then the variable is set.
 ```
 
-### Debugging issues with your deployments to the platform
+#### Debugging issues with your deployments to the platform
 
 If you get to the end of the above guide but can't access your application there are a number of places something could be going wrong.
 This section of the guide aims to give you some basic starting points for how to debug your application.
 
-### Debugging deployments
+#### Debugging deployments
 
 We suggest the following steps:
 

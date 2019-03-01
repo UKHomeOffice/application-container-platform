@@ -1,4 +1,4 @@
-# Using Ingress
+## Using Ingress
 
 An [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) is a type of Kubernetes resource that allows you to expose your services outside the cluster. It gets deployed and managed exactly like other Kube resources.
 

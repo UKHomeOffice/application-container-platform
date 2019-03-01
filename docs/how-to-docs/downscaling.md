@@ -1,8 +1,10 @@
-# Downscaling Services Out Of Hours
+## Downscaling Services Out Of Hours
 
 In an effort to reduce costs on running the platform, we've enabled to capability to scale down specific resources Out Of Hours (OOH) for Non-Production environments.
 
-### AWS RDS (Relational Database Service)
+[TOC]
+
+#### AWS RDS (Relational Database Service)
 
 Non-Production RDS resources can be transitioned to a stopped state OOH to save on resource utilisation costs. This is currently managed with the use of tags on the RDS instance defining a cronjob schedule to stop and start the instance.
 
@@ -10,13 +12,13 @@ To set a schedule for your RDS instances, please use the related Platform Hub su
 
 > **Note:** Shutting down an RDS instance will have cost savings based on the instance size, however you will still be charged for the allocated storage.
 
-### Kubernetes Pods
+#### Kubernetes Pods
 
 Automatically scale down Kubernetes Deployments & Statefulsets to 0 replicas during non-working hours for Non-Production or Production Environments.
 
 Downscaling for Deployments & Statefulsets are managed by an annotation set within the manifest, and are processed every 30 seconds for changes, by a service running within the Kubernetes Clusters.
 
-### Usage
+##### Usage
 
 Set **ONE** of the following annotations on your Deployment / Statefulset:
 - `downscaler/uptime`: A time schedule in which the Deployment should be scaled up

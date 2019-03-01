@@ -1,4 +1,4 @@
-# Network Policies
+## Network Policies
 
 By default a deny-all policy is applied to every namespace in each cluster.
 
@@ -28,7 +28,7 @@ spec:
 
 The port number should be the same as the one that your service is listening on.
 
-## Controlling Egress Traffic
+#### Controlling Egress Traffic
 
 Kubernetes v1.8 with Calico v2.6 adds support to limit egress traffic via the use of Kubernetes Network Policies.
 

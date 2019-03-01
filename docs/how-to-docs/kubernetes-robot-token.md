@@ -1,6 +1,6 @@
-# Getting a Kubernetes Robot Token
+## Getting a Kubernetes Robot Token
 
-### Users
+#### Users
 
 1. Log into the [Platform Hub][platform hub link].
 
@@ -10,7 +10,7 @@
 
 If there are no robot tokens for that service, or the required one is not there, you will need to ask your project admin(s) to create a robot token.
 
-### Project Admins (Creating a robot token)
+#### Project Admins (Creating a robot token)
 
 1. Log into the [Platform Hub][platform hub link].
 

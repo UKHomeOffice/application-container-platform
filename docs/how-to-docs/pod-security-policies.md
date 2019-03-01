@@ -1,4 +1,4 @@
-# Pod Security Policies
+## Pod Security Policies
 
 By default all user deployments will inherit a default PodSecurityPolicy applied in the Kubernetes Clusters, which define a set of conditions that a pod must be configured with in order to run successfully.
 
@@ -32,7 +32,7 @@ spec:
   - secret
 ```
 
-## `runAsUser`
+#### `runAsUser`
 
 This condition requires that the pod specification deploys an image with a non-root user. The user defined in the specification (image spec OR pod spec) must be numeric, so that Kubernetes will be able to verify that it is a non-root user. If this is not done, you may receive any of the following errors in your event log and your pod will be prevented from starting up successfully:
 - `container's runAsUser breaks non-root policy`
@@ -44,7 +44,7 @@ This condition requires that the pod specification deploys an image with a non-r
 
 To update your deployment accordingly for the above condition, there are multiple ways to achieve this:
 
-### Dockerfile
+#### Dockerfile
 
 Within the `Dockerfile` for the image you are attempting to run, ensure the `USER` specified references the User ID rather than the username itself. For example:
 
@@ -71,12 +71,12 @@ quay.io/ukhomeofficedigital/redis:v0.1.2
 quay.io/ukhomeofficedigital/squidproxy:v0.0.5
 ```
 
-### Deployment Spec
+#### Deployment Spec
 
 In the `securityContext` section of your deployment spec, the `runAsUser` field can be used to set a UID that the image should be run as.
 
 An example spec would include:
-```yaml
+```YAML
     spec:
       securityContext:
         fsGroup: 1000

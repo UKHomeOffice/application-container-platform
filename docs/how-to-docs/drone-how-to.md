@@ -1,31 +1,8 @@
-# Drone How To
+## Drone How To
 
-- Setup
-  - [Install Drone CLI](#install-drone-cli)
-  - [Activate your pipeline](#activate-your-pipeline)
-- Adding a repository to Drone
-  - [Configure your pipeline](#configure-your-pipeline)
-- Publishing Docker images to
-  - [Quay](#publishing-to-quay)
-  - [Artifactory](#publishing-to-artifactory)
-- Deployments
-  - [Deployments and promotions](#deployments-and-promotions)
-  - [Drone as a pull request builder](#drone-as-a-pull-request-builder)
-  - [Deploying to ACP](#deploying-to-acp)
-  - [Using Another Repo](#using-another-repo)
-  - [Versioned deployments](#versioned-deployments)
-- Migrating your Pipeline
-  - [Secrets and Signing](#secrets-and-signing)
-  - [Docker in Docker](#docker-in-docker)
-  - [Services](#services)
-  - [Variable Escaping](#variable-escaping)
-- Scanning for Vulnerabilities
-  - [Scanning Images](#scanning-images)
-- [QAs](#qas)
+[TOC]
 
-## Setup
-
-### Install Drone CLI
+#### Install Drone CLI
 
 - Github drone instance: https://drone.acp.homeoffice.gov.uk/
 - Gitlab drone instance: https://drone-gitlab.acp.homeoffice.gov.uk/
@@ -74,7 +51,7 @@ Email: youremail@gmail.com
 >
 >  Please make sure that you have exported the `DRONE_SERVER` and `DRONE_TOKEN` variables properly.
 
-### Activate your pipeline
+#### Activate your pipeline
 
 Once you are logged in to Drone, you will find a list of repos by clicking the icon in the top right corner and going to [Repositories][drone github repos page].
 
@@ -92,7 +69,7 @@ https://drone-external.acp.homeoffice.gov.uk/hook?access_token=some_token
 >
 > **Please note that this does not apply to Gitlab. When you activate the repo in Drone, you should not change anything for a Gitlab repo.**
 
-### Configure your pipeline
+#### Configure your pipeline
 
 In the root folder of your project, create a `.drone.yml` file with the following content:
 
@@ -122,9 +99,9 @@ $ git push origin master
 
 You should be able to watch your build succeed in the Drone UI.
 
-## Publishing Docker images
+#### Publishing Docker images
 
-### Publishing to Quay
+##### Publishing to Quay
 
 If your repository is hosted on Gitlab, you don't want to publish your images to Quay. Images published to Quay are public and can be inspected and downloaded by anyone. [You should publish your private images to Artifactory](#publishing-to-artifactory).
 
@@ -213,7 +190,7 @@ Tag using `git tag v1.0` and push your tag with `git push origin v1.0` (replace 
 
 > Note: These pipeline configurations are using the Docker plugin for Drone. For more information, see http://plugins.drone.io/drone-plugins/drone-docker/
 
-### Publishing to Artifactory
+##### Publishing to Artifactory
 
 Images hosted on [Artifactory][artifactory link] are private.
 
@@ -256,9 +233,9 @@ is the name of the image you tagged previously in the build step.
 
 The image should now be published on Artifactory.
 
-## Deployments
+#### Deployments
 
-### Deployments and promotions
+##### Deployments and promotions
 
 Create a step that runs only on deployments:
 
@@ -329,7 +306,7 @@ $ drone deploy ukhomeoffice/<your_repo> 16 prod
 
 Read more on [environments][drone docs - environments].
 
-### Drone as a Pull Request builder
+##### Drone as a Pull Request builder
 
 Drone pipelines are triggered when events occurs. Event triggers can be as simple as a _push_, _a tagged commit_, _a pull request_ or as granular as _only for pull requests for a branch named `test`_. You can limit the execution of build steps at runtime using the `when` block. As an example, this block executes only on pull requests:
 
@@ -348,7 +325,7 @@ Drone will only execute that step when a new pull request is raised (and when pu
 
 [Read more about Drone conditions][drone docs - conditions].
 
-### Deploying to ACP
+##### Deploying to ACP
 
 > Please note that this section assumes that you already have kube files to work with (specifically, deployment, service and ingress files).
 > Examples of these files can be found in the [kube-signed-commit-check][kube signed commit check repo] project.
@@ -405,7 +382,7 @@ deploy_to_uat:
     event: deployment
 ```
 
-### Using Another Repo
+#### Using Another Repo
 
 It is possible to access files or deployment scripts from another repo, there are two ways of doing this.
 
@@ -467,7 +444,7 @@ This will trigger a new deployment on the second repository.
 
 Please note that in this scenario you need to inspect 2 builds on 2 separate repositories if you just want to inspect the logs.
 
-### Versioned deployments
+#### Versioned deployments
 
 When you restart your build, Drone will automatically use the latest version of the code. However always using the latest version of the deployment configuration can cause major issues and isn't recommended. For example when promoting from preprod to prod you want to use the preprod version of the deployment configuration. If you use the latest it could potentially break your production environment, especially as it won't necessarily have been tested.
 
@@ -498,9 +475,9 @@ deploy_to_uat:
     event: deployment
 ```
 
-## Migrating your pipeline
+#### Migrating your pipeline
 
-### Secrets and Signing
+##### Secrets and Signing
 
 It is no longer necessary to sign your `.drone.yml` so the `.drone.yml.sig` can be deleted. Secrets can be defined in the Drone UI or using the CLI. Secrets created using the UI will be available to push, tag and deployment events. To restrict to selected events, or to allow pull request builds to access secrets you must use the CLI.
 
@@ -526,7 +503,7 @@ image_to_quay:
 
 Organisation secrets are no longer available. This means that if you are using any organisation secrets such as `KUBE_TOKEN_DEV`, you will need to add a secret in Drone to replace it.
 
-### Docker-in-Docker
+#### Docker-in-Docker
 
 The Docker-in-Docker (dind) service is no longer required. Instead, change the Docker host to `DOCKER_HOST=tcp://172.17.0.1:2375` in the `environment` section of your pipline, and you will be able to access the shared Docker server on the drone agent. Note that it is only possible to run one Docker build at a time per Drone agent.
 
@@ -559,7 +536,7 @@ pipeline:
 ```
 
 
-### Services
+#### Services
 
 If you use the `services` section of your `.drone.yml` it is possible to reference them using the DNS name of the service.
 
@@ -573,7 +550,7 @@ services:
 
 The mysql server would be available on `tcp://database:3306`
 
-### Variable Escaping
+#### Variable Escaping
 
 Any Drone variables (secrets and environment variables) must now be escaped by having two $$ instead of one. Examples:
 
@@ -584,7 +561,7 @@ ${DRONE_COMMIT_SHA} --> $${DRONE_COMMIT_SHA}
 
 ```
 
-### Scanning Images
+#### Scanning Images
 
 ACP provides Anchore as scanning solution to images built into the Drone pipeline, allowing users to scan both ephemeral _(built within the context of the drone, but not pushed to a repository yet)_ as well and well any public images.
 
@@ -615,13 +592,13 @@ pipeline:
     fail_on_detection: false
 ```
 
-## Q&As
+#### Q&As
 
-### Q: The build fails with _"ERROR: Insufficient privileges to use privileged mode"_
+##### Q: The build fails with _"ERROR: Insufficient privileges to use privileged mode"_
 
 A: Remove `privileged: true` from your `.drone.yml`. As explained in the [migrating your pipeline section](#migrating-your-pipeline), the primary use of this was for Docker-in-Docker which is not required.
 
-### Q: The build fails with _"Cannot connect to the Docker daemon. Is the docker daemon running on this host?"_
+##### Q: The build fails with _"Cannot connect to the Docker daemon. Is the docker daemon running on this host?"_
 
 A: Make sure that your steps contain the environment variable `DOCKER_HOST=tcp://172.17.0.1:2375` like in this case:
 
@@ -637,11 +614,11 @@ my-build:
     event: push
 ```
 
-### Q: The build fails when uploading to Quay with the error _"Error response from daemon: Get https://quay.io/v2/: unauthorized:..."_
+##### Q: The build fails when uploading to Quay with the error _"Error response from daemon: Get https://quay.io/v2/: unauthorized:..."_
 
 A: This is likely because the secret wasn't added correctly or the password is incorrect. Check that the secret has been added to Drone and that you have added the `secrets` section in your `.drone.yaml` it to the pipeline that requires it.
 
-### Q: As part of my build process I have two `Dockerfiles` to produce a Docker image. How can I share files between builds in the same step?
+##### Q: As part of my build process I have two `Dockerfiles` to produce a Docker image. How can I share files between builds in the same step?
 
 A: When the pipeline starts, Drone creates a Docker data volume that is passed along all active steps in the pipeline. If the first step creates a `test.txt` file, the second step can use that file. As an example, this pipeline uses a two step build process:
 
@@ -665,13 +642,13 @@ pipeline:
       event: push
 ```
 
-### Q: Should I use Gitlab with Quay?
+##### Q: Should I use Gitlab with Quay?
 
 A: Please don't. If your repository is hosted in Gitlab then use Artifactory to publish your images. Images published to Artifactory are kept private.
 
 If you still want to use Quay, you should consider hosting your repository on the open (Github).
 
-### Q: Can I create a token that has permission to create ephemeral/temporary namespaces?
+##### Q: Can I create a token that has permission to create ephemeral/temporary namespaces?
 
 A: No. This is because there is currently no way to give access to namespaces via regex.
 

@@ -1,6 +1,6 @@
-# Getting a Kubernetes Token
+## Getting a Kubernetes Token
 
-### Users
+#### Users
 
 1. Log into the [Platform Hub][platform hub link].
 
@@ -10,7 +10,7 @@
 
 4. Once your token has been created, you will be able to find it in the [Connected Identities][connected identities] section. You will need to expand the **Kubernetes** identity and show your full token by clicking the eye icon next to it.
 
-### Project Admins (Creating a user token)
+#### Project Admins (Creating a user token)
 
 1. Log into the [Platform Hub][platform hub link].
 
