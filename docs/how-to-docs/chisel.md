@@ -4,7 +4,7 @@
 
 One pattern we are exploring is the use of a proxy cluster with an authenticated side-kick to route traffic and provide end-to-end encryption. Both ACP Notprod and Prod are peered to an respective proxy cluster that is running a [Chisel](https://github.com/jpillora/chisel) server. Below is rough idea of how the chisel service works.
 
-![alt text](https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/pics/chisel.png "Chisel")
+![alt text](https://github.com/UKHomeOffice/application-container-platform/blob/master/docs/how-to-docs/pics/chisel.png "Chisel")
 
 The workflow for this is as follows, note the following example is assuming we have peered with a network in the proxy cluster which is exposing x services.
 
