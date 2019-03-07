@@ -43,7 +43,7 @@ spec:
       - name: consumer
         image: quay.io/ukhomeofficedigital/someimage:someversion
       - name: chisel
-        image: quay.io/ukhomeofficedigital/chisel:latest
+        image: quay.io/ukhomeofficedigital/chisel:v1.3.1 # Both Chisel Client & Server versions must match
         securityContext:
           runAsNonRoot: true
         env:
