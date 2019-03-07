@@ -125,6 +125,53 @@ Digest: sha256:0309d2655ecef6b4181ee93edfb91f386fc2ebc7849cc88f6e7a18b0d349c35f
 Status: Image is up to date for 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/hello-world-app@sha256:0309d2655ecef6b4181ee93edfb91f386fc2ebc7849cc88f6e7a18b0d349c35f
 ```
 
+#### Listing Images & Housekeeping
+
+Using the AWS CLI you can list all images that have been pushed to a given repository which you have access to.
+
+For example:
+```sh
+$ aws ecr list-images --repository-name acp/hello-world-app
+{
+    "imageIds": [
+        {
+            "imageDigest": "sha256:0309d2655ecef6b4181ee93edfb91f386fc2ebc7849cc88f6e7a18b0d349c35f",
+            "imageTag": "v0.0.1"
+        },
+        {
+            "imageDigest": "sha256:0309d2655ecef6b4181ee93edfb91f386fc2ebc7849cc88f6e7a18b0d349c35f",
+            "imageTag": "latest"
+        }
+    ]
+}
+```
+
+To delete old images, you must have write access enabled or perform the action via a Robot Account. Images can be deleted based on a provided tag or digest. When providing a digest, all image tags with the same digest are deleted together.
+
+```sh
+$ aws ecr batch-delete-image --repository-name acp/hello-world-app --image-ids imageTag=v0.0.1
+{
+    "imageIds": [
+        {
+            "imageDigest": "sha256:0309d2655ecef6b4181ee93edfb91f386fc2ebc7849cc88f6e7a18b0d349c35f",
+            "imageTag": "v0.0.1"
+        }
+    ],
+    "failures": []
+}
+
+$ aws ecr batch-delete-image --repository-name acp/hello-world-app --image-ids imageDigest=sha256:0309d2655ecef6b4181ee93edfb91f386fc2ebc7849cc88f6e7a18b0d349c35f
+{
+    "imageIds": [
+        {
+            "imageDigest": "sha256:0309d2655ecef6b4181ee93edfb91f386fc2ebc7849cc88f6e7a18b0d349c35f",
+            "imageTag": "latest"
+        }
+    ],
+    "failures": []
+}
+```
+
 #### Managing Image Deployments via Drone CI
 
 The Docker Authorisation Token generated via the aws-cli command is only valid for 12 hours, and so this can't be used as a Drone Secret for Docker Image builds. Instead, you would need to store the IAM Credentials for a Robot Account as Drone Secrets and perform the `aws ecr get-login` + `docker login ..` step on each build.
