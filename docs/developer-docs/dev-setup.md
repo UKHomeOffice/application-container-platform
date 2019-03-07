@@ -131,4 +131,4 @@ Finally, please head over and read through our [SLA] documentation to familiaris
 [Support Requests]:https://hub.acp.homeoffice.gov.uk/help/support/requests/overview
 [Request access to Developer Induction]:https://hub.acp.homeoffice.gov.uk/help/support/requests/new/acp-induction-token
 [Connected Identities]:https://hub.acp.homeoffice.gov.uk/identities
-[SLA]:https://github.com/UKHomeOffice/application-container-platform/blob/master/sla.md
+[SLA]:https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support

@@ -4,7 +4,7 @@
 This document will go over the flow for getting access to our various services if you are finding difficulties with the specifics of the tasks outlined in this document please see the more detailed [Developer Docs][developer docs link].
 
 ## Office 365 Account
-Licensed [Office 365](https://portal.office.com) accounts should be requested from your Programme Management Office. We can request AD-only accounts to facilitate access to ACP services via Single Sign On as explained on the [Support page](https://github.com/UKHomeOffice/application-container-platform/blob/master/sla.md)
+Licensed [Office 365](https://portal.office.com) accounts should be requested from your Programme Management Office. We can request AD-only accounts to facilitate access to ACP services via Single Sign On as explained on the [Support page](https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support)
 Please note that to use SSO, which is using your Office 365 account to log onto other services, pop-ups will need to be enabled on your computer.
 
 ## VPN
