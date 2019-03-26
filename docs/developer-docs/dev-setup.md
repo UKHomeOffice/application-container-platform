@@ -54,6 +54,7 @@ Before joining the Developer Induction, we kindly ask you to install binaries wh
   - [Docker](#install-docker)
   - [Drone](#install-drone)
   - [Kubectl](#install-kubectl)
+  - [AWS CLI](#install-aws-cli)
 
 #### Install Git
 
@@ -73,16 +74,18 @@ You can follow the instructions to install `docker` from the [Docker website]. Y
 ```bash
 $ docker --version
 Docker version 18.03.1-ce, build 9ee9f40
+
+# version 17.06 or above is required
 ```
 #### Install Drone
 
-Drone CLI can be downloaded from the [Drone CI website]. Instructions installing on multiple operating systems are shown on the webpage.
+Drone CLI can be downloaded from the [Drone CI website]. Instructions installing on multiple operating systems are shown on the webpage. Currently our drone instance is compatible with `drone 0.8.6`, which can be found [here](https://github.com/drone/drone-cli/releases/tag/v0.8.6)
 
 Verify that the installation is successful:
 
 ```bash
 $ drone --version
-drone version 0.8.0
+drone version 0.8.6
 ```
 
 #### Install Kubectl
@@ -92,6 +95,17 @@ You can follow the instructions to install version 1.8 of `kubectl` from the [Ku
 ```bash
 $ kubectl version
 Client Version: version.Info{Major:"1", Minor:"8", GitVersion:"v1.8.4", GitCommit:"9befc2b8928a9426501d3bf62f72849d5cbcd5a3", GitTreeState:"clean", BuildDate:"2017-11-20T05:28:34Z", GoVersion:"go1.8.3", Compiler:"gc", Platform:"linux/amd64"}
+```
+
+#### Install AWS CLI
+
+Follow the [official AWS documentation] for instructions to install the AWS CLI. You can verify the installation is successful with:
+
+```bash
+$ aws --version
+aws-cli/1.16.28 Python/2.7.10 Darwin/18.2.0 botocore/1.12.18
+
+# version 1.11.91 or above is required
 ```
 
 #### Connecting to the cluster
@@ -132,3 +146,4 @@ Finally, please head over and read through our [SLA] documentation to familiaris
 [Request access to Developer Induction]:https://hub.acp.homeoffice.gov.uk/help/support/requests/new/acp-induction-token
 [Connected Identities]:https://hub.acp.homeoffice.gov.uk/identities
 [SLA]:https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support
+[official AWS documentation]:https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
