@@ -1,4 +1,8 @@
 # Kubernetes Platform
+#### v0.3.3
+
+* Updated to Kubernetes v1.13.4
+
 #### v0.2.19
 
 * Added Kubernetes conformance tests, extended the integration tests and use spot instances for E2E runs
