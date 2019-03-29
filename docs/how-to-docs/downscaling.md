@@ -1,10 +1,10 @@
 ## Downscaling Services Out Of Hours
 
-In an effort to reduce costs on running the platform, we've enabled to capability to scale down specific resources Out Of Hours (OOH) for Non-Production environments.
+In an effort to reduce costs on running the platform, we've enabled to capability to scale down specific resources Out Of Hours (OOH) for Non-Production and Production environments.
 
 #### AWS RDS (Relational Database Service)
 
-Non-Production RDS resources can be transitioned to a stopped state OOH to save on resource utilisation costs. This is currently managed with the use of tags on the RDS instance defining a cronjob schedule to stop and start the instance.
+RDS resources can be transitioned to a stopped state OOH to save on resource utilisation costs. This is currently managed with the use of tags on the RDS instance defining a cronjob schedule to stop and start the instance.
 
 To set a schedule for your RDS instances, please use the related Platform Hub support request template titled **["Shutdown RDS Instance(s) Out Of Hours"](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/rds-scheduling)**.
 
