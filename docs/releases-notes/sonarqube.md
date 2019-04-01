@@ -1,4 +1,7 @@
 # SonarQube
+#### 6.7.6
+- Update to: https://www.sonarsource.com/resources/product-news/news.html#2018-11-20-sonarqube-676-released
+
 #### 6.7.3.1
 
 - Nginx - Remove limit on body size
