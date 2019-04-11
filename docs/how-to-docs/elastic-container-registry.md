@@ -188,8 +188,8 @@ pipeline:
   build_push_to_ecr:
     image: quay.io/ukhomeofficedigital/ecr:latest
     secrets:
-    - ACCESS_KEY
-    - SECRET_KEY
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
     repo: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/hello-world-app
     build_args:
     - APP_BUILD=${DRONE_COMMIT_SHA}
