@@ -106,7 +106,7 @@ If your repository is hosted on Gitlab, you don't want to publish your images to
 Register for a free [Quay account][quay link] using your Github account linked to the Home Office organisation.
 
 Once you've logged into Quay check that you have `ukhomeofficedigital` under Users and Organisations.
-If you do not, [submit a support request on the platform hub for access to the ukhomeoffice organisation][add to quay support request].
+If you do not, [submit a support request on the support portal for access to the ukhomeoffice organisation][add to quay support request].
 
 Once you have access to view the `ukhomeofficedigital` repositories, click repositories and
 click the `+ Create New Repositories` that is:
@@ -114,7 +114,7 @@ click the `+ Create New Repositories` that is:
 - public
 - empty - no need to create a repo from a Dockerfile or link it to an existing repository
 
-Add your project to the UKHomeOffice Quay account and [submit a support request on the platform hub for a new Quay robot][quay robot support request].
+Add your project to the UKHomeOffice Quay account and [submit a support request on the support portal for a new Quay robot][quay robot support request].
 
 Add the step to publish the docker image to Quay in your Drone pipeline:
 
@@ -652,17 +652,17 @@ A: No. This is because there is currently no way to give access to namespaces vi
 
 I.e. There is no way to give access to any namespace with the format: `my-temp-namespace-*` (where \* would be build number or something similar).
 
-Alternatively, you can be given a named namespace in the CI cluster. Please create an issue on our [BAU board][bau repo] if you require this.
+Alternatively, you can be given a named namespace in the CI cluster. Please create an issue on our [Support Portal][support portal] if you require this.
 
 [drone docs - cli install]: https://docs.drone.io/cli-installation/
 [drone cli releases]: https://github.com/drone/drone-cli/releases
 [drone github token page]: https://drone.acp.homeoffice.gov.uk/account/token
 [drone github repos page]: https://drone.acp.homeoffice.gov.uk/account/repos
 [quay link]: https://quay.io
-[add to quay support request]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/add-to-quay-org
-[quay robot support request]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/quay-robot-request
+[add to quay support request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/88
+[quay robot support request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/37
 [artifactory link]: https://docker.digital.homeoffice.gov.uk
-[artifactory support request]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/artifactory-token
+[artifactory support request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/30
 [drone docs - environments]: http://docs.drone.io/environment/
 [drone docs - conditions]: http://docs.drone.io/conditional-steps/
 [kube signed commit check repo]: https://github.com/UKHomeOffice/kube-signed-commit-check
@@ -670,4 +670,4 @@ Alternatively, you can be given a named namespace in the CI cluster. Please crea
 [kube token how to]: kubernetes-user-token.md
 [drone-trigger repo]: https://github.com/UKHomeOffice/drone-trigger
 [drone docs - environment conditional]: http://docs.drone.io/conditional-steps/#environment
-[bau repo]: https://github.com/UKHomeOffice/application-container-platform-bau
+[support portal]: https://support.acp.homeoffice.gov.uk/servicedesk

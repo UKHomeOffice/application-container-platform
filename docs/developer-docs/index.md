@@ -23,12 +23,13 @@ Some prerequisites are required before developing on ACP. [This guide](dev-setup
 In addition, new developers should look at the [new user flow](../newuser.md) documentation whilst going through this doc to serve as a checklist and make sure you are onboarded to all necessary platform services.
 
 ## Platform Hub
-  [The Platform Hub](https://hub.acp.homeoffice.gov.uk) serves as a central portal for users of ACP. It acts as an all-in-one place to find information, requests and also support for the platform. The hub also provides tools to develop, build, deploy and manage all your projects.
-
-  You can submit [support requests via the hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/overview) located in `Support Requests` under the `Help & Support` tab on the sidebar. These request templates cover a wide majority of general requests that users normally need. If your issue/request is not listed, please use the [General Request][general request form] support request.
+[The Platform Hub](https://hub.acp.homeoffice.gov.uk) serves as a central portal for users of ACP. It acts as an all-in-one place to find information, requests and also support for the platform. The hub also provides tools to develop, build, deploy and manage all your projects.
 
 Updates are also on its way to include more self-service tools, along with documentation, FAQs and live status updates.
 > Access to the Platform Hub requires the `ACP Platform` VPN profile. Please make sure you have followed the [Developer getting started guide](#Developer-getting-started-guide) for instructions on connecting to VPNs.
+
+## Support Portal
+All support requests, changes, incidents and announcements for ACP are managed via [JIRA Service Desk](https://support.acp.homeoffice.gov.uk/servicedesk). A set of request templates have been created to cover a wide majority of general requests that users normally need. If your issue / request type is not listed, there is a [general request](https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/89) form available.
 
 ## Project getting started guide
 Kubernetes resources (including your applications!) are always deployed into a particular namespace.
@@ -43,5 +44,3 @@ Drone is what we use for Continuous Integration in ACP. [This guide](../how-to-d
 
 ## Writing Dockerfiles
 [This guide](../how-to-docs/write-dockerfiles.md) covers best practice for building Dockerfiles, and lists our standard base images.
-
-[general request form]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/general-request

@@ -20,7 +20,7 @@ Please refer to [Connect to GovWifi] to obtain your credentials and set up wirel
 
 ## Office 365
 
-Platform users must have Office 365 Single Sign-On (SSO) credentials for the `digital.homeoffice.gov.uk` domain. Please get in touch with your Programme Management Office to request an account or raise an issue on the [BAU] Board. If you can't access the Board, please ask a colleague to raise a request on your behalf. You will not be able to follow through the rest of this guide unless you have Office 365 credentials.
+Platform users must have Office 365 Single Sign-On (SSO) credentials for the `digital.homeoffice.gov.uk` domain. Please get in touch with your Programme Management Office to request an account or raise an issue on the [Support Portal]. If you can't access the Board, please ask a colleague to raise a request on your behalf. You will not be able to follow through the rest of this guide unless you have Office 365 credentials.
 
 ## Connecting to ACP VPN
 
@@ -36,11 +36,11 @@ VPN profiles expire after 12 hours. You'll need to download and connect with a n
 > **Please note** that you need to have your VPN running to access the Platform Hub and also talk to cluster APIs.
 
 You will need to register with the Platform Hub in order to gain access tokens for our Kubernetes clusters.
-Head to [Platform Hub], you will need your O365 credentials to login/sign up. You will be asked to connect your Github account to your Platform Hub account - this will give you access to our [BAU] board, which is used to raise requests and issues regarding the Platform or your project. More information can be found in the [developer documentation].
+Head to [Platform Hub], you will need your O365 credentials to login/sign up. You will be asked to connect your Github account to your Platform Hub account. This will give you access to project repositories under the UKHomeOffice Organisation in GitHub.
 
-Click on [Support Requests] under the `Help & Support` heading on the navigation bar after connecting your Github identity to the Hub. Create a support request for [Request access to Developer Induction]. The support request will be sent and reviewed by a member of ACP team. Updates on the request will be seen as a notification on your Github account.
+Navigate to the [Support Portal] (JIRA Service Desk), logging in via your O365 account, and create a support request for [access to Developer Induction]. The support request will be sent to and reviewed by a member of the ACP team. Any updates on the request will be available to view within the [Support Portal] and additionally emailed to you.
 
-Once created, your token will be shown under `Kubernetes` section of the [Connected Identities] tab on the sidebar. You can view all of your tokens by pressing the `Show Tokens` button.
+Once created, your token will be shown in the [Platform Hub] under the `Kubernetes` section of the [Connected Identities] tab on the sidebar. You can view all of your tokens by pressing the `Show Tokens` button.
 
 ## Add a ssh key to Gitlab
 
@@ -141,9 +141,8 @@ Finally, please head over and read through our [SLA] documentation to familiaris
 [releases page]:https://github.com/UKHomeOffice/kd/releases
 [Platform Hub]:https://hub.acp.homeoffice.gov.uk/
 [developer documentation]:https://github.com/UKHomeOffice/application-container-platform/tree/master/developer-docs#platform-hub
-[BAU]:https://github.com/UKHomeOffice/application-container-platform-bau/
-[Support Requests]:https://hub.acp.homeoffice.gov.uk/help/support/requests/overview
-[Request access to Developer Induction]:https://hub.acp.homeoffice.gov.uk/help/support/requests/new/acp-induction-token
+[Support Portal]:https://support.acp.homeoffice.gov.uk/servicedesk
+[access to Developer Induction]:https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/94
 [Connected Identities]:https://hub.acp.homeoffice.gov.uk/identities
 [SLA]:https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support
 [official AWS documentation]:https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html

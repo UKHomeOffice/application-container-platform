@@ -26,4 +26,4 @@ When trying to get onto the platform for the first time you will need to get acc
 
 ## Support
 [You can find more information about support here](https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support)
-If you require support you can talk to us on our Slack Channel or raise an issue on our [BAU Board](https://github.com/UKHomeOffice/application-container-platform-bau).
+If you require support you can talk to us on our Slack Channel or raise an issue on our [Support Portal](https://support.acp.homeoffice.gov.uk/servicedesk).
