@@ -1,7 +1,7 @@
 
 ## Create an Artifactory access token
 
-> Note: These instructions are intended for the ACP team. If you would like to request an Artifactory token, please use the relevant support request on the [Platform Hub][artifactory support request].
+> Note: These instructions are intended for the ACP team. If you would like to request an Artifactory token, please raise the relevant support request via the [Support Portal][artifactory support request].
 
 The requester should state the name of the token, how they would like to receive the token and post their GPG key.
 
@@ -16,5 +16,5 @@ where `<robot-username>` is the name of the access token and `<appropriate-group
 
 * Once the token has been created, JSON data should be returned which will include the access key. The JSON data you receive will be the only time you will be able to see the access key as it is not shown on Artifactory. You should, however, be able to see the name and expiry date (if you set an expiry time) of the access key in the "Access Keys" section.
 
-[artifactory support request]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/artifactory-token
+[artifactory support request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/30
 [artifactory link]: https://artifactory.digital.homeoffice.gov.uk/

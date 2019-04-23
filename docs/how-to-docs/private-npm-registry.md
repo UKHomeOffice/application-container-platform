@@ -35,7 +35,7 @@ You might then need to `source` your profile to load these environment variables
 
 ##### Request a bot token for artifactory
 
-You can do this through the [ACP Hub](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/artifactory-bot). You'll need to provide a username for the bot when you create it.
+You can do this through the [ACP Support Portal](https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/30).
 
 One of the ACP team will create a token and send it to you as an encrypted gpg file via email.
 

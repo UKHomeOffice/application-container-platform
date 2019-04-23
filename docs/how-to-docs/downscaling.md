@@ -6,7 +6,7 @@ In an effort to reduce costs on running the platform, we've enabled to capabilit
 
 RDS resources can be transitioned to a stopped state OOH to save on resource utilisation costs. This is currently managed with the use of tags on the RDS instance defining a cronjob schedule to stop and start the instance.
 
-To set a schedule for your RDS instances, please use the related Platform Hub support request template titled **["Shutdown RDS Instance(s) Out Of Hours"](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/rds-scheduling)**.
+To set a schedule for your RDS instances, please use the related [Support Portal support request template](https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/95).
 
 > **Note:** Shutting down an RDS instance will have cost savings based on the instance size, however you will still be charged for the allocated storage.
 

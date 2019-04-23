@@ -76,7 +76,7 @@ The following are containers that we create for use alongside your own applicati
 Logging stack consists of [Elasticsearch](https://github.com/UKHomeOffice/docker-elasticsearch), [Logstash](https://github.com/UKHomeOffice/docker-logstash-kubernetes), [Kibana](https://github.com/UKHomeOffice/docker-kibana)).
 
 - Logstash agents deployed as a daemonSet will collect all workload logs and index them in Elasticsearch.
-- Logs are searchable for a period of 5 days through [Kibana UI](https://kibana.acp.homeoffice.gov.uk). Access to view logs can be requested via [Support request](https://hub.acp.homeoffice.gov.uk/help/support/requests/new/kibana-access-request).
+- Logs are searchable for a period of 5 days through [Kibana UI](https://kibana.acp.homeoffice.gov.uk). Access to view logs can be requested via [Support request](https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/34).
 
 #### Current Log Retention Policy
 - Logs are searchable in Kibana for 5 days and remain within Elasticsearch for 10 days.
@@ -103,7 +103,7 @@ The Platform is spread across multiple availability zones, which are essentially
 
 The recovery of products hosted on the Platform are subject to considerations set out for the Production Ready criteria in [Service Lifecycle](service-lifecycle.md).
 
-For further information on security and disaster recovery considerations, please raise a ticket on the [BAU Board](https://github.com/UKHomeOffice/application-container-platform-bau/issues).
+For further information on security and disaster recovery considerations, please raise a ticket on the [Support Portal](https://support.acp.homeoffice.gov.uk/servicedesk).
 
 
 ## Reusable components
