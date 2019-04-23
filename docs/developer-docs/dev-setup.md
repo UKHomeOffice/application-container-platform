@@ -36,7 +36,7 @@ VPN profiles expire after 12 hours. You'll need to download and connect with a n
 > **Please note** that you need to have your VPN running to access the Platform Hub and also talk to cluster APIs.
 
 You will need to register with the Platform Hub in order to gain access tokens for our Kubernetes clusters.
-Head to [Platform Hub], you will need your O365 credentials to login/sign up. You will be asked to connect your Github account to your Platform Hub account. This will give you access to project repositories under the UKHomeOffice Organisation in Github.
+Head to [Platform Hub], you will need your O365 credentials to login/sign up. You will be asked to connect your Github account to your Platform Hub account. This will give you access to project repositories under the UKHomeOffice Organisation in GitHub.
 
 Navigate to the [Support Portal] (JIRA Service Desk), logging in via your O365 account, and create a support request for [access to Developer Induction]. The support request will be sent to and reviewed by a member of the ACP team. Any updates on the request will be available to view within the [Support Portal] and additionally emailed to you.
 
