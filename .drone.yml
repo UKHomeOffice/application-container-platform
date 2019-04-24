@@ -3,7 +3,6 @@ clone:
   git:
     image: plugins/git
     recursive: true
-    tags: true
 
 pipeline:
 
@@ -13,14 +12,15 @@ pipeline:
       - pip install mkdocs mkdocs-material markdown-include
       - mkdocs build
     when:
-      event: push
+      event: pull_request
 
-  build:
+  deploy:
     image: python:2.7-alpine
     commands:
       - apk add -U openssh git-fast-import
       - mkdir /root/.ssh && echo -n "$SSH_KEY" > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa
       - touch /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts && ssh-keyscan -H github.com > /etc/ssh/ssh_known_hosts 2> /dev/null
+      - git remote add origin git@github.com:UKHomeOffice/application-container-platform.git
       - pip install mkdocs mkdocs-material markdown-include
       - mkdocs gh-deploy
     secrets:
