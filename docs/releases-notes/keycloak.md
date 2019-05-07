@@ -1,5 +1,54 @@
 # Keycloak
 
+#### **Keycloak v4.6.0**
+
+**Enhancement**
+
+* [KEYCLOAK-3454] - allowed-origins should be optional in token and not included if empty
+* [KEYCLOAK-6449] - Finish spring boot testing
+* [KEYCLOAK-6884] - Use protocolMapper to add roles to OIDC access token
+* [KEYCLOAK-7605] - Make sure Evaluation API is read-only
+* [KEYCLOAK-8317] - keycloak-connect - allow kc_idp_hint to be specified from the application
+* [KEYCLOAK-8449] - Option to automatically map HTTP verbs to scopes when configuring the policy enforcer
+* [KEYCLOAK-8484] - Remove client scope templates
+* [KEYCLOAK-8509] - Enhancements to session iframe functionality in JS adapter
+* [KEYCLOAK-8554] - Large number of realms causing slow startup due to new installation check
+* [KEYCLOAK-8555] - Large number of realms causing slow startup due to user storage bootstrap
+* [KEYCLOAK-8556] - Improvements to profile and align preview features in community and product
+* [KEYCLOAK-8580] - Add Nginx certificate lookup provider
+* [KEYCLOAK-8605] - The microprofile extensions/subsystems should not be included in standalone.xml files
+* [KEYCLOAK-8606] - Remove unneeded extensions/subsystems from the image
+* [KEYCLOAK-8614] - the permissions obtained from keycloak is not attached to the request object
+* [KEYCLOAK-8640] - Expose granted permissions to other middleware
+* [KEYCLOAK-8840] - Every policy enforcement call results in an unique service account session
+
+**Feature Request**
+
+* [KEYCLOAK-5831] - JS adapter should redirect using window.location.replace to avoid cluttering history
+* [KEYCLOAK-6658] - Expose fine grain admin permissions endpoints in admin client
+* [KEYCLOAK-6757] - Migrate from Microsoft live API to Microsoft Graph due to deprecation this year
+* [KEYCLOAK-7698] - Update Japanese translation for version 4.0
+* [KEYCLOAK-7910] - Store credentials when updating user via Admin REST API
+* [KEYCLOAK-8346] - Add switch include client scope in scope parameter
+* [KEYCLOAK-8377] - Attributes for Roles
+* [KEYCLOAK-8412] - Upgrade to Drools 7.11.0.Final
+* [KEYCLOAK-8419] - Make most Account Mgt API's only active in preview mode
+* [KEYCLOAK-8420] - Create Hello React
+* [KEYCLOAK-8421] - POC for account management extension
+* [KEYCLOAK-8485] - Document priorities used by protocol mappers
+* [KEYCLOAK-8510] - German translation for admin messages
+* [KEYCLOAK-8601] - Evaluate REST/HTTP packages for React
+* [KEYCLOAK-8604] - Figure out how forms will be handled
+* [KEYCLOAK-8678] - Turkish translation
+*
+**Epic**
+
+* [KEYCLOAK-6195] - Supported authorization services
+* [KEYCLOAK-6203] - Gatekeeper
+* [KEYCLOAK-6436] - Testsuite
+* [KEYCLOAK-8220] - CE Sprint 24
+* [KEYCLOAK-8295] - Upgrade to WildFly 14
+
 #### **Keycloak v4.5.0**
 
 **Enhancement**
