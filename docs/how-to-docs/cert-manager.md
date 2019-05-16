@@ -216,7 +216,8 @@ apiVersion: extensions/v1beta1
   kind: Ingress
   metadata:
     annotations:
-      certmanager.k8s.io/acme-challenge-type: dns
+      certmanager.k8s.io/acme-challenge-type: dns01
+      certmanager.k8s.io/acme-dns01-provider: route53
       certmanager.k8s.io/enabled: "true"
       kubernetes.io/ingress.class: nginx-internal
     name: example
