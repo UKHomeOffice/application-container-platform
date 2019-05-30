@@ -35,4 +35,4 @@ The ACP clusters all run behind NAT gateways, with fixed external addresses. Not
 |                 | eu-west-2b    | 18.130.11.142      |
 |                 | eu-west-2c    | 18.130.6.5         |
 
-Note: The ACP-VPN external IP addresses only work for the "Tunnel All Traffic" VPN profiles.
+Note: The ACP-VPN external IP addresses only work for the "acp-tunnel" VPN profile.
