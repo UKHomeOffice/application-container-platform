@@ -1,5 +1,37 @@
 # Keycloak
 
+#### **Keycloak v4.8.0**
+
+* https://www.keycloak.org/docs/latest/release_notes/index.html#keycloak-4-8-0-final
+
+##### **User Required Actions**
+
+Post release of Keycloak v4.6.0 the `aud` claim was removed from the generated access token. This causes an issue specifically for those using the keycloak-proxy / keycloak-gatekeeper which uses go-oidc (github.com/coreos/go-oidc) under the hood as it validates it's existence.
+
+The easiest way to mitigate the issue is add the `aud` claim either in the Client scopes or on the keycloak client you're using, i.e.
+
+Go to realm settings
+Click on the client your using to login with and go to "Mappers" tab
+Click "Create" and add
+Name: Audience
+Mapper Type: Hardcoded Claim
+Token Claim Name: aud
+Claim Value: <the name of the this client>
+Claim JSON Type: String
+Add to ID token: true
+Add to access token: true
+Add to userinfo: false
+
+This can be a pain if you’re using multiple clients within the realm as the above has to be repeated for other clients you are using to login with, though most people will be using the default 'broker' client.
+
+An alternative would be to add the above to the client scope, hard-code to a value and add '--skip-client-id' on the keycloak proxy arguments. This continues to verify token signature and issuer but ignores the audience / client id.
+
+Note if the above is not done the proxy will start throwing errors such as;
+
+`{"error": "oidc: JWT claims invalid: invalid claim value: 'aud' is required, and should be either string or string array"}`
+
+Also, these change are be done before the upgrade takes place.
+
 #### **Keycloak v4.6.0**
 
 **Enhancement**
