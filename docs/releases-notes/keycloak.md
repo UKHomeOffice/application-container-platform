@@ -4,7 +4,7 @@
 
 * https://www.keycloak.org/docs/latest/release_notes/index.html#keycloak-4-8-0-final
 
-##### **User Required Actions**
+#### **User Required Actions**
 
 Post release of Keycloak v4.6.0 the `aud` claim was removed from the generated access token. This causes an issue specifically for those using the keycloak-proxy / keycloak-gatekeeper which uses go-oidc (github.com/coreos/go-oidc) under the hood as it validates it's existence.
 
