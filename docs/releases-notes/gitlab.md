@@ -1,7 +1,7 @@
 # GitLab
 You can find full Gitlab Release changelog [here](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/CHANGELOG.md).
 
-## v11.1.4-postgres
+#### v11.1.4-postgres
 
 - Gitlab CE 11.1.4
 - Migration from MySQL to Postgres database
