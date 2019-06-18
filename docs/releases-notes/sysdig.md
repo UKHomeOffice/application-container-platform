@@ -1,4 +1,10 @@
 # Sysdig
+
+#### 1765
+
+- Update to: https://github.com/draios/sysdigcloud-kubernetes/releases/tag/v1765
+- Change RDS from MariaDB to Mysql
+
 #### 1629
 
 - Updated to hotfix to address the dashboards not showing current data issue, lagging x hours behind.
