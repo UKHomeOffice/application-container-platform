@@ -1,5 +1,9 @@
 # Sysdig
 
+#### 2304
+
+- Update to: https://github.com/draios/sysdigcloud-kubernetes/releases/tag/v2304
+
 #### 1765
 
 - Update to: https://github.com/draios/sysdigcloud-kubernetes/releases/tag/v1765
