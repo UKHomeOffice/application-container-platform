@@ -1,4 +1,15 @@
 # ELK Stack
+
+#### 5.6.16-1
+
+* Change Elasticsearch / Logstash / Kibana version to 5.6.16
+* Change Elasticsearch Curator version to 5.7.6
+* Add X-Pack security audit event exclusion option
+* Add Curator configuration improvements
+* Fix JVM DNS caching
+
+NOTE: Starting with this release the versioning of ELK stack will track major Elasticsearch upstream version.
+
 #### v0.4.3
 
 * Enables Watcher SMTP
