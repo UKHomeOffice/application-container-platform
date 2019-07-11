@@ -13,7 +13,7 @@ The easiest way to mitigate the issue is add the `aud` claim either in the Clien
 * Go to realm settings
 * Click on the client your using to login with and go to "Mappers" tab
 * Click "Create" and add
-  * Name: Audience
+  * Name: aud
   * Mapper Type: Hardcoded Claim
   * Token Claim Name: aud
   * Claim Value: `<the name of this client>`
