@@ -19,7 +19,7 @@ We focus on enabling self-service where possible, and have developed a Platform 
 
 **Everyone using our platform MUST adhere to [technical service standards](https://github.com/UKHomeOffice/technical-service-requirements). All Services will be under a review process.**
 
-For definitions on each phase of the lifecycle and the criteria for production-ready, please refer [here](service-lifecycle.md).
+For definitions on each phase of the lifecycle and the criteria for production-ready, please refer [here](service-lifecycle.md). Release notes for ACP services can be found [here](https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/tree/master/release-notes).
 
 ## Accessing the Services
 When trying to get onto the platform for the first time you will need to get access to a various things that will allow you to get to other things. The full flow for this can be found [here](newuser.md)
