@@ -4,7 +4,7 @@ use_directory_urls: false
 nav:
   - Home: index.md
   - Services: services.md
-  - Release Notes: releases-notes/index.md
+  - Release Notes: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/tree/master/release-notes/
   - How To's: how-to-docs/index.md
   - Developer Getting Started Guide: developer-docs/index.md
   - New User Guide: newuser.md
