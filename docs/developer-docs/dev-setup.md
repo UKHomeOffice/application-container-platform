@@ -38,17 +38,21 @@ VPN profiles expire after 12 hours. You'll need to download and connect with a n
 You will need to register with the Platform Hub in order to gain access tokens for our Kubernetes clusters.
 Head to [Platform Hub], you will need your O365 credentials to login/sign up. You will be asked to connect your Github account to your Platform Hub account. This will give you access to project repositories under the UKHomeOffice Organisation in GitHub.
 
-Navigate to the [Support Portal] (JIRA Service Desk), logging in via your O365 account, and create a support request for [access to Developer Induction]. The support request will be sent to and reviewed by a member of the ACP team. Any updates on the request will be available to view within the [Support Portal] and additionally emailed to you.
+Navigate to the [Support Portal] (JIRA Service Desk), logging in via your O365 account, and create a support request for [access to ACP Induction]. The support request will be sent to and reviewed by a member of the ACP team. Any updates on the request will be available to view within the [Support Portal] and additionally emailed to you.
+
+> **Please note** that if you have an AD-only email account (a digital account without a mailbox), then you can raise a support request to [update your email address][update email request] so that you can receive email notifications on ticket updates.
+
+If you find that you cannot raise support requests, this may be because you have not been added to a team yet. Please ask one of your team members who already has access to the support portal to [raise a request to have you added to service desk][add colleague to service desk].
 
 Once created, your token will be shown in the [Platform Hub] under the `Kubernetes` section of the [Connected Identities] tab on the sidebar. You can view all of your tokens by pressing the `Show Tokens` button.
 
 ## Add a ssh key to Gitlab
 
-You will need to add a ssh public key to your Gitlab profile before attending the Induction. Please sign into [Gitlab] with Office 365 and add a ssh public key to your profile. Instructions for generating a ssh keypair can be found in [Gitlab Docs].
+You will need to add a ssh public key to your Gitlab profile before attending the Induction. Please sign into [Gitlab] with Office 365 and add a ssh public key to your profile. Instructions for generating a ssh keypair can be found in the [Gitlab Docs].
 
 ## Required binaries
 
-Before joining the Developer Induction, we kindly ask you to install binaries which are used for the deployment of applications in ACP - instructions on how to install these are shown below:
+Before joining the ACP Induction, we kindly ask you to install binaries which are used for the deployment of applications in ACP - instructions on how to install these are shown below:
 
   - [Git](#install-git)
   - [Docker](#install-docker)
@@ -59,13 +63,15 @@ Before joining the Developer Induction, we kindly ask you to install binaries wh
 #### Install Git
 
 Verify if you have Git installed by:
-```
+
+```bash
 $ git --version
 git version 2.16.2
 ```
+
 If Git is not installed, instructions on how to download and install it can be found over at the [Git website].
 
-> **Please note** We assume a basic knowledge of Git for the ACP Induction. If you've not used git before, or need to brush up on your skills please see [Git basics].
+> **Please note** that we assume a basic knowledge of Git for the ACP Induction. If you've not used git before, or need to brush up on your skills please see [Git basics].
 
 #### Install Docker
 
@@ -77,9 +83,10 @@ Docker version 18.03.1-ce, build 9ee9f40
 
 # version 17.06 or above is required
 ```
+
 #### Install Drone
 
-Drone CLI can be downloaded from the [Drone CI website]. Instructions installing on multiple operating systems are shown on the webpage. Currently our drone instance is compatible with `drone 0.8.6`, which can be found [here](https://github.com/drone/drone-cli/releases/tag/v0.8.6)
+Drone CLI can be downloaded from the [Drone CI website]. Instructions installing on multiple operating systems are shown on the webpage. Currently our Drone server instance is compatible with version `0.8.6`, which can be found [here][drone cli github download] or [here][drone cli 0.8 docs].
 
 Verify that the installation is successful:
 
@@ -88,13 +95,15 @@ $ drone --version
 drone version 0.8.6
 ```
 
+> **Please note** that Drone CLI version `1.0` and above are not fully compatible with our version of the Drone server. Please install `v0.8.6`.
+
 #### Install Kubectl
 
-You can follow the instructions to install version 1.8 of `kubectl` from the [Kubernetes website]. You can verify the installation is successful with:
+You can follow the instructions to install version `v1.13.4` of `kubectl` from the [Kubernetes website][install kubectl]. You can verify the installation is successful with:
 
 ```bash
 $ kubectl version
-Client Version: version.Info{Major:"1", Minor:"8", GitVersion:"v1.8.4", GitCommit:"9befc2b8928a9426501d3bf62f72849d5cbcd5a3", GitTreeState:"clean", BuildDate:"2017-11-20T05:28:34Z", GoVersion:"go1.8.3", Compiler:"gc", Platform:"linux/amd64"}
+Client Version: version.Info{Major:"1", Minor:"13", GitVersion:"v1.13.4", GitCommit:"c27b913fddd1a6c480c229191a087698aa92f0b1", GitTreeState:"clean", BuildDate:"2019-02-28T13:37:52Z", GoVersion:"go1.11.5", Compiler:"gc", Platform:"linux/amd64"}
 ```
 
 #### Install AWS CLI
@@ -121,13 +130,14 @@ $ kubectl --context=acp-notprod_acp-induction --namespace=acp-induction get secr
 NAME                  TYPE                                  DATA      AGE
 default-token-dcnmg   kubernetes.io/service-account-token   3         105d
 ```
->The output of the command above may differ if there are other pods or extra secrets deployed to the namespace.
+
+> The output of the command above may differ if there are other pods or extra secrets deployed to the namespace.
 
 ## User agreement
 
-Finally, please head over and read through our [SLA] documentation to familiarise yourself with the level of service ACP provides to its users including the level and hours of support on offer and issue escalation procedures.
+Finally, please head over and read through our [support documentation] to familiarise yourself with the level of service ACP provides to its users including the level and hours of support on offer and issue escalation procedures.
 
-[Remote Access]:https://remote-access.vpn.acp.homeoffice.gov.uk
+[Remote Access]:https://access-acp.digital.homeoffice.gov.uk
 [Windows Subsystem for Linux]:https://docs.microsoft.com/en-us/windows/wsl/about
 [Connect to GovWifi]:https://www.gov.uk/government/collections/connect-to-govwifi
 [OpenVPN]:https://openvpn.net/index.php/open-source/downloads.html
@@ -136,13 +146,16 @@ Finally, please head over and read through our [SLA] documentation to familiaris
 [Gitlab]:https://gitlab.digital.homeoffice.gov.uk
 [Gitlab Docs]:https://docs.gitlab.com/ee/ssh/
 [Docker website]:https://docs.docker.com/engine/installation/
-[Kubernetes website]:http://kubernetes.io/docs/user-guide/prereqs/
+[install kubectl]:https://kubernetes.io/docs/tasks/tools/install-kubectl/
 [Drone CI website]:http://docs.drone.io/cli-installation/
 [releases page]:https://github.com/UKHomeOffice/kd/releases
 [Platform Hub]:https://hub.acp.homeoffice.gov.uk/
-[developer documentation]:https://github.com/UKHomeOffice/application-container-platform/tree/master/developer-docs#platform-hub
 [Support Portal]:https://support.acp.homeoffice.gov.uk/servicedesk
-[access to Developer Induction]:https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/94
+[access to ACP Induction]:https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/94
 [Connected Identities]:https://hub.acp.homeoffice.gov.uk/identities
-[SLA]:https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support
+[support documentation]:https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support
 [official AWS documentation]:https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
+[drone cli github download]: https://github.com/drone/drone-cli/releases/tag/v0.8.6
+[drone cli 0.8 docs]: https://0-8-0.docs.drone.io/cli-installation/
+[add colleague to service desk]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/100
+[update email request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/98
