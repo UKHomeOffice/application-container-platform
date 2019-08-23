@@ -6,12 +6,14 @@ This guide aims to prepare developers to use the Application Container Platform.
 All examples in this document are for Linux distributions and instructions for other operating systems will vary. If you choose to use a Windows device, please ensure that [Windows Subsystem for Linux] is installed.
 
   1. [Set up GovWifi credentials](#connecting-to-govwifi)
-  2. [Office 365](#office-365)
-  3. [Connecting to ACP VPN](#connecting-to-acp-vpn)
-  4. [Platform Hub registration](#platform-hub-registration)
-  5. [Add a ssh key to Gitlab](#add-a-ssh-key-to-gitlab)
-  6. [Required binaries](#required-binaries)
-  7. [User agreement](#user-agreement)
+  1. [Office 365](#office-365)
+  1. [Connecting to ACP VPN](#connecting-to-acp-vpn)
+  1. [Platform Hub registration](#platform-hub-registration)
+  1. [Add a ssh key to Gitlab](#add-a-ssh-key-to-gitlab)
+  1. [Sign in to Sysdig](#sign-in-to-sysdig)
+  1. [Join our Slack instance](#join-our-slack-instance)
+  1. [Required binaries](#required-binaries)
+  1. [User agreement](#user-agreement)
 
 
 ## Connecting to GovWifi
@@ -49,6 +51,20 @@ Once created, your token will be shown in the [Platform Hub] under the `Kubernet
 ## Add a ssh key to Gitlab
 
 You will need to add a ssh public key to your Gitlab profile before attending the Induction. Please sign into [Gitlab] with Office 365 and add a ssh public key to your profile. Instructions for generating a ssh keypair can be found in the [Gitlab Docs].
+
+## Sign in to Sysdig
+
+Platform users with a digital account can sign into our [Sysdig instance][sysdig]. Just click the `OpenID` button and then the `O365` button.
+
+Initially you will be added to a default team that does not have access to any data, however you will be added to the ACP Induction team on (or shortly before) the day.
+
+## Join our Slack instance
+
+Platform users can join [our Slack instance][hod dsp slack] using a Home Office email address. If you do not already have an account on our instance, you can [create an account here][hod dsp slack sign up].
+
+> **Please note** that the sign up process involves clicking a link that will be emailed to you, so if you only have an AD-only digital account (i.e. if your digital email does not have a mailbox), you will need to [raise a request][misc request form] to have your corporate email invited to Slack.
+
+Once you have an account on Slack, please join the `#acp-support` and `#acp-induction` channels. Other useful channels include `#acp-service-alerts` for the current status of ACP services (which can also be found on our [status page][acp status page]) and `#acp-feedback` where you can provide feedback regarding our platform.
 
 ## Required binaries
 
@@ -159,3 +175,8 @@ Finally, please head over and read through our [support documentation] to famili
 [drone cli 0.8 docs]: https://0-8-0.docs.drone.io/cli-installation/
 [add colleague to service desk]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/100
 [update email request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/98
+[hod dsp slack]: https://hod-dsp.slack.com/
+[hod dsp slack sign up]: https://hod-dsp.slack.com/signup/
+[misc request form]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/118
+[acp status page]: https://status.acp.homeoffice.gov.uk/
+[sysdig]: https://sysdig.digital.homeoffice.gov.uk/
