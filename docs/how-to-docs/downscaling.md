@@ -1,6 +1,6 @@
 ## Downscaling Services Out Of Hours
 
-In an effort to reduce costs on running the platform, we've enabled to capability to scale down specific resources Out Of Hours (OOH) for Non-Production and Production environments.
+In an effort to reduce costs on running the platform, we've enabled the capability to scale down specific resources Out Of Hours (OOH) for Non-Production and Production environments.
 
 #### AWS RDS (Relational Database Service)
 
