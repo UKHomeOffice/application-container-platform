@@ -30,9 +30,9 @@ Most of ACP's services operate behind a VPN which is accessible with an `openvpn
 
 Once you've got your Office 365 SSO credentials, you can now navigate to [Remote Access] and login with your Office 365 account by clicking on the link on the right.
 
-Please download the VPN profile named **"ACP Platform (Ops, Dev, CI, Test)"** and use the `openvpn` client to connect. Verify that you can resolve the [Platform Hub] before continuing on.
+Please download the VPN profile named **"Kube Platform"** and use the `openvpn` client to connect. Verify that you can resolve the [Platform Hub] before continuing on.
 
-VPN profiles expire after 12 hours. You'll need to download and connect with a new VPN Profile when it expires.
+VPN profiles expire after 72 hours. You'll need to download and connect with a new VPN Profile when it expires.
 
 ## Platform Hub registration
 > **Please note** that you need to have your VPN running to access the Platform Hub and also talk to cluster APIs.
