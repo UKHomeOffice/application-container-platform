@@ -8,7 +8,7 @@ Licensed [Office 365](https://portal.office.com) accounts should be requested fr
 Please note that to use SSO, which is using your Office 365 account to log onto other services, pop-ups will need to be enabled on your computer.
 
 ## VPN
-VPN profiles are used to be able to get through to our multiple AWS environments as well as other data centers. The profiles can be downloaded from [access](https://access-acp.digital.homeoffice.gov.uk) which you can access using your Office 365 SSO. The following services can be only accessed when connected to the ACP Platform VPN profile.
+VPN profiles are used to be able to get through to our multiple AWS environments as well as other data centers. The profiles can be downloaded from [access](https://access-acp.digital.homeoffice.gov.uk) which you can access using your Office 365 SSO. The following services can be only accessed when connected to the Kube-Platform VPN profile.
 
 ## Platform Hub
 [The Platform Hub](https://hub.acp.homeoffice.gov.uk) serves as a central portal for users of ACP. It acts as an all-in-one place to find information, requests and also support for the platform. The Hub also provides tools to develop, build, deploy and manage all your projects.
