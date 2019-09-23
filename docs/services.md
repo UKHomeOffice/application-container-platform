@@ -3,7 +3,7 @@ These are the core services which we provide across our platform.
 ## VPN
 Many of our services are behind a VPN (using [OpenVPN](https://wiki.archlinux.org/index.php/OpenVPN) protocol) for security reasons. We have many different roles and profiles for accessing different environments. These profiles are all found at [Access ACP](https://access-acp.digital.homeoffice.gov.uk).
 You can download VPN profiles for the environments you have access to. New profiles can be set up to connect through to things like project specific AWS accounts.
-Each profile will expire after a certain amount of time (2-12 hours), users will have to download a new profile once their certificates which are baked into the openvpn profiles expire.
+Each profile will expire after a certain amount of time (8-72 hours), users will have to download a new profile once their certificates which are baked into the openvpn profiles expire.
 
 ## Source Code Management
 #### GitHub
@@ -32,7 +32,7 @@ We use [Artifactory](https://artifactory.digital.homeoffice.gov.uk) as our inter
 ## Domain Name System (DNS) Pattern
 To standardise on how services route their application traffic to the appropriate hosting platform and to offer consistency in how we approach DNS we have a standard DNS naming convention for services.
 
-In parallel to this, users need to also be aware of [the limits on certificates and letsencrypt](how-to-docs/certificates.md) if they are wanting external TLS certificates for their services.
+In parallel to this, users need to also be aware of [the limits on certificates and letsencrypt](https://letsencrypt.org/docs/rate-limits/) if they are wanting external TLS certificates for their services.
 
 #### For Non-production Services
 The following categories are something we would expect a service to specify:
@@ -69,8 +69,8 @@ The following are containers that we create for use alongside your own applicati
 [Keycloak Proxy](https://github.com/keycloak/keycloak-gatekeeper): a container for putting auth in front of your application.
 #### Nginx Proxy
 [Nginx Proxy](https://github.com/UKHomeOffice/docker-nginx-proxy): for TLS and proxying your application container.
-#### cfssl Sidekick
-[cfssl-sidecar](https://github.com/UKHomeOffice/cfssl-sidekick): for providing a server TLS cert on demand from a cluster hosted cfssl server.
+#### cert-manager
+[Cert-manager](how-to-docs/cert-manager.md): for obtaining internal and external certificates.
 
 ## Logging
 Logging stack consists of [Elasticsearch](https://github.com/UKHomeOffice/docker-elasticsearch), [Logstash](https://github.com/UKHomeOffice/docker-logstash-kubernetes), [Kibana](https://github.com/UKHomeOffice/docker-kibana)).
