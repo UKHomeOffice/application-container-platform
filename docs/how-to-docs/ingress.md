@@ -6,7 +6,7 @@ Our ingress setup offers two different ingresses based on how restrictively you 
 - internal - only people within the VPN can access services
 - external - anyone with internet access can access services
 
-The annotation ```kubernetes.io/ingress.class: "nginx-internal"``` is used to specify whether the ingress is internal. (```kubernetes.io/ingress.class: "nginx-external"``` is used for an external ingress.)
+The annotation `kubernetes.io/ingress.class: "nginx-internal"` is used to specify whether the ingress is internal. (`kubernetes.io/ingress.class: "nginx-external"` is used for an external ingress.)
 
 In the following example the terms "myapp" and "myproject" have been used, these will need to be changed to the relevant names for your project. Where internal is used, this can be changed for an external ingress - everything else stays the same.
 
@@ -17,9 +17,7 @@ metadata:
   annotations:
     # used to select which ingress this resource should be configured on
     kubernetes.io/ingress.class: "nginx-internal"
-    # indicate the ingress SHOULD speak TLS between itself and pods - in version 0.18.0 of ingress this was deprecated.
-    ingress.kubernetes.io/secure-backends: "true"
-    # This replaces the old annotation secure-backends
+    # Indicate the ingress SHOULD speak TLS between itself and pods (best-practice)
     ingress.kubernetes.io/backend-protocol: "HTTPS"
   name: myapp-server-internal
 spec:
@@ -38,4 +36,6 @@ spec:
     secretName: myapp-github-internal-tls
 ```
 
-> Always ensure you are using TLS between the ingress controller and your pods by placing the annotation: ingress.kubernetes.io/backend-protocol: "HTTPS". At the moment; this is not enforced though there are plans to enforce by policy at a later date.
+Please view the official documentation for a full list of available [ingress-nginx annotations](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/).
+
+> **Note:** Where the prefix for the annotation in the docs references `nginx.ingress.kubernetes.io/`, this should be changed to `ingress.kubernetes.io/` when running within ACP (as per the above example).
