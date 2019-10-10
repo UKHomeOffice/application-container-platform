@@ -53,6 +53,8 @@ Email: youremail@gmail.com
 
 Once you are logged in to Drone, you will find a list of repos by clicking the icon in the top right corner and going to [Repositories][drone github repos page].
 
+Sync your repository access rights with Drone by clicking the icon in the top right corner again with the `Synchronize` button - this needs to be applied everytime when a new repository is created.
+
 Select the repo you want to activate.
 
 Navigate to your repository's settings in Github (or Gitlab) and you will see a webhook has been created. You need to update the url for the newly created web hook so that it matches this pattern:
