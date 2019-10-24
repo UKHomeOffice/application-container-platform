@@ -563,8 +563,9 @@ ${DRONE_COMMIT_SHA} --> $${DRONE_COMMIT_SHA}
 
 ## Scanning Images in Drone
 
-ACP provides Anchore as scanning solution to images built into the Drone pipeline, allowing users to scan both ephemeral _(built within the context of the drone, but not pushed to a repository yet)_ as well and well any public images.
+ACP provides Anchore as a scanning solution for images built into the Drone pipeline, allowing users to scan both ephemeral _(built within the context of the drone, but not pushed to a repository yet)_ as well as any public images.
 
+Example pipeline:
 ```YAML
 pipeline:
   build:
@@ -579,16 +580,20 @@ pipeline:
     image: quay.io/ukhomeofficedigital/anchore-submission:latest
     # The optional path of a Dockerfile
     dockerfile: Dockerfile
-    # Note the lack of double $ here (due to the way drone injects variables"
+    # Note the lack of double $ here (due to the way drone injects variables)
     image_name: docker.digital.homeoffice.gov.uk/myimage:${DRONE_BUILD_NUMBER}
-    # This indicates we are willing tolerate any vulnerabilities which are below medium
-    tolarates: medium
-    # An optional whitelist (comman separated list of CVE's)
+    # Indicates the image is locally available
+    local_image: true
+    # This indicates we are willing tolerate any vulnerabilities which are below medium (valid values: negligible, low, medium, high, critical)
+    tolerate: medium
+    # An optional whitelist (comma separated list of CVE's)
     whitelist: CVE_SOMENAME_1,CVE_SOMENAME_2
     # An optional whitelist file containing a list of CSV relative to the repo path
     whitelist_file: <PATH>
-    # By default the pligin will exit will fail if any vulnerabilities are discovered which are not tolarated,
-    # you change this behaviour by setting the bellow
+    # Indicates we should show all vulnerabilities regardless
+    show_all_vulnerabilities: false
+    # By default the plugin will exit will fail if any vulnerabilities are discovered which are not tolerated,
+    # you change this behaviour by setting the below
     fail_on_detection: false
 ```
 
