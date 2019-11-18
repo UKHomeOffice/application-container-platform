@@ -17,7 +17,7 @@ The following steps in this section can only be done by an administrator
 * And then search for your name in the drop-down
 * And then click `create a new kubernetes user token for this user`
 * Add the user as read-only
-* Escalate priveledges to two hours, you'll need to do this everytime you are on.  If you're not an administrator then you'll have to ask your admin
+* Escalate privileges to two hours, you'll need to do this everytime you are on.  If you're not an administrator then you'll have to ask your admin
 
 ### Add the user token to your kube file <a name="add-token"></a>
 
