@@ -26,7 +26,7 @@ Platform users must have Office 365 Single Sign-On (SSO) credentials for the `di
 
 ## Connecting to ACP VPN
 
-Most of ACP's services operate behind a VPN which is accessible with an `openvpn` client. Instructions on installing `openvpn` for your OS can be found at [OpenVPN]
+Most of ACP's services operate behind a VPN which is accessible with a `tunnelblick` or `openvpn` client. Instructions on installing `openvpn` for your OS can be found at [OpenVPN]. Tunnelblick instructions can be found at [tunnelblick.net](https://tunnelblick.net/)
 
 Once you've got your Office 365 SSO credentials, you can now navigate to [Remote Access] and login with your Office 365 account by clicking on the link on the right.
 
@@ -102,7 +102,7 @@ Docker version 18.03.1-ce, build 9ee9f40
 
 #### Install Drone
 
-Drone CLI can be downloaded from the [Drone CI website]. Instructions installing on multiple operating systems are shown on the webpage. Currently our Drone server instance is compatible with version `0.8.6`, which can be found [here][drone cli github download] or [here][drone cli 0.8 docs].
+Drone CLI (version 0.8.6) can be downloaded from the [Drone CI website](https://docs.drone.io/cli/install/). Instructions installing on multiple operating systems are shown on the webpage. Currently our Drone server instance is compatible with version `0.8.6`, which can be found [here][drone cli github download] or [here][drone cli 0.8 docs].
 
 Verify that the installation is successful:
 
@@ -111,7 +111,7 @@ $ drone --version
 drone version 0.8.6
 ```
 
-> **Please note** that Drone CLI version `1.0` and above are not fully compatible with our version of the Drone server. Please install `v0.8.6`.
+> **Please note** that Drone CLI version `1.0` and above are not fully compatible with our version of the Drone server. Please install `v0.8.6` (https://github.com/drone/drone-cli/releases/download/v0.8.6/drone_darwin_amd64.tar.gz).
 
 #### Install Kubectl
 
