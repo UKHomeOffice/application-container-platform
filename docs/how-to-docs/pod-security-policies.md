@@ -9,6 +9,9 @@ apiVersion: extensions/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: default
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default
+    seccomp.security.alpha.kubernetes.io/defaultProfileName: docker/default
 spec:
   privileged: false
   fsGroup:
@@ -18,6 +21,9 @@ spec:
   hostNetwork: false
   runAsUser:
     rule: MustRunAsNonRoot
+  requiredDropCapabilities:
+    - SETUID
+    - SETGID
   seLinux:
     rule: RunAsAny
   supplementalGroups:
