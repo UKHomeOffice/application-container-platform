@@ -40,7 +40,7 @@ kubectl -n project get challenge.certmanager.k8s.io
 
 ### **How-tos**
 
-#### **As a developer I already have a certificate from the legacy kube-cert-manger, how do I migrate?**
+#### **As a developer I already have a certificate from the legacy kube-cert-manager, how do I migrate?**
 
 Migrating from the former [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager) over to [cert-manager](https://github.com/jetstack/cert-manager) means creating the certificate request as below and removing the annotations from the ingress. However, the safe way would be to;
 
@@ -68,7 +68,7 @@ spec:
   - 127.0.0.1
 ```
 
-This would create a kubernetes secret named `tls` in your namespace with the signed certificate. An interesting thing to note here is that although this is using the ClusterIssuer platform-ca created by the ACP team, there is nothing stopping a project from creating a local Issuer for the own project. So for example.
+This would create a kubernetes secret named `tls` in your namespace with the signed certificate. An interesting thing to note here is that although this is using the ClusterIssuer platform-ca created by the ACP team, there is nothing stopping a project from creating a local Issuer for their own project. So for example.
 
 ```YAML
 ---
@@ -106,7 +106,7 @@ Optionally, the acme solver to be used by the cluster issuer can be specified wi
 
 Please note that `cert-manager.io/enabled` is an annotation but `cert-manager.io/solver` is a label.
 
-When the site is externally facing i.e. the ingress class on the ingress is `kubernetes.io/ingress.class: ingress-external` you should always default to using a http01 challenge.
+When the site is externally facing i.e. the ingress class on the ingress is `kubernetes.io/ingress.class: nginx-external` you should always default to using a http01 challenge.
 
 ```YAML
 apiVersion: networking.k8s.io/v1beta1
@@ -171,20 +171,20 @@ $ kubectl -n project get certificate
 NAME        AGE
 example-tls    1d
 
-# you can also review the certfificaterequests, orders and challenges via
+# you can also review the certificaterequests, orders and challenges via
 $ kubectl -n project get orders
 $ kubectl -n project get challenge
 ```
 
 **Network Policies**
 
-In order to handle the http01 challenge the requestor is provided an ephermal token which must be handled back to LetsEncrypt on the path `http://domain/.well-known/acme-challenge/`, thus validating to them you own the domain's your requesting for.
+In order to handle the http01 challenge the requestor is provided an ephemeral token which must be handled back to LetsEncrypt on the path `http://domain/.well-known/acme-challenge/`, thus validating to them you own the domains you're requesting for.
 
 Cert-manager handles the http01 resolver by:
 
 - creating a `CertificateRequest` resource within the namespace
 - a controller picks up the certificate request and because the issuer's solver is an acme http01 solver, it creates an acme `Order` within the namespace
-- a controller picks up the order and creates a `Challenge` resource from it, creating an ephermal pod, service and ingress in your namespace and routing the `/.well-known/acme-challenge/`.
+- a controller picks up the order and creates a `Challenge` resource from it, creating an ephemeral pod, service and ingress in your namespace and routing the `/.well-known/acme-challenge/`.
 - the controller checks the path has been provisioned via the ingress beforehand and validates the order.
 - the certificate controller then informs letsencrypt to call us back.
 - it continues to probe the request and once validated, pulls down the certificate.
@@ -219,7 +219,7 @@ spec:
 
 #### **As a developer I want to retrieve a certificate for a service behind the vpn, or simply wish to use the DNS validation**
 
-When a site is internal / behind the vpn, in order to handle the challengert you need to switch to using a DNS challenge.
+When a site is internal / behind the vpn, in order to handle the challenge you need to switch to using a DNS challenge.
 
 This is done by adding the following to your ingress resource:
 
@@ -229,7 +229,7 @@ This is done by adding the following to your ingress resource:
 **Very Important**: in order to successfully switch to a DNS challenge, please ensure you have contacted the ACP team before attempting this for the first time on your sub-domain as the correct permissions need to exist to permit cert-manager to add records to the domain.
 
 ```YAML
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
   name: example-tls
@@ -375,7 +375,7 @@ spec:
   - my-rather-long-winded-service-name.my-namespace.subdomain.example.com
 ```
 
-#### **As a developer I want to migrate my cert-manager resources from v0.8 to v.11+**
+#### **As a developer I want to migrate my cert-manager resources from v0.8 to v0.11+**
 
 **IMPORTANT - PLEASE READ.**
 
@@ -399,7 +399,7 @@ Essentially, the cert-manager API version has been changed from `certmanager.k8s
 - Update all your ingress resources and remove ***all*** `certmanager.k8s.io` annotations.
 - Deploy your ingress changes
 - Delete all your `Certificate` resources. You might want to back them up before doing that.
-- Wait a minute or so and verify that the certificate resources have not been re-created with `kubectl get certificates -n my-namespace`. If a certificate is re-cretated, double-check your ingress annotations.
+- Wait a minute or so and verify that the certificate resources have not been re-created with `kubectl get certificates -n my-namespace`. If a certificate is re-created, double-check your ingress annotations.
 
 Note that:
 
@@ -421,7 +421,7 @@ Changes required for websites or services exposed externally
 The following `Ingress` resource with v0.8 annotations:
 
 ```YAML
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ .DEPLOYMENT_NAME }}-external
@@ -446,10 +446,10 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls
 ```
 
-should be changed to `Ingress` resource with the following v0.11 annotations:
+should be changed to `Ingress` resource with the following v0.11+ annotations:
 
 ```YAML
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ .DEPLOYMENT_NAME }}-external
@@ -508,7 +508,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-internal-tls
 ```
 
-should be changed to `Ingress` resource with the following v0.11 annotations:
+should be changed to `Ingress` resource with the following v0.11+ annotations:
 
 ```YAML
 apiVersion: networking.k8s.io/v1beta1
