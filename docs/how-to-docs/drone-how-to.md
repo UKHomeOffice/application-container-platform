@@ -231,7 +231,7 @@ docker tag <image_name> docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<yo
 
 is the name of the image you tagged previously in the build step.
 
-The image should now be published on Artifactory.
+The image should now be published on Artifactory. Please note that we regularly remove container images that have not been downloaded in a year.
 
 #### Deployments
 
@@ -661,7 +661,7 @@ I.e. There is no way to give access to any namespace with the format: `my-temp-n
 
 Alternatively, you can be given a named namespace in the CI cluster. Please create an issue on our [Support Portal][support portal] if you require this.
 
-[drone docs - cli install]: https://docs.drone.io/cli-installation/
+[drone docs - cli install]: https://0-8-0.docs.drone.io/cli-installation/
 [drone cli releases]: https://github.com/drone/drone-cli/releases
 [drone github token page]: https://drone.acp.homeoffice.gov.uk/account/token
 [drone github repos page]: https://drone.acp.homeoffice.gov.uk/account/repos
@@ -670,11 +670,11 @@ Alternatively, you can be given a named namespace in the CI cluster. Please crea
 [quay robot support request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/37
 [artifactory link]: https://docker.digital.homeoffice.gov.uk
 [artifactory support request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/30
-[drone docs - environments]: http://docs.drone.io/environment/
-[drone docs - conditions]: http://docs.drone.io/conditional-steps/
+[drone docs - environments]: http://0-8-0.docs.drone.io/environment/
+[drone docs - conditions]: http://0-8-0.docs.drone.io/step-conditions/
 [kube signed commit check repo]: https://github.com/UKHomeOffice/kube-signed-commit-check
 [kd repo]: https://github.com/UKHomeOffice/kd
 [kube token how to]: kubernetes-user-token.md
 [drone-trigger repo]: https://github.com/UKHomeOffice/drone-trigger
-[drone docs - environment conditional]: http://docs.drone.io/conditional-steps/#environment
+[drone docs - environment conditional]: http://0-8-0.docs.drone.io/step-conditions/#environment
 [support portal]: https://support.acp.homeoffice.gov.uk/servicedesk

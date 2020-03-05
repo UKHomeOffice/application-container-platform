@@ -19,7 +19,7 @@ Drone is our CI tool for building and deploying applications. We have two instan
 #### Jenkins
 Jenkins is considered a legacy system and is not supported.
 
-## Binary / Artifact Storage
+## Binary / Artefact Storage
 #### Quay
 [Quay](https://quay.io/ukhomeofficedigital) is where store all of our open source container images.
 
@@ -27,7 +27,7 @@ Jenkins is considered a legacy system and is not supported.
 We use AWS ECR to host our private container images for high availability and resiliency. For more information on how to use ECR see [here](how-to-docs/drone-how-to.md)
 
 #### Artifactory
-We use [Artifactory](https://artifactory.digital.homeoffice.gov.uk) as our internal binary repository store, projects can push build artifacts / dependencies here. Prior to the introduction of ECR, docker images were also push here, and can be access via https://docker.digital.homeoffice.gov.uk, log in via the Office 365 button to view your artifacts.
+We use [Artifactory](https://artifactory.digital.homeoffice.gov.uk) as our internal binary repository store where projects can push build time artefacts and dependencies. Prior to the introduction of ECR, Docker images were also pushed here and can be accessed via https://docker.digital.homeoffice.gov.uk. Please note that we regularly remove container images that have not been downloaded in a year.
 
 ## Domain Name System (DNS) Pattern
 To standardise on how services route their application traffic to the appropriate hosting platform and to offer consistency in how we approach DNS we have a standard DNS naming convention for services.

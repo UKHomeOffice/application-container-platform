@@ -7,7 +7,7 @@ clone:
 pipeline:
 
   build:
-    image: python:2.7-alpine
+    image: python:alpine
     commands:
       - pip install mkdocs mkdocs-material markdown-include
       - mkdocs build
@@ -15,7 +15,7 @@ pipeline:
       event: pull_request
 
   deploy:
-    image: python:2.7-alpine
+    image: python:alpine
     commands:
       - apk add -U openssh git-fast-import
       - mkdir /root/.ssh && echo -n "$SSH_KEY" > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa
