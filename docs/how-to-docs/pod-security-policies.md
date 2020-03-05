@@ -1,42 +1,6 @@
 ## Pod Security Policies
 
-By default all user deployments will inherit a default PodSecurityPolicy applied in the Kubernetes Clusters, which define a set of conditions that a pod must be configured with in order to run successfully.
-
-The specification for the default policy is as follows:
-
-```yaml
-apiVersion: extensions/v1beta1
-kind: PodSecurityPolicy
-metadata:
-  name: default
-  annotations:
-    seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default
-    seccomp.security.alpha.kubernetes.io/defaultProfileName: docker/default
-spec:
-  privileged: false
-  fsGroup:
-    rule: RunAsAny
-  hostPID: false
-  hostIPC: false
-  hostNetwork: false
-  runAsUser:
-    rule: MustRunAsNonRoot
-  requiredDropCapabilities:
-    - SETUID
-    - SETGID
-  seLinux:
-    rule: RunAsAny
-  supplementalGroups:
-    rule: RunAsAny
-  volumes:
-  - configMap
-  - downwardAPI
-  - emptyDir
-  - gitRepo
-  - persistentVolumeClaim
-  - projected
-  - secret
-```
+By default all user deployments will inherit a default PodSecurityPolicy applied accross our Kubernetes clusters, which define a set of conditions that a pod must be configured with in order to run successfully.
 
 #### `runAsUser`
 
