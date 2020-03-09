@@ -48,6 +48,6 @@ The following services can be access without a VPN connection and with personal 
 ### Quay
 [Quay](https://quay.io) - You can access Quay using your GitHub account. Once you have been added to the ukhomeoffice organisation on Quay, you can create repositories in the organisation. If you are not already part of the organisation you can submit a [support request on the Support Portal to be added][quay add to org support request]. You will also need a robot created for you to push to your repository once you have created one. Requests for a Quay robot can be made on the [Support Portal](https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/37).
 
-[developer docs link]: https://github.com/UKHomeOffice/application-container-platform/blob/master/developer-docs/README.md
+[developer docs link]: https://github.com/UKHomeOffice/application-container-platform/blob/master/docs/developer-docs/index.md
 [quay add to org support request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/88
-[kube user token doc]: https://github.com/UKHomeOffice/application-container-platform/blob/master/how-to-docs/kubernetes-user-token.md
+[kube user token doc]: https://github.com/UKHomeOffice/application-container-platform/blob/master/docs/how-to-docs/kubernetes-user-token.md
