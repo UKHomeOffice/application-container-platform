@@ -64,13 +64,14 @@ Default output format [None]: json
 
 $ export AWS_PROFILE=acp-ecr
 ```
-
+  
 Now, using the aws-cli you can request an authorisation token to perform a docker login:
 ```bash
 $ aws ecr get-login --no-include-email
 
 docker login -u AWS -p <long-auth-token> https://340268328991.dkr.ecr.eu-west-2.amazonaws.com
 ```
+
 
 #### Step 2: Login with Authorisation Token
 
@@ -83,8 +84,24 @@ WARNING! Using --password via the CLI is insecure. Use --password-stdin.
 Login Succeeded
 ```
 
-> **Note:** If you get an error from Step 1 such as `Unknown options: --no-include-email`, your aws-cli client needs updating. You can omit `--no-include-email` rather than updating your aws-cli client, but the resulting docker login command will include a deprecated `-e none` flag (needs to be removed prior to running the command).
+> **Note:** 
+If you get an error from Step 1 such as `Unknown options: --no-include-email`, your aws-cli client needs updating. You can omit `--no-include-email` rather than updating your aws-cli client, but the resulting docker login command will include a deprecated `-e none` flag (needs to be removed prior to running the command).
 
+Steps 1 and 2 will also not work if you are using AWS CLI (version 2.\*). Instead use
+
+```bash
+$ aws_account_id="340268328991"
+$ aws_region="eu-west-2"
+$ ecr_url="${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com"
+
+$ aws --region "${aws_region}" ecr get-login-password \
+    | docker login \
+        --password-stdin \
+        --username AWS \
+        "${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com"
+
+Login Succeeded
+```
 
 #### Pulling & Pushing Images
 
