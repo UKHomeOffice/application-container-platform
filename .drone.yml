@@ -9,6 +9,7 @@ pipeline:
   build:
     image: python:alpine
     commands:
+      - apk add -U gcc musl-dev
       - pip install mkdocs mkdocs-material markdown-include
       - mkdocs build
     when:
@@ -17,7 +18,7 @@ pipeline:
   deploy:
     image: python:alpine
     commands:
-      - apk add -U openssh git-fast-import
+      - apk add -U openssh git-fast-import gcc musl-dev
       - mkdir /root/.ssh && echo -n "$SSH_KEY" > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa
       - touch /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts && ssh-keyscan -H github.com > /etc/ssh/ssh_known_hosts 2> /dev/null
       - git remote remove origin && git remote add origin git@github.com:UKHomeOffice/application-container-platform.git
