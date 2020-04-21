@@ -1,9 +1,14 @@
-## **Cert Manager**
-----
+# **Cert Manager**
+
+## VERY IMPORTANT upgrade information
+
+`cert-manager` is being upgraded from v0.8 to v0.13.1. If you have cert-manager resources deployed in your namespaces, you MUST follow the [instructions to upgrade from v0.8](docs/how-to-docs/cert-manager-upgrade-from-v0.8.md) to upgrade annotations and labels in order for them to be managed by the new version of cert-manager.
+
+## Background
 
 The ACP platform presently has two certificate management services.
 
-The first service was [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager). However with the forever changing landscape the project gradually became deprecated and now recommends replacement with [cert-manager](https://github.com/jetstack/cert-manager).
+The first service was PSG's [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager). However with the forever changing landscape the project gradually became deprecated and now recommends replacement with JetStack's [cert-manager](https://github.com/jetstack/cert-manager).
 
 Therefore, projects still using kube-cert-manager should modify their services to start using cert-manager instead. Note that ACP will continue to support kube-cert-manager and the internal cfssl service while they are still in use, but we do recommend shifting over to cert-manager as soon as possible as aside from security fixes there will not be any more updates to these services.
 
@@ -14,14 +19,14 @@ Without wishing to duplicate documentation which can be found in the [readme](ht
 
 **IMPORTANT NOTE:**
 
-`cert-manager` is being upgraded from v0.8 to v0.12. In order to allow development teams to upgrade their `cert-manager` resources according to their own schedule, both v0.8 and v.12 resources will be available concurrently for a period of time.
+`cert-manager` is being upgraded from v0.8 to v0.13.1. In order to allow development teams to upgrade their `cert-manager` resources according to their own schedule, both v0.8 and v.13.1 resources will be available concurrently for a period of time.
 
-While the older version of `cert-manager` (v0.8) is still available on the ACP platform, resources managed by the newer version of cert-manager (v0.12+) can only be accessed from the API server by suffixing the resource kind with `.cert-manager.io`.
+While the older version of `cert-manager` (v0.8) is still available on the ACP platform, resources managed by the newer version of cert-manager (v0.13.1+) can only be accessed from the API server by suffixing the resource kind with `.cert-manager.io`.
 
 For example:
 
 ```
-# to access v0.12 cert-manager resources
+# to access v0.13.1 cert-manager resources
 kubectl -n project get certificate.cert-manager.io
 kubectl -n project get orders.acme.cert-manager.io
 kubectl -n project get challenge.acme.cert-manager.io
@@ -38,9 +43,9 @@ kubectl -n project get orders.certmanager.k8s.io
 kubectl -n project get challenge.certmanager.k8s.io
 ```
 
-### **How-tos**
+## **How-tos**
 
-#### **As a developer I already have a certificate from the legacy kube-cert-manager, how do I migrate?**
+### **As a developer I already have a certificate from the legacy kube-cert-manager, how do I migrate?**
 
 Migrating from the former [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager) over to [cert-manager](https://github.com/jetstack/cert-manager) means creating the certificate request as below and removing the annotations from the ingress. However, the safe way would be to;
 
@@ -48,7 +53,7 @@ Migrating from the former [kube-cert-manager](https://github.com/PalmStoneGames/
 - Push out the change and wait for the certificate to be fulfilled.
 - Once you have the certificate you can update your ingress to use the new secret,**remove** the annotations and use the Certificate resource thereafter.
 
-#### **As a developer I want to retrieve an internal certificate**
+### **As a developer I want to retrieve an internal certificate**
 
 As stated above the cert-manager can also handle internal certificates i.e. those signed by the internal ACP Certificate Authority _(this is self signed btw)_. At the moment you might be using [cfssl-sidekick](https://github.com/UKHomeOffice/cfssl-sidekick) to perform this, but this can be completely replaced.
 
@@ -96,7 +101,7 @@ spec:
   - 127.0.0.1
 ```
 
-#### **As a developer I want to retrieve a certificate for my external service**
+### **As a developer I want to retrieve a certificate for my external service**
 
 Let's assume we have an externally facing site which we wish to expose via ingress and we want a valid LetsEncrypt certificate.
 
@@ -217,7 +222,7 @@ spec:
       port: 8089
 ```
 
-#### **As a developer I want to retrieve a certificate for a service behind the vpn, or simply wish to use the DNS validation**
+### **As a developer I want to retrieve a certificate for a service behind the vpn, or simply wish to use the DNS validation**
 
 When a site is internal / behind the vpn, in order to handle the challenge you need to switch to using a DNS challenge.
 
@@ -283,7 +288,7 @@ spec:
     secretName: example-tls
 ```
 
-#### **As a developer I want to use LetsEncrypt staging while configuring my cert-manager resources**
+### **As a developer I want to use LetsEncrypt staging while configuring my cert-manager resources**
 
 You should use the staging version of LetsEncrypt in order to not be impacted by rate limits of the production version while setting up and testing the cert-manager annotations and labels you specify on your resources.
 
@@ -323,7 +328,7 @@ Not specifying this annotation is equivalent to specifying `cert-manager.io/clus
 
 Please note that the certificates issued by the staging version of LetsEncrypt are not signed and should not be used in production.
 
-#### **As a developer I want to get a certificate for a server with a DNS name longer than 63 characters**
+### **As a developer I want to get a certificate for a server with a DNS name longer than 63 characters**
 
 A certificate's `commonName` is used to create a Certificate Signing Request and populate a field that is limited to 63 characters.
 
@@ -374,280 +379,3 @@ spec:
   - svc-1.my-namespace.subdomain.example.com
   - my-rather-long-winded-service-name.my-namespace.subdomain.example.com
 ```
-
-#### **As a developer I want to migrate my cert-manager resources from v0.8 to v0.11+**
-
-**IMPORTANT - PLEASE READ.**
-
-**In version v0.11, cert-manager has introduced some backwards incompatible changes that were announced in v0.8.**
-
-**Because there are currently 2 instances of cert-manager running on the ACP platform, it is important that your cert-manager related resources are only managed by one of those instances. Otherwise, you run the risk of hitting letsencrypt rate limits as the 2 instances of cert-manager both attempt to manage the same resources.**
-
-**In order to do that, you must de-register your resources with the current version of cert-manager (v0.8) before getting registered with the new version of cert-manager (v0.11+).**
-
-The following official cert-manager documentation provides good background information as to what has changed.
-
-- [v0.8 Release Notes](https://cert-manager.io/docs/release-notes/release-notes-0.8/)
-- [v0.11 Release Notes](https://cert-manager.io/docs/release-notes/release-notes-0.11/)
-- [Upgrading from v0.7 to v0.8](https://cert-manager.io/docs/installation/upgrading/upgrading-0.7-0.8/)
-- [Upgrading from v0.10 to v0.11](https://cert-manager.io/docs/installation/upgrading/upgrading-0.10-0.11/)
-
-Essentially, the cert-manager API version has been changed from `certmanager.k8s.io/v1alpha1` to `cert-manager.io/v1alpha2`. This means that both `Ingress` and `Certificate` resources have to be changed: there are annotations and labels changes for both resource types, as well as structural changes for `Certificate`s.
-
-##### Step 1 - de-registering resources from v0.8
-
-- Update all your ingress resources and remove ***all*** `certmanager.k8s.io` annotations.
-- Deploy your ingress changes
-- Delete all your `Certificate` resources. You might want to back them up before doing that.
-- Wait a minute or so and verify that the certificate resources have not been re-created with `kubectl get certificates -n my-namespace`. If a certificate is re-created, double-check your ingress annotations.
-
-Note that:
-
-1) All `Certificate` resources should be deleted: the ones managed by the ingress shim controller and the ones for which you have `Certificate` manifests.
-2) Although the certificate resources have been deleted, this will not affect the secrets containing the TLS private key and signed certificate. That's because, by default, cert-manager does not delete the secrets specified in a certificate object when that certificate object is deleted. This means that your service will continue having a valid certificate until it expires, so you have some time (usually at least 4 weeks) to complete the migration.
-
-An example of removing the annotations can be found in [kube-example-app](https://github.com/UKHomeOffice/kube-example-app/commit/a161ea22563e45fcd87141933118d2102caa4dc1).
-
-##### Step 2 - updating the resources for v0.11+
-
-The following examples are based on the [kube-example](https://github.com/ukhomeoffice/kube-example-app) project.
-
-An example of updating annotations and labels can be found in [kube-example-app](https://github.com/UKHomeOffice/kube-example-app/commit/379a6da037a91089726bd0b335db87a3e723208e) but they are also explained below.
-
-###### External Ingress changes
-
-Changes required for websites or services exposed externally
-
-The following `Ingress` resource with v0.8 annotations:
-
-```YAML
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: {{ .DEPLOYMENT_NAME }}-external
-  annotations:
-    certmanager.k8s.io/acme-challenge-type: "http01"
-    certmanager.k8s.io/enabled: "true"
-    ingress.kubernetes.io/backend-protocol: "HTTPS"
-    ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: "nginx-external"
-spec:
-  rules:
-  - host: {{ .APP_HOST_EXTERNAL }}
-    http:
-      paths:
-      - backend:
-          serviceName: {{ .DEPLOYMENT_NAME }}
-          servicePort: 10443
-        path: /
-  tls:
-  - hosts:
-    - {{ .APP_HOST_EXTERNAL }}
-    secretName: {{ .DEPLOYMENT_NAME }}-external-tls
-```
-
-should be changed to `Ingress` resource with the following v0.11+ annotations:
-
-```YAML
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: {{ .DEPLOYMENT_NAME }}-external
-  annotations:
-    # @Note: get rid of any certmanager.k8s.io annotations
-    # @Note: change the enabled annotation to cert-manager.io/enabled
-    cert-manager.io/enabled: "true"
-    ingress.kubernetes.io/backend-protocol: "HTTPS"
-    ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: "nginx-external"
-spec:
-  rules:
-  - host: {{ .APP_HOST_EXTERNAL }}
-    http:
-      paths:
-      - backend:
-          serviceName: {{ .DEPLOYMENT_NAME }}
-          servicePort: 10443
-        path: /
-  tls:
-  - hosts:
-    - {{ .APP_HOST_EXTERNAL }}
-    secretName: {{ .DEPLOYMENT_NAME }}-external-tls
-```
-
-###### Internal Ingress changes
-
-Changes required for websites or services exposed internally
-
-The following `Ingress` resource with v0.8 annotations:
-
-```YAML
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: {{ .DEPLOYMENT_NAME }}-internal
-  annotations:
-    certmanager.k8s.io/acme-challenge-type: "dns01"
-    certmanager.k8s.io/enabled: "true"
-    certmanager.k8s.io/acme-dns01-provider: "route53"
-    ingress.kubernetes.io/backend-protocol: "HTTPS"
-    ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: "nginx-internal"
-spec:
-  rules:
-  - host: {{ .APP_HOST_INTERNAL }}
-    http:
-      paths:
-      - backend:
-          serviceName: {{ .DEPLOYMENT_NAME }}
-          servicePort: 10443
-        path: /
-  tls:
-  - hosts:
-    - {{ .APP_HOST_INTERNAL }}
-    secretName: {{ .DEPLOYMENT_NAME }}-internal-tls
-```
-
-should be changed to `Ingress` resource with the following v0.11+ annotations:
-
-```YAML
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: {{ .DEPLOYMENT_NAME }}-internal
-  annotations:
-    # @Note: get rid of any certmanager.k8s.io annotations
-    # @Note: change the enabled annotation to cert-manager.io/enabled
-    cert-manager.io/enabled: "true"
-    ingress.kubernetes.io/backend-protocol: "HTTPS"
-    ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: "nginx-internal"
-  # @Note: add label cert-manager.io/solver to specify that the route53 dns01 solver should be used
-  labels:
-    cert-manager.io/solver: route53
-spec:
-  rules:
-  - host: {{ .APP_HOST_INTERNAL }}
-    http:
-      paths:
-      - backend:
-          serviceName: {{ .DEPLOYMENT_NAME }}
-          servicePort: 10443
-        path: /
-  tls:
-  - hosts:
-    - {{ .APP_HOST_INTERNAL }}
-    secretName: {{ .DEPLOYMENT_NAME }}-internal-tls
-```
-
-###### Certificate resources changes
-
-Please note that because the apiGroup for the new certificate resource (`cert-manager.io`) is different from the old one (`certmanager.k8s.io`), by making the changes below to your `Certificate` resource, you will actually create a new `Certificate` object as opposed to replacing the existing one.
-
-The following v0.8 `Certificate` resource providing a self-signed certificate:
-
-```YAML
-apiVersion: certmanager.k8s.io/v1alpha1
-kind: Certificate
-metadata:
-  name: {{ .DEPLOYMENT_NAME }}-service-tls
-spec:
-  secretName: {{ .DEPLOYMENT_NAME }}-service-tls
-  issuerRef:
-    name: platform-tls
-    kind: ClusterIssuer
-  commonName: app.{{ .KUBE_NAMESPACE }}.svc.cluster.local
-  dnsNames:
-  - app
-  - app.{{ .KUBE_NAMESPACE }}.svc
-```
-
-should be changed to a v0.11 `Certificate`
-
-```YAML
-# @Note: change the apiVersion
-apiVersion: cert-manager.io/v1alpha2
-kind: Certificate
-metadata:
-  name: {{ .DEPLOYMENT_NAME }}-service-tls
-spec:
-  secretName: {{ .DEPLOYMENT_NAME }}-service-tls
-  issuerRef:
-    # @Note: change the name of the issuer
-    name: platform-ca
-    kind: ClusterIssuer
-  commonName: app.{{ .KUBE_NAMESPACE }}.svc.cluster.local
-  dnsNames:
-  - app
-  - app.{{ .KUBE_NAMESPACE }}.svc
-```
-
-In order to convert a `Certificate` resource for a certificate issued by LetsEncrypt, the `spec.issuerRef.name` should be set as `letsencrypt-prod`.
-
-For an externally accessed service, no labelling is required.
-
-However for an internally accessed service whose certificate ACME challenge is resolved with dns01, the following label should be added: `cert-manager.io/solver: route53`.
-
-###### Network Policy resources changes
-
-The following `NetworkPolicy` resource with v0.8 match expressions:
-
-```YAML
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: permit-certmanager-acme
-spec:
-  policyTypes:
-  - Ingress
-  podSelector:
-    matchExpressions:
-    - {key: certmanager.k8s.io/acme-http-domain, operator: Exists}
-    - {key: certmanager.k8s.io/acme-http-token, operator: Exists}
-  ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: ingress-external
-    ports:
-    - protocol: TCP
-      port: 8089
-```
-
-should be changed to `NetworkPolicy` resource with the following v0.11 match expressions:
-
-```YAML
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: permit-certmanager-acme
-spec:
-  policyTypes:
-  - Ingress
-  podSelector:
-    matchExpressions:
-    # @Note: both match expressions have changed
-    - {key: acme.cert-manager.io/http-domain, operator: Exists}
-    - {key: acme.cert-manager.io/http-token, operator: Exists}
-  ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: ingress-external
-      podSelector:
-        matchLabels:
-          name: ingress
-    ports:
-    - protocol: TCP
-      port: 8089
-```
-
-###### Deployment verification
-
-Once you have applied the changes above, you should no longer have `Certificate` resources managed by v0.8.
-
-To verify that's the case, run `kubectl get certificate -n my-namespace`. The resource list returned should be empty.
-
-To verify that the new version of cert-manager is managing the certificates, run `kubectl get certificate.cert-manager.io -n my-namespace`. An non-empty list of resources should be returned, including any certificate resources you have created yourselves as well as ones created by cert-manager on behalf of an ingress.
-
-Once the development teams have migrated all their resources to the new version of cert-manager, the old instance will be decommissioned. When that's done it will no longer be needed to append `.cert-manager.io` to the resource kinds when using `kubectl`.
