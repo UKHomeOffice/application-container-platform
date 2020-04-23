@@ -183,44 +183,9 @@ $ kubectl -n project get challenge
 
 **Network Policies**
 
-In order to handle the http01 challenge the requestor is provided an ephemeral token which must be handled back to LetsEncrypt on the path `http://domain/.well-known/acme-challenge/`, thus validating to them you own the domains you're requesting for.
+Please note that as part of the implementation of cert-manager v0.13.1, a `GlobalNetworkPolicy` object managing ingress traffic for `http01` challenges has been deployed.
 
-Cert-manager handles the http01 resolver by:
-
-- creating a `CertificateRequest` resource within the namespace
-- a controller picks up the certificate request and because the issuer's solver is an acme http01 solver, it creates an acme `Order` within the namespace
-- a controller picks up the order and creates a `Challenge` resource from it, creating an ephemeral pod, service and ingress in your namespace and routing the `/.well-known/acme-challenge/`.
-- the controller checks the path has been provisioned via the ingress beforehand and validates the order.
-- the certificate controller then informs letsencrypt to call us back.
-- it continues to probe the request and once validated, pulls down the certificate.
-
-**IMPORTANT** All this requires the user's to add a network policy to permit the callback, as ACP by default denies all traffic.
-
-```YAML
-# This default policy permits access for LetsEncrypt to resolve the http01 challenges from the ACME pods
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: permit-certmanager-acme
-spec:
-  policyTypes:
-  - Ingress
-  podSelector:
-    matchExpressions:
-    - {key: acme.cert-manager.io/http-domain, operator: Exists}
-    - {key: acme.cert-manager.io/http-token, operator: Exists}
-  ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: ingress-external
-      podSelector:
-        matchLabels:
-          name: ingress
-    ports:
-    - protocol: TCP
-      port: 8089
-```
+This means that you no longer need to have a `NetworkPolicy` in your namespaces allowing ingress traffic from port 8089 to the ephemral pods that cert-manager creates to handle the `http01` challenge.
 
 ### **As a developer I want to retrieve a certificate for a service behind the vpn, or simply wish to use the DNS validation**
 
