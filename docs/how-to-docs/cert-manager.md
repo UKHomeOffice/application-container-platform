@@ -185,7 +185,7 @@ $ kubectl -n project get challenge
 
 Please note that as part of the implementation of cert-manager v0.13.1, a `GlobalNetworkPolicy` object managing ingress traffic for `http01` challenges has been deployed.
 
-This means that you no longer need to have a `NetworkPolicy` in your namespaces allowing ingress traffic from port 8089 to the ephemral pods that cert-manager creates to handle the `http01` challenge.
+This means that you no longer need to have a `NetworkPolicy` in your namespaces allowing ingress traffic from port 8089 to the ephemeral pods that cert-manager creates to handle the `http01` challenge.
 
 ### **As a developer I want to retrieve a certificate for a service behind the vpn, or simply wish to use the DNS validation**
 
