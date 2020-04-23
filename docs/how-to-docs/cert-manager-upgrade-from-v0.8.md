@@ -44,36 +44,36 @@ To keep names consistent, you could for example add a `-cmio` suffix to all secr
 - For `Ingress` resources:
   - amend the `Ingress`'s annotations and labels
   - change the value of `secretName`
-- For `Certficate` resources that are part of your deployments (e.g. to create a certificate that is mounted by an nginx sidecar for your main service):
+- For `Certificate` resources that are part of your deployments (e.g. to create a certificate that is mounted by an nginx sidecar for your main service):
   - amend the `Certificate`'s annotations and labels
   - change the value of `secretName`
   - amend your deployment to mount the new secret (e.g. get the nginx sidecar to mount the new tls secret)
 - Deploy the changes
 - When you've checked that the service is functioning as intended, you can tidy up the old v0.8 cert-manager resources:
-  - delete any certficate resources still returned by `kubectl -n project get certificate` (back them up if they are not stored in git)
+  - delete any certificate resources still returned by `kubectl -n project get certificate` (back them up if they are not stored in git)
   - delete any secrets associated with those old resources (again, back them up to be safe)
 - You can check that the certificate resources are valid by running `kubectl -n project get certificate.cert-manager.io`. The `READY` field for the resources should be `TRUE`. Note that it might take a short while (typically no more than about a minute) for the certificates to reach that `READY` state.
 
-The main draw-back of this approach is that the value for the new secret being created will need to be created from LetsEncrypt (unless using the platform culster issuer). This is usually quite quick, but could take up to around 1 minute.
+The main draw-back of this approach is that the value for the new secret being created will need to be created from LetsEncrypt (unless using the platform culster issuer). This is usually quite quick, but could take up to around 2 minutes.
 
 If your deployments have several replicas and use a rolling update strategy, as they should, this is not usually an issue as the service will continue being available, although with a reduced capacity. As the deployment roll-out, users might experience a failed request that should be successful again on retry.
 
 ### Option 2 - keeping same secret names
 
-This option is much more complex than the option 1 and should only be considered if there are concerens with service availability. For example, if there is a single replica and a deployment would create an unacceptable service outage while a new certificate is retrieved. But then again, you're not running services with a single replica as that' a bad pattern, right?
+This option is much more complex than the option 1 and should only be considered if there are concerens with service availability. For example, if there is a single replica and a deployment would create an unacceptable service outage while a new certificate is retrieved. But then again, you're not running services with a single replica as that's a bad pattern, right?
 
-Please be aware that if not performed appropriately, this upgrade path has the potential to hit LetsEncrypt limits and therefore prevent new certficates to be successfully retrieved for a given hostname for up to a week.
+Please be aware that if not performed appropriately, this upgrade path has the potential to hit LetsEncrypt limits and therefore prevent new certificates to be successfully retrieved for a given hostname for up to a week.
 
 - For `Ingress` resources:
   - amend the `Ingress`'s annotations and labels to **REMOVE** all `certmanager.k8s.io` annotations. **DO NOT** add any of the new cert-manager annotations yet.
-- Deploy the ingress changes. This will unregister the ingresses from the old version of cert-manager and within a few minutes, the `Certificate` resources that cert-manager created automatically will be deleted. The secrets with the tls private key and certificate will still be available and therefore your ingress will carry on working until that certficate expires. That's because, by default, cert-manager does not delete the secrets specified in a certificate object when that certificate object is deleted. You typically have several weeks during which the certifcate will remain valid.
-- Delete all remaining `Certficate` resources returned by `kubectl -n project get certificate`. At this stage, assuming that you have waited long enough for the unregistering of `Ingress` resources to occur, you should only see certificate resources for which you have manifest files for.
+- Deploy the ingress changes. This will unregister the ingresses from the old version of cert-manager and within a few minutes, the `Certificate` resources that cert-manager created automatically will be deleted. The secrets with the tls private key and certificate will still be available and therefore your ingress will carry on working until that certificate expires. That's because, by default, cert-manager does not delete the secrets specified in a certificate object when that certificate object is deleted. You typically have several weeks during which the certifcate will remain valid.
+- Delete all remaining `Certificate` resources returned by `kubectl -n project get certificate`. At this stage, assuming that you have waited long enough for the unregistering of `Ingress` resources to occur, you should only see certificate resources for which you have manifest files for.
 - Do not proceed further until there are no `Certificate` resources left. You should wait a few minutes and check again to make sure that new `Certificate` resources are not re-created automatically by cert-manager
 - Once you are sure that no more resources are returned by `kubectl -n project get certificate`, it is time to update your manifest files and add annotations and labels for the new version of cert-manager (with a `cert-manager.io` prefix)
   - For `Ingress` resources, add the new `cert-manager.io` annotations and labels
-  - For `Certficate` resources that are part of your deployments (e.g. to create a certificate that is mounted by an nginx sidecar for your main service), amend the `Certificate`'s annotations and labels
+  - For `Certificate` resources that are part of your deployments (e.g. to create a certificate that is mounted by an nginx sidecar for your main service), amend the `Certificate`'s annotations and labels
 - Deploy the new changes. You should now have a new set of certificate resources. You can verify this with `kubectl -n project get certificate.cert-manager.io`. Note that will list the new `Certificate` resources that you created as well as the ones automatically created by cert-manager on your behalf to manage ingress certificates.
-- Identify all the secrets associated with the `Certficate` resources listed in the previous step (secrets have the same name as their associated `Certfificate` resources)
+- Identify all the secrets associated with the `Certificate` resources listed in the previous step (secrets have the same name as their associated `Certfificate` resources)
   - Back them up
   - Delete them with `kubectl -n project delete secret xxx`. This is required because the current secrets still have annotations related to the old version of cert-manager
   - Watch as the secrets get re-created by the new version of cert-manager
@@ -284,9 +284,14 @@ However for an internally accessed service whose certificate ACME challenge is r
 
 ### Network Policy resources changes
 
-The following `NetworkPolicy` resource with v0.8 match expressions:
+The following `NetworkPolicy` resources used to be required to allow successful `http01` ACME challenges for cert-manager v0.8 resources.
+
+This is no longer needed thanks to a new `GlobalNetworkPolicy` which has a cluster-wide scope.
+
+Network policies such as the following in your namespaces can therefore be deleted
 
 ```YAML
+# No longer required; this NetworkPolicy can now be deleted
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
@@ -303,34 +308,6 @@ spec:
     - namespaceSelector:
         matchLabels:
           name: ingress-external
-    ports:
-    - protocol: TCP
-      port: 8089
-```
-
-should be changed to `NetworkPolicy` resource with the following v0.11 match expressions:
-
-```YAML
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: permit-certmanager-acme
-spec:
-  policyTypes:
-  - Ingress
-  podSelector:
-    matchExpressions:
-    # @Note: both match expressions have changed
-    - {key: acme.cert-manager.io/http-domain, operator: Exists}
-    - {key: acme.cert-manager.io/http-token, operator: Exists}
-  ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: ingress-external
-      podSelector:
-        matchLabels:
-          name: ingress
     ports:
     - protocol: TCP
       port: 8089
