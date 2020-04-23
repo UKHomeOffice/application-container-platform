@@ -54,9 +54,10 @@ To keep names consistent, you could for example add a `-cmio` suffix to all secr
   - delete any secrets associated with those old resources (again, back them up to be safe)
 - You can check that the certificate resources are valid by running `kubectl -n project get certificate.cert-manager.io`. The `READY` field for the resources should be `TRUE`. Note that it might take a short while (typically no more than about a minute) for the certificates to reach that `READY` state.
 
-The main draw-back of this approach is that the value for the new secret being created will need to be created from LetsEncrypt (unless using the platform culster issuer). This is usually quite quick, but could take up to around 2 minutes.
+The main draw-back of this approach is that the value for the new secret being created will need to be created from LetsEncrypt (unless using the platform cluster issuer). This is usually quite quick, but could take up to around 2 minutes.
 
-If your deployments have several replicas and use a rolling update strategy, as they should, this is not usually an issue as the service will continue being available, although with a reduced capacity. As the deployment roll-out, users might experience a failed request that should be successful again on retry.
+During the time the new certificate is being requested and LetsEncrypt performs its http or dns challenge, your ingress will not have a valid certificate.
+So access to the endpoint is disrupted for that brief period of time whilst the challenge is being completed and new cert/secret generated.
 
 ### Option 2 - keeping same secret names
 
@@ -73,7 +74,7 @@ Please be aware that if not performed appropriately, this upgrade path has the p
   - For `Ingress` resources, add the new `cert-manager.io` annotations and labels
   - For `Certificate` resources that are part of your deployments (e.g. to create a certificate that is mounted by an nginx sidecar for your main service), amend the `Certificate`'s annotations and labels
 - Deploy the new changes. You should now have a new set of certificate resources. You can verify this with `kubectl -n project get certificate.cert-manager.io`. Note that will list the new `Certificate` resources that you created as well as the ones automatically created by cert-manager on your behalf to manage ingress certificates.
-- Identify all the secrets associated with the `Certificate` resources listed in the previous step (secrets have the same name as their associated `Certfificate` resources)
+- Identify all the secrets associated with the `Certificate` resources listed in the previous step (secrets have the same name as their associated `Certificate` resources)
   - Back them up
   - Delete them with `kubectl -n project delete secret xxx`. This is required because the current secrets still have annotations related to the old version of cert-manager
   - Watch as the secrets get re-created by the new version of cert-manager
