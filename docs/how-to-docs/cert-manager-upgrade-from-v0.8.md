@@ -39,6 +39,8 @@ By far the easiest and safest option is to amend the annotations and labels as d
 
 Renaming the secret (changing the value of `secretName` in either `Ingress` or `Certificate` resources) will make sure that the same secret is not managed by 2 `Certificate` resources (the v0.8 certificate and its v0.13.1 counter-part) - whether those `Certificate` resources are part of your deployments or it's one of the resources managed automatically for you by cert-manager when it deals with `Ingress` annotations.
 
+To keep names consistent, you could for example add a `-cmio` suffix to all secret names (for `cert-manager.io`).
+
 - For `Ingress` resources:
   - amend the `Ingress`'s annotations and labels
   - change the value of `secretName`
