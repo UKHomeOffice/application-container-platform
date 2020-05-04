@@ -61,7 +61,7 @@ So access to the endpoint is disrupted for that brief period of time whilst the 
 
 ### Option 2 - keeping same secret names
 
-This option is much more complex than the option 1 and should only be considered if there are concerens with service availability. For example, if there is a single replica and a deployment would create an unacceptable service outage while a new certificate is retrieved. But then again, you're not running services with a single replica as that's a bad pattern, right?
+This option is much more complex than the option 1 and should only be considered if there are concerns with service availability. For example, if there is a single replica and a deployment would create an unacceptable service outage while a new certificate is retrieved. But then again, you're not running services with a single replica as that's a bad pattern, right?
 
 Please be aware that if not performed appropriately, this upgrade path has the potential to hit LetsEncrypt limits and therefore prevent new certificates to be successfully retrieved for a given hostname for up to a week.
 
