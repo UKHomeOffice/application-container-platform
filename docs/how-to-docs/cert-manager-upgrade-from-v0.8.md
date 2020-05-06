@@ -45,7 +45,7 @@ However, please be aware that when annotating an `Ingress` resource with cert-ma
 
 There are 2 possible approaches for the migration of resources. The high-level steps for both approaches are expanded below.
 
-For a more detailed understanding of how the manifest files need to be updated, please refer to section `Updating cert-manager resources for v0.13.1` below.
+For a more detailed understanding of how the manifest files need to be updated, please refer to section [Updating cert-manager resources for v0.13.1](#updating-cert-manager-resources-for-v0131) below.
 
 Option 1 below is strongly recommended as the approach.
 
@@ -68,39 +68,39 @@ To keep names consistent, you could for example add a `-cmio` suffix  (standing 
 - When you've checked that the service is functioning as intended, you can tidy up the old v0.8 cert-manager resources:
   - delete any certificate resources still returned by `kubectl -n project get certificate` (back them up if they are not stored in git)
   - delete any secrets associated with those old resources (again, back them up to be safe)
-- You can check that the certificate resources are valid by running `kubectl -n project get certificate.cert-manager.io`. The `READY` field for the resources should be `TRUE`. Note that it might take a short while (typically no more than about a minute) for the certificates to reach that `READY` state.
+- You can check that the certificate resources are valid by running `kubectl -n project get certificate.cert-manager.io`. The `READY` field for the resources should be `TRUE`. Note that it might take a short while (typically no more than about a couple of minutes) for the certificates to reach that `READY` state.
 
 The main draw-back of this approach is that the value for the new secret being created will need to be created from LetsEncrypt (unless using the platform cluster issuer). This is usually quite quick, but could take up to around 2 minutes.
 
 During the time the new certificate is being requested and LetsEncrypt performs its http or dns challenge, your ingress will not have a valid certificate.
-So access to the endpoint is disrupted for that brief period of time whilst the challenge is being completed and new cert/secret generated.
+So access to the endpoint is disrupted for that period whilst the challenge is being completed and new cert/secret generated.
 
 If you are keen on minimising service disruption further and only have current connections reset, please evaluate Option 2 below.
 
 ### Option 2 - explicit ingress certificate
 
-This option is much more complex than Option 1 and should only be considered if there are concerens with service availability while ingresses do not have a valid certifcate during the initial new certificate request.
+This option is more complex than Option 1 and should only be considered if there are concerns with service availability while ingresses do not have a valid certifcate during the initial new certificate request.
 
 If not performed properly, you will gain nothing from it and it will have the same impact as Option 1.
 
 The high levels steps are:
 
 - Leave the current `Ingress` resource as it is (whith old v0.8 annotations)
-- Create a `Certificate` resource with `letsencrypt-prod` as the clusterIssuer, a new secret name and the appropriate stanzas as shown later on this guide
-- Deploy the changes to create the new certificate resource. Please note that the certificate and associated secret will at that point be unused.
+- Create a `Certificate` resource with `letsencrypt-prod` as the clusterIssuer, a secret name different from the one used by the Ingress and the appropriate stanzas as shown later on this guide. You might want to use the `letsencrypt-staging` clusterIssuer instead of `letsencrypt-prod` while changing your Certificate manifest file and testing it in order to not reach the weekly limits imposed by LetsEncrypt on its prod server and switch to `letsencrypt-prod` once you know your `Certificate` resource works as you expect.
+- Deploy the changes to create the new certificate resource. Please note that the certificate and associated secret will at that point be unused, but make sure the `Certificate` is ready before deploying the next set of changes. You can check that by running `kubectl get certificates.cert-manager.io` in your namespace.
 - Update your `Ingress` resources
   - Remove all `certmanager.k8s.io` annotations
-  - DO NOT add any new `cert-manager.io` annotations or labels
-  - Update `secretName` in the `Ingress` resource to the name of the secret you created in step 2
+  - *DO NOT* add any new `cert-manager.io` annotations or labels
+  - Update `secretName` in the `Ingress` resource to the name of the secret you created in step 2 (the secret associated with your `Certficate` resource)
 - Deploy the `Ingress` changes
-- When you've checked that the service is functioning as intended, you can tidy up the old v0.8 cert-manager resources:
+- When you've checked that the service is functioning as intended and that its certificate has been updated, you can tidy up the old v0.8 cert-manager resources and secrets:
   - delete any certificate resources still returned by `kubectl -n project get certificates.certmanager.k8s.io` (back them up if they are not stored in git)
   - delete any secrets associated with those old resources (again, back them up to be safe)
-- You can check that the certificate resources are valid by running `kubectl -n project get certificates.cert-manager.io`. The `READY` field for the resources should be `TRUE`. Note that it might take a short while (typically no more than about a minute) for the certificates to reach that `READY` state.
+- You can check that the certificate resources are valid by running `kubectl -n project get certificates.cert-manager.io`. The `READY` field for the resources should be `TRUE`. Note that it might take a short while (typically no more than about a couple of minutes) for the certificates to reach that `READY` state.
 
 Please note that during the development lifecycle, you will quite naturally deploy the 2 changes above when they are made in 2 separate commit points.
 
-However, when it comes to deploying to other environments once the commits already exist, make sure to deploy the first step (`Certificate` creation), wait for the `Certificate` resource to be ready and only then deploy the change to the ingress. If you do not wait and deploy those changes in quick succession, the outcome will be the same as for option 1: your service will be unavailable as it will not have a valid certificate until letsencrypt returns a new one.
+However, when it comes to deploying to other environments once the commits already exist, make sure to deploy the commit associated with the first step (`Certificate` creation), wait for the `Certificate` resource to be ready and only deploy the change to the ingress once it is. If you do not wait and deploy those changes in quick succession, the outcome will be the same as for option 1: your service will be unavailable as it will not have a valid certificate until letsencrypt returns a new one.
 
 ## Getting cert-manager resources
 
@@ -294,7 +294,7 @@ spec:
 
 should be initially left unchanged.
 
-Deploy the new certificate
+Deploy a new certificate
 
 ```YAML
 apiVersion: cert-manager.io/v1alpha2
@@ -312,7 +312,7 @@ spec:
   - {{ .APP_HOST_EXTERNAL }}
 ```
 
-Once the certificate is ready (run `kubectl get certificates.cert-manager.io` to find out its state), change and deploy the `Ingress` resource with the following v0.11+ annotations:
+Once the certificate is ready (run `kubectl get certificates.cert-manager.io` to find out its state), change and deploy the `Ingress` resource to specify the new secret name:
 
 ```YAML
 apiVersion: networking.k8s.io/v1beta1
@@ -376,7 +376,7 @@ spec:
 
 should be initially left unchanged.
 
-Deploy the new certificate
+Deploy a new certificate
 
 ```YAML
 apiVersion: cert-manager.io/v1alpha2
@@ -396,7 +396,7 @@ spec:
   - {{ .APP_HOST_INTERNAL }}
 ```
 
-Once the certificate is ready (run `kubectl get certificates.cert-manager.io` to find out its state), change and deploy the `Ingress` resource with the following v0.11+ annotations:
+Once the certificate is ready (run `kubectl get certificates.cert-manager.io` to find out its state), change and deploy the `Ingress` resource to specify the new secret name:
 
 ```YAML
 apiVersion: networking.k8s.io/v1beta1

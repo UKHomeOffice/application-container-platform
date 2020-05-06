@@ -2,7 +2,23 @@
 
 ## VERY IMPORTANT upgrade information
 
-`cert-manager` is being upgraded from v0.8 to v0.13.1. If you have cert-manager resources deployed in your namespaces, you MUST follow the [instructions to upgrade from v0.8](docs/how-to-docs/cert-manager-upgrade-from-v0.8.md) to upgrade annotations and labels in order for them to be managed by the new version of cert-manager.
+`cert-manager` is being upgraded from v0.8 to v0.13.1. If you have cert-manager resources deployed in your namespaces, you MUST follow the [instructions to upgrade from v0.8](cert-manager-upgrade-from-v0.8.md) to upgrade annotations and labels in order for them to be managed by the new version of cert-manager.
+
+To find out if you are using v0.8 cert-manager resources in your namespace, you can run:
+
+```
+kubectl get certificates.certmanager.k8s.io
+```
+
+Also LetsEncrypt will no longer be supporting PSG's kube-cert-manager from June 2020. So if you are using PSG kube-cert-manager to obtain certificates for your ingresses, you also need to migrate to JetStack's cert-manager v0.13.1 and follow the [instructions to upgrade from PGS's kube-cert-manager](cert-manager-upgrade-from-psg.md)
+
+To find out if you are using PSG kube-cert-manager to manage your ingresses certificates, you can run:
+
+```
+kubectl get ingresses -o yaml | grep stable.k8s.psg.io
+```
+
+Please also be aware that admission policies have been updated and will reject `Ingress` resources with annotations or labels supported by more than one certificate manager. There are currently ingresses with both cert-manager v0.8 and PSG annotations or labels and those will now fail applying.
 
 ## Background
 
