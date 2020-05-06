@@ -27,3 +27,4 @@ tmp/*
 /.idea
 _site
 site
+.talismanrc

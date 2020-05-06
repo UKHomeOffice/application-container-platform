@@ -39,10 +39,10 @@ By far the easiest and safest option is to amend the annotations and labels as d
 
 Renaming the secret (changing the value of `secretName` in either `Ingress` or `Certificate` resources) will make sure that the same secret is not managed by 2 `Certificate` resources (the v0.8 certificate and its v0.13.1 counter-part) - whether those `Certificate` resources are part of your deployments or it's one of the resources managed automatically for you by cert-manager when it deals with `Ingress` annotations.
 
-To keep names consistent, you could for example add a `-cmio` suffix to all secret names (for `cert-manager.io`).
+To keep names consistent, you could for example add a `-cmio` suffix  (standing for `cert-manager.io`) to all the `secretName` attributes in the `Ingress` or `Certificate` resources as shown below in the example section.
 
 - For `Ingress` resources:
-  - amend the `Ingress`'s annotations and labels
+  - amend the `Ingress`'s annotations and labels as described below
   - change the value of `secretName`
 - For `Certificate` resources that are part of your deployments (e.g. to create a certificate that is mounted by an nginx sidecar for your main service):
   - amend the `Certificate`'s annotations and labels
@@ -59,25 +59,32 @@ The main draw-back of this approach is that the value for the new secret being c
 During the time the new certificate is being requested and LetsEncrypt performs its http or dns challenge, your ingress will not have a valid certificate.
 So access to the endpoint is disrupted for that brief period of time whilst the challenge is being completed and new cert/secret generated.
 
+If you are keen on minimising service disruption further and only have current connections reset, please evaluate Option 2 below.
+
 ### Option 2 - keeping same secret names
 
-This option is much more complex than the option 1 and should only be considered if there are concerens with service availability. For example, if there is a single replica and a deployment would create an unacceptable service outage while a new certificate is retrieved. But then again, you're not running services with a single replica as that's a bad pattern, right?
+This option is much more complex than Option 1 and should only be considered if there are concerens with service availability while ingresses do not have a valid certifcate during the initial new certificate request.
 
-Please be aware that if not performed appropriately, this upgrade path has the potential to hit LetsEncrypt limits and therefore prevent new certificates to be successfully retrieved for a given hostname for up to a week.
+If not performed properly, you will gain nothing from it and it will have the same impact as Option 1.
 
-- For `Ingress` resources:
-  - amend the `Ingress`'s annotations and labels to **REMOVE** all `certmanager.k8s.io` annotations. **DO NOT** add any of the new cert-manager annotations yet.
-- Deploy the ingress changes. This will unregister the ingresses from the old version of cert-manager and within a few minutes, the `Certificate` resources that cert-manager created automatically will be deleted. The secrets with the tls private key and certificate will still be available and therefore your ingress will carry on working until that certificate expires. That's because, by default, cert-manager does not delete the secrets specified in a certificate object when that certificate object is deleted. You typically have several weeks during which the certifcate will remain valid.
-- Delete all remaining `Certificate` resources returned by `kubectl -n project get certificate`. At this stage, assuming that you have waited long enough for the unregistering of `Ingress` resources to occur, you should only see certificate resources for which you have manifest files for.
-- Do not proceed further until there are no `Certificate` resources left. You should wait a few minutes and check again to make sure that new `Certificate` resources are not re-created automatically by cert-manager
-- Once you are sure that no more resources are returned by `kubectl -n project get certificate`, it is time to update your manifest files and add annotations and labels for the new version of cert-manager (with a `cert-manager.io` prefix)
-  - For `Ingress` resources, add the new `cert-manager.io` annotations and labels
-  - For `Certificate` resources that are part of your deployments (e.g. to create a certificate that is mounted by an nginx sidecar for your main service), amend the `Certificate`'s annotations and labels
-- Deploy the new changes. You should now have a new set of certificate resources. You can verify this with `kubectl -n project get certificate.cert-manager.io`. Note that will list the new `Certificate` resources that you created as well as the ones automatically created by cert-manager on your behalf to manage ingress certificates.
-- Identify all the secrets associated with the `Certificate` resources listed in the previous step (secrets have the same name as their associated `Certificate` resources)
-  - Back them up
-  - Delete them with `kubectl -n project delete secret xxx`. This is required because the current secrets still have annotations related to the old version of cert-manager
-  - Watch as the secrets get re-created by the new version of cert-manager
+The high levels steps are:
+
+- Leave the current `Ingress` resource as it is (whith old v0.8 annotations)
+- Create a `Certificate` resource with `letsencrypt-prod` as the clusterIssuer, a new secret name and the appropriate stanzas as shown later on this guide
+- Deploy the changes to create the new certificate resource. Please note that the certificate and associated secret will at that point be unused.
+- Update your `Ingress` resources
+  - Remove all `certmanager.k8s.io` annotations
+  - DO NOT add any new `cert-manager.io` annotations or labels
+  - Update `secretName` in the `Ingress` resource to the name of the secret you created in step 2
+- Deploy the `Ingress` changes
+- When you've checked that the service is functioning as intended, you can tidy up the old v0.8 cert-manager resources:
+  - delete any certificate resources still returned by `kubectl -n project get certificates.certmanager.k8s.io` (back them up if they are not stored in git)
+  - delete any secrets associated with those old resources (again, back them up to be safe)
+- You can check that the certificate resources are valid by running `kubectl -n project get certificates.cert-manager.io`. The `READY` field for the resources should be `TRUE`. Note that it might take a short while (typically no more than about a minute) for the certificates to reach that `READY` state.
+
+Please note that during the development lifecycle, you will quite naturally deploy the 2 changes above when they are made in 2 separate commit points.
+
+However, when it comes to deploying to other environments once the commits already exist, make sure to deploy the first step (`Certificate` creation), wait for the `Certificate` resource to be ready and only then deploy the change to the ingress. If you do not wait and deploy those changes in quick succession, the outcome will be the same as for option 1: your service will be unavailable as it will not have a valid certificate until letsencrypt returns a new one.
 
 ## Getting cert-manager resources
 
@@ -109,7 +116,7 @@ kubectl -n project get challenge.certmanager.k8s.io
 
 The following examples are based on the [kube-example](https://github.com/ukhomeoffice/kube-example-app) project.
 
-### External Ingress changes
+### External Ingress changes (option 1 - recommended)
 
 Changes required for websites or services exposed externally
 
@@ -167,10 +174,11 @@ spec:
   tls:
   - hosts:
     - {{ .APP_HOST_EXTERNAL }}
-    secretName: {{ .DEPLOYMENT_NAME }}-external-tls
+    # @Note: change the secret name
+    secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-### Internal Ingress changes
+### Internal Ingress changes (option 1 - recommended)
 
 Changes required for websites or services exposed internally
 
@@ -232,7 +240,174 @@ spec:
   tls:
   - hosts:
     - {{ .APP_HOST_INTERNAL }}
+    # @Note: change the secret name
+    secretName: {{ .DEPLOYMENT_NAME }}-internal-tls-cmio
+```
+
+### External Ingress changes (option 2 - 2 stages)
+
+Changes required for websites or services exposed externally
+
+The following `Ingress` resource with v0.8 annotations:
+
+```YAML
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .DEPLOYMENT_NAME }}-external
+  annotations:
+    certmanager.k8s.io/acme-challenge-type: "http01"
+    certmanager.k8s.io/enabled: "true"
+    ingress.kubernetes.io/backend-protocol: "HTTPS"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: "nginx-external"
+spec:
+  rules:
+  - host: {{ .APP_HOST_EXTERNAL }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .DEPLOYMENT_NAME }}
+          servicePort: 10443
+        path: /
+  tls:
+  - hosts:
+    - {{ .APP_HOST_EXTERNAL }}
+    secretName: {{ .DEPLOYMENT_NAME }}-external-tls
+```
+
+should be initially left unchanged.
+
+Deploy the new certificate
+
+```YAML
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
+spec:
+  secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
+  issuerRef:
+    # use letsencrypt-staging while developing and testing your certificates
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+    group: cert-manager.io
+  dnsNames:
+  - {{ .APP_HOST_EXTERNAL }}
+```
+
+Once the certificate is ready (run `kubectl get certificates.cert-manager.io` to find out its state), change and deploy the `Ingress` resource with the following v0.11+ annotations:
+
+```YAML
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .DEPLOYMENT_NAME }}-external
+  annotations:
+    # @Note: get rid of any certmanager.k8s.io annotations
+    # @Note: no cert-manager.io annotations or labels are added
+    ingress.kubernetes.io/backend-protocol: "HTTPS"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: "nginx-external"
+spec:
+  rules:
+  - host: {{ .APP_HOST_EXTERNAL }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .DEPLOYMENT_NAME }}
+          servicePort: 10443
+        path: /
+  tls:
+  - hosts:
+    - {{ .APP_HOST_EXTERNAL }}
+    # @Note: change the secret name
+    secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
+```
+
+### Internal Ingress changes (option 2 - 2 stages)
+
+Changes required for websites or services exposed internally
+
+The following `Ingress` resource with v0.8 annotations:
+
+```YAML
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .DEPLOYMENT_NAME }}-internal
+  annotations:
+    certmanager.k8s.io/acme-challenge-type: "dns01"
+    certmanager.k8s.io/enabled: "true"
+    certmanager.k8s.io/acme-dns01-provider: "route53"
+    ingress.kubernetes.io/backend-protocol: "HTTPS"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: "nginx-internal"
+spec:
+  rules:
+  - host: {{ .APP_HOST_INTERNAL }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .DEPLOYMENT_NAME }}
+          servicePort: 10443
+        path: /
+  tls:
+  - hosts:
+    - {{ .APP_HOST_INTERNAL }}
     secretName: {{ .DEPLOYMENT_NAME }}-internal-tls
+```
+
+should be initially left unchanged.
+
+Deploy the new certificate
+
+```YAML
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: {{ .DEPLOYMENT_NAME }}-internal-tls-cmio
+  labels:
+    cert-manager.io/solver: route53
+spec:
+  secretName: {{ .DEPLOYMENT_NAME }}-internal-tls-cmio
+  issuerRef:
+    # use letsencrypt-staging while developing and testing your certificates
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+    group: cert-manager.io
+  dnsNames:
+  - {{ .APP_HOST_INTERNAL }}
+```
+
+Once the certificate is ready (run `kubectl get certificates.cert-manager.io` to find out its state), change and deploy the `Ingress` resource with the following v0.11+ annotations:
+
+```YAML
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .DEPLOYMENT_NAME }}-internal
+  annotations:
+    # @Note: get rid of any certmanager.k8s.io annotations
+    # @Note: no cert-manager.io annotations or labels are added
+    cert-manager.io/enabled: "true"
+    ingress.kubernetes.io/backend-protocol: "HTTPS"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: "nginx-internal"
+spec:
+  rules:
+  - host: {{ .APP_HOST_INTERNAL }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .DEPLOYMENT_NAME }}
+          servicePort: 10443
+        path: /
+  tls:
+  - hosts:
+    - {{ .APP_HOST_INTERNAL }}
+    # @Note: change the secret name
+    secretName: {{ .DEPLOYMENT_NAME }}-internal-tls-cmio
 ```
 
 ### Certificate resources changes
@@ -266,7 +441,8 @@ kind: Certificate
 metadata:
   name: {{ .DEPLOYMENT_NAME }}-service-tls
 spec:
-  secretName: {{ .DEPLOYMENT_NAME }}-service-tls
+  # @Note: change the secret name
+  secretName: {{ .DEPLOYMENT_NAME }}-service-tls-cmio
   issuerRef:
     # @Note: change the name of the issuer
     name: platform-ca
