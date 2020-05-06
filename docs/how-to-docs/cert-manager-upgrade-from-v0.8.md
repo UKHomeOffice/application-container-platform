@@ -1,5 +1,21 @@
 # Migration from Jetstack cert-manager v0.8 resources to v0.13.1
 
+## Table of Content
+
+1. [Background - understanding why a migration is needed](#background---understanding-why-a-migration-is-needed)
+1. [Migration options](#migration-options)
+    1. [Option 1 - renaming secrets](#option-1---renaming-secrets)
+    1. [Option 2 - explicit ingress certificate](#option-2---explicit-ingress-certificate)
+1. [Getting cert-manager resources](#getting-cert-manager-resources)
+1. [Updating cert-manager resources for v0.13.1](#updating-cert-manager-resources-for-v0131)
+    1. [External Ingress changes (option 1 - recommended)](#external-ingress-changes-option-1---recommended)
+    1. [Internal Ingress changes (option 1 - recommended)](#internal-ingress-changes-option-1---recommended)
+    1. [External Ingress changes (option 2 - 2 stages)](#external-ingress-changes-option-2---2-stages)
+    1. [Internal Ingress changes (option 2 - 2 stages)](#internal-ingress-changes-option-2---2-stages)
+    1. [Certificate resources changes](#certificate-resources-changes)
+    1. [Network Policy resources changes](#network-policy-resources-changes)
+    1. [Deployment verification](#deployment-verification)
+
 There is a lot of information in this migration guide, so please make sure you read it all and understand what is required before performing a migration, as it might have an adverse impact on services if not performed appropriately.
 
 ## Background - understanding why a migration is needed
@@ -61,7 +77,7 @@ So access to the endpoint is disrupted for that brief period of time whilst the 
 
 If you are keen on minimising service disruption further and only have current connections reset, please evaluate Option 2 below.
 
-### Option 2 - keeping same secret names
+### Option 2 - explicit ingress certificate
 
 This option is much more complex than Option 1 and should only be considered if there are concerens with service availability while ingresses do not have a valid certifcate during the initial new certificate request.
 
