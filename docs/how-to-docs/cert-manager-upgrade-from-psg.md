@@ -8,12 +8,14 @@
     1. [Option 2 - explicit ingress certificate](#option-2---explicit-ingress-certificate)
 1. [Getting cert-manager resources](#getting-cert-manager-resources)
 1. [Updating cert-manager resources for v0.13.1](#updating-cert-manager-resources-for-v0131)
-    1. [External Ingress with DNS challenge changes (option 1 - recommended)](#external-ingress-with-dns-challenge-changes-option-1---recommended)
-    1. [External Ingress with HTTP challenge changes (option 1 - recommended](#external-ingress-with-http-challenge-changes-option-1---recommended)
-    1. [External Ingress with DNS challenge changes (option 2 - 2 stages)](#external-ingress-with-dns-challenge-changes-option-2---2-stages)
-    1. [External Ingress with HTTP challenge changes (option 2 - 2 stages)](#external-ingress-with-http-challenge-changes-option-2---2-stages)
-    1. [Certificate resources changes](#certificate-resources-changes)
-    1. [Network Policy resources changes](#network-policy-resources-changes)
+    1. [Option 1 changes](#option-1-changes)
+        1. [External Ingress with DNS challenge changes (option 1 - recommended)](#external-ingress-with-dns-challenge-changes-option-1---recommended)
+        1. [External Ingress with HTTP challenge changes (option 1 - recommended)](#external-ingress-with-http-challenge-changes-option-1---recommended)
+        1. [Internal Ingress with DNS challenge changes (option 1 - recommended)](#internal-ingress-with-dns-challenge-changes-option-1---recommended)
+    1. [Option 2 changes](#option-2-changes)
+        1. [External Ingress with DNS challenge changes (option 2 - 2 stages)](#external-ingress-with-dns-challenge-changes-option-2---2-stages)
+        1. [External Ingress with HTTP challenge changes (option 2 - 2 stages)](#external-ingress-with-http-challenge-changes-option-2---2-stages)
+        1. [Internal Ingress with DNS challenge changes (option 2 - 2 stages)](#internal-ingress-with-dns-challenge-changes-option-2---2-stages)
     1. [Deployment verification](#deployment-verification)
 
 ## Background - understanding why a migration is needed
@@ -105,7 +107,9 @@ kubectl -n project get challenge.certmanager.k8s.io
 
 The following examples are based on the [kube-example](https://github.com/ukhomeoffice/kube-example-app) project.
 
-### External Ingress with DNS challenge changes (option 1 - recommended)
+### Option 1 changes
+
+#### External Ingress with DNS challenge changes (option 1 - recommended)
 
 Changes required for websites or services exposed externally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
 
@@ -173,7 +177,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-### External Ingress with HTTP challenge changes (option 1 - recommended)
+#### External Ingress with HTTP challenge changes (option 1 - recommended)
 
 Changes required for websites or services exposed externally with ACME HTTP challenge
 
@@ -241,11 +245,81 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-### External Ingress with DNS challenge changes (option 2 - 2 stages)
+#### Internal Ingress with DNS challenge changes (option 1 - recommended)
+
+Changes required for websites or services exposed internally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
+
+The following `Ingress` resource with PSG labels and annotations
+
+```YAML
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .DEPLOYMENT_NAME }}-internal
+  annotations:
+    ingress.kubernetes.io/backend-protocol: "HTTPS"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: "nginx-internal"
+    # @Note: your ingress might not specify stable.k8s.psg.io/kcm.provider as dns is the default provider
+    stable.k8s.psg.io/kcm.provider: dns
+  labels:
+    stable.k8s.psg.io/kcm.class: default
+spec:
+  rules:
+  - host: {{ .APP_HOST_INTERNAL }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .DEPLOYMENT_NAME }}
+          servicePort: 10443
+        path: /
+  tls:
+  - hosts:
+    - {{ .APP_HOST_INTERNAL }}
+    secretName: {{ .DEPLOYMENT_NAME }}-internal-tls
+```
+
+should be changed to `Ingress` resource with the following v0.11+ annotations:
+
+```YAML
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .DEPLOYMENT_NAME }}-internal
+  annotations:
+    # @Note: get rid of any psg annotations
+    # @Note: add the enabled annotation to cert-manager.io/enabled
+    cert-manager.io/enabled: "true"
+    ingress.kubernetes.io/backend-protocol: "HTTPS"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: "nginx-internal"
+  labels:
+    # @Note: remove any psg labels you might have
+    # @Note: add label cert-manager.io/solver to specify that the route53 dns01 solver should be used
+    cert-manager.io/solver: route53
+spec:
+  rules:
+  - host: {{ .APP_HOST_INTERNAL }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .DEPLOYMENT_NAME }}
+          servicePort: 10443
+        path: /
+  tls:
+  - hosts:
+    - {{ .APP_HOST_INTERNAL }}
+    # @Note: change the secret name
+    secretName: {{ .DEPLOYMENT_NAME }}-internal-tls-cmio
+```
+
+### Option 2 changes
+
+#### External Ingress with DNS challenge changes (option 2 - 2 stages)
 
 Changes required for websites or services exposed externally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
 
-The following `Ingress` resource with v0.8 annotations:
+The following `Ingress` resource with PSG annotations:
 
 ```YAML
 apiVersion: networking.k8s.io/v1beta1
@@ -327,11 +401,11 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-### External Ingress with HTTP challenge changes (option 2 - 2 stages)
+#### External Ingress with HTTP challenge changes (option 2 - 2 stages)
 
 Changes required for websites or services exposed externally
 
-The following `Ingress` resource with v0.8 annotations:
+The following `Ingress` resource with PSG annotations:
 
 ```YAML
 apiVersion: networking.k8s.io/v1beta1
@@ -411,6 +485,92 @@ spec:
     - {{ .APP_HOST_EXTERNAL }}
     # @Note: change the secret name
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
+```
+
+#### Internal Ingress with DNS challenge changes (option 2 - 2 stages)
+
+Changes required for websites or services exposed internally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
+
+The following `Ingress` resource with PSG annotations:
+
+```YAML
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .DEPLOYMENT_NAME }}-internal
+  annotations:
+    ingress.kubernetes.io/backend-protocol: "HTTPS"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: "nginx-internal"
+    # @Note: your ingress might not specify stable.k8s.psg.io/kcm.provider as dns is the default provider
+    stable.k8s.psg.io/kcm.provider: dns
+  labels:
+    stable.k8s.psg.io/kcm.class: default
+spec:
+  rules:
+  - host: {{ .APP_HOST_INTERNAL }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .DEPLOYMENT_NAME }}
+          servicePort: 10443
+        path: /
+  tls:
+  - hosts:
+    - {{ .APP_HOST_INTERNAL }}
+    secretName: {{ .DEPLOYMENT_NAME }}-internal-tls
+```
+
+should be initially left unchanged.
+
+Deploy a new certificate
+
+```YAML
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: {{ .DEPLOYMENT_NAME }}-internal-tls-cmio
+  labels:
+    # @Note: specify label cert-manager.io/solver to specify that the route53 dns01 solver should be used
+    cert-manager.io/solver: route53
+spec:
+  secretName: {{ .DEPLOYMENT_NAME }}-internal-tls-cmio
+  issuerRef:
+    # use letsencrypt-staging while developing and testing your certificates
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+    group: cert-manager.io
+  dnsNames:
+  - {{ .APP_HOST_INTERNAL }}
+```
+
+Once the certificate is ready (run `kubectl get certificates.cert-manager.io` to find out its state), change and deploy the `Ingress` resource to specify the new secret name:
+
+```YAML
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .DEPLOYMENT_NAME }}-internal
+  annotations:
+    # @Note: get rid of any psg annotations
+    # @Note: no cert-manager.io annotations or labels are added
+    ingress.kubernetes.io/backend-protocol: "HTTPS"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: "nginx-internal"
+spec:
+  rules:
+  - host: {{ .APP_HOST_INTERNAL }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .DEPLOYMENT_NAME }}
+          servicePort: 10443
+        path: /
+  tls:
+  - hosts:
+    - {{ .APP_HOST_INTERNAL }}
+    # @Note: change the secret name
+    secretName: {{ .DEPLOYMENT_NAME }}-internal-tls-cmio
 ```
 
 ### Deployment verification
