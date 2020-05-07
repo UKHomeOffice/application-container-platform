@@ -28,8 +28,6 @@ For a more detailed understanding of how the manifest files need to be updated, 
 
 Option 1 below is strongly recommended as the approach.
 
-Please also note that PSG kube-cert-manager does not support internal ingresses, but cert-manager does (annotation `kubernetes.io/ingress.class` set to `"nginx-internal"`). See the main [cert-manager](cert-manager.md) documentation.
-
 ### Option 1 - renaming secrets
 
 By far the easiest and safest option is to amend the annotations and labels of your `Ingress` resources as described below **while at the same time also renaming the associated secrets**.
