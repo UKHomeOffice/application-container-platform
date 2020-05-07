@@ -10,7 +10,7 @@
 1. [Updating cert-manager resources for v0.13.1](#updating-cert-manager-resources-for-v0131)
     1. [Option 1 changes](#option-1-changes)
         1. [External Ingress with DNS challenge changes (option 1 - recommended)](#external-ingress-with-dns-challenge-changes-option-1---recommended)
-        1. [External Ingress with HTTP challenge changes (option 1 - recommended](#external-ingress-with-http-challenge-changes-option-1---recommended)
+        1. [External Ingress with HTTP challenge changes (option 1 - recommended)](#external-ingress-with-http-challenge-changes-option-1---recommended)
         1. [Internal Ingress with DNS challenge changes (option 1 - recommended)](#internal-ingress-with-dns-challenge-changes-option-1---recommended)
     1. [Option 2 changes](#option-2-changes)
         1. [External Ingress with DNS challenge changes (option 2 - 2 stages)](#external-ingress-with-dns-challenge-changes-option-2---2-stages)
