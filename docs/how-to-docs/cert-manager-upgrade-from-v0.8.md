@@ -2,23 +2,25 @@
 
 ## Table of Content
 
-1. [Background - understanding why a migration is needed](#background---understanding-why-a-migration-is-needed)
+1. [Background - understanding why a migration is needed](#background-understanding-why-a-migration-is-needed)
 1. [Migration options](#migration-options)
-    1. [Option 1 - renaming secrets](#option-1---renaming-secrets)
-    1. [Option 2 - explicit ingress certificate](#option-2---explicit-ingress-certificate)
+    1. [Option 1 (renaming secrets)](#option-1-renaming-secrets)
+    1. [Option 2 (explicit ingress certificate)](#option-2-explicit-ingress-certificate)
 1. [Getting cert-manager resources](#getting-cert-manager-resources)
 1. [Updating cert-manager resources for v0.13.1](#updating-cert-manager-resources-for-v0131)
-    1. [External Ingress changes (option 1 - recommended)](#external-ingress-changes-option-1---recommended)
-    1. [Internal Ingress changes (option 1 - recommended)](#internal-ingress-changes-option-1---recommended)
-    1. [External Ingress changes (option 2 - 2 stages)](#external-ingress-changes-option-2---2-stages)
-    1. [Internal Ingress changes (option 2 - 2 stages)](#internal-ingress-changes-option-2---2-stages)
+    1. [Option 1 changes (recommended)](#option-1-changes-recommended)
+        1. [External Ingress changes (recommended)](#external-ingress-changes-recommended)
+        1. [Internal Ingress changes (recommended)](#internal-ingress-changes-recommended)
+    1. [Option 2 changes](#option-2-changes)
+        1. [External Ingress changes (2 stages)](#external-ingress-changes-2-stages)
+        1. [Internal Ingress changes (2 stages)](#internal-ingress-changes-2-stages)
     1. [Certificate resources changes](#certificate-resources-changes)
     1. [Network Policy resources changes](#network-policy-resources-changes)
     1. [Deployment verification](#deployment-verification)
 
 There is a lot of information in this migration guide, so please make sure you read it all and understand what is required before performing a migration, as it might have an adverse impact on services if not performed appropriately.
 
-## Background - understanding why a migration is needed
+## Background (understanding why a migration is needed)
 
 **In version v0.11, cert-manager introduced some backwards incompatible changes that were announced in v0.8.**
 
@@ -49,7 +51,7 @@ For a more detailed understanding of how the manifest files need to be updated, 
 
 Option 1 below is strongly recommended as the approach.
 
-### Option 1 - renaming secrets
+### Option 1 (renaming secrets)
 
 By far the easiest and safest option is to amend the annotations and labels as described below **while at the same time also renaming the associated secrets**.
 
@@ -77,7 +79,7 @@ So access to the endpoint is disrupted for that period whilst the challenge is b
 
 If you are keen on minimising service disruption further and only have current connections reset, please evaluate Option 2 below.
 
-### Option 2 - explicit ingress certificate
+### Option 2 (explicit ingress certificate)
 
 This option is more complex than Option 1 and should only be considered if there are concerns with service availability while ingresses do not have a valid certifcate during the initial new certificate request.
 
@@ -132,7 +134,9 @@ kubectl -n project get challenge.certmanager.k8s.io
 
 The following examples are based on the [kube-example](https://github.com/ukhomeoffice/kube-example-app) project.
 
-### External Ingress changes (option 1 - recommended)
+### Option 1 changes (recommended)
+
+#### External Ingress changes (recommended)
 
 Changes required for websites or services exposed externally
 
@@ -194,7 +198,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-### Internal Ingress changes (option 1 - recommended)
+#### Internal Ingress changes (recommended)
 
 Changes required for websites or services exposed internally
 
@@ -260,7 +264,9 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-internal-tls-cmio
 ```
 
-### External Ingress changes (option 2 - 2 stages)
+### Option 2 changes
+
+#### External Ingress changes (2 stages)
 
 Changes required for websites or services exposed externally
 
@@ -341,7 +347,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-### Internal Ingress changes (option 2 - 2 stages)
+#### Internal Ingress changes (2 stages)
 
 Changes required for websites or services exposed internally
 

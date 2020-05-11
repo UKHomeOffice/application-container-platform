@@ -2,23 +2,23 @@
 
 ## Table of Content
 
-1. [Background - understanding why a migration is needed](#background---understanding-why-a-migration-is-needed)
+1. [Background (understanding why a migration is needed)](#background-understanding-why-a-migration-is-needed)
 1. [Migration options](#migration-options)
-    1. [Option 1 - renaming secrets](#option-1---renaming-secrets)
-    1. [Option 2 - explicit ingress certificate](#option-2---explicit-ingress-certificate)
+    1. [Option 1 (renaming secrets)](#option-1-renaming-secrets)
+    1. [Option 2 (explicit ingress certificate)](#option-2-explicit-ingress-certificate)
 1. [Getting cert-manager resources](#getting-cert-manager-resources)
 1. [Updating cert-manager resources for v0.13.1](#updating-cert-manager-resources-for-v0131)
-    1. [Option 1 changes](#option-1-changes)
-        1. [External Ingress with DNS challenge changes (option 1 - recommended)](#external-ingress-with-dns-challenge-changes-option-1---recommended)
-        1. [External Ingress with HTTP challenge changes (option 1 - recommended)](#external-ingress-with-http-challenge-changes-option-1---recommended)
-        1. [Internal Ingress with DNS challenge changes (option 1 - recommended)](#internal-ingress-with-dns-challenge-changes-option-1---recommended)
+    1. [Option 1 changes (recommended)](#option-1-changes-recommended)
+        1. [External Ingress with DNS challenge changes (recommended)](#external-ingress-with-dns-challenge-changes-recommended)
+        1. [External Ingress with HTTP challenge changes (recommended)](#external-ingress-with-http-challenge-changes-recommended)
+        1. [Internal Ingress with DNS challenge changes (recommended)](#internal-ingress-with-dns-challenge-changes-recommended)
     1. [Option 2 changes](#option-2-changes)
-        1. [External Ingress with DNS challenge changes (option 2 - 2 stages)](#external-ingress-with-dns-challenge-changes-option-2---2-stages)
-        1. [External Ingress with HTTP challenge changes (option 2 - 2 stages)](#external-ingress-with-http-challenge-changes-option-2---2-stages)
-        1. [Internal Ingress with DNS challenge changes (option 2 - 2 stages)](#internal-ingress-with-dns-challenge-changes-option-2---2-stages)
+        1. [External Ingress with DNS challenge changes (2 stages)](#external-ingress-with-dns-challenge-changes-2-stages)
+        1. [External Ingress with HTTP challenge changes (2 stages)](#external-ingress-with-http-challenge-changes-2-stages)
+        1. [Internal Ingress with DNS challenge changes (2 stages)](#internal-ingress-with-dns-challenge-changes-2-stages)
     1. [Deployment verification](#deployment-verification)
 
-## Background - understanding why a migration is needed
+## Background (understanding why a migration is needed)
 
 [PalmStoneGames/kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager) has been deprecated and not updated for 2 years, but more importantly it will stop being supported by LetsEncrypt in June 2020.
 
@@ -30,7 +30,7 @@ For a more detailed understanding of how the manifest files need to be updated, 
 
 Option 1 below is strongly recommended as the approach.
 
-### Option 1 - renaming secrets
+### Option 1 (renaming secrets)
 
 By far the easiest and safest option is to amend the annotations and labels of your `Ingress` resources as described below **while at the same time also renaming the associated secrets**.
 
@@ -53,7 +53,7 @@ So access to the endpoint is disrupted for that period whilst the challenge is b
 
 If you are keen on minimising service disruption further and only have current connections reset, please evaluate Option 2 below.
 
-### Option 2 - explicit ingress certificate
+### Option 2 (explicit ingress certificate)
 
 This option is more complex than Option 1 and should only be considered if there are concerens with service availability while ingresses do not have a valid certifcate during the initial new certificate request.
 
@@ -107,9 +107,9 @@ kubectl -n project get challenge.certmanager.k8s.io
 
 The following examples are based on the [kube-example](https://github.com/ukhomeoffice/kube-example-app) project.
 
-### Option 1 changes
+### Option 1 changes (recommended)
 
-#### External Ingress with DNS challenge changes (option 1 - recommended)
+#### External Ingress with DNS challenge changes (recommended)
 
 Changes required for websites or services exposed externally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
 
@@ -177,7 +177,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-#### External Ingress with HTTP challenge changes (option 1 - recommended)
+#### External Ingress with HTTP challenge changes (recommended)
 
 Changes required for websites or services exposed externally with ACME HTTP challenge
 
@@ -245,7 +245,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-#### Internal Ingress with DNS challenge changes (option 1 - recommended)
+#### Internal Ingress with DNS challenge changes (recommended)
 
 Changes required for websites or services exposed internally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
 
@@ -315,7 +315,7 @@ spec:
 
 ### Option 2 changes
 
-#### External Ingress with DNS challenge changes (option 2 - 2 stages)
+#### External Ingress with DNS challenge changes (2 stages)
 
 Changes required for websites or services exposed externally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
 
@@ -401,7 +401,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-#### External Ingress with HTTP challenge changes (option 2 - 2 stages)
+#### External Ingress with HTTP challenge changes (2 stages)
 
 Changes required for websites or services exposed externally
 
@@ -487,7 +487,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-#### Internal Ingress with DNS challenge changes (option 2 - 2 stages)
+#### Internal Ingress with DNS challenge changes (2 stages)
 
 Changes required for websites or services exposed internally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
 
