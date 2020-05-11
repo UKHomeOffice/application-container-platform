@@ -15,5 +15,5 @@ nav:
 markdown_extensions:
   - toc:
       permalink: "#"
-      toc_depth: 3
+      toc_depth: 4
   - markdown_include.include
