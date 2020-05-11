@@ -2,7 +2,7 @@
 
 ## Table of Content
 
-1. [Background - understanding why a migration is needed](#background-understanding-why-a-migration-is-needed)
+1. [Background (understanding why a migration is needed)](#background-understanding-why-a-migration-is-needed)
 1. [Migration options](#migration-options)
     1. [Option 1 (renaming secrets)](#option-1-renaming-secrets)
     1. [Option 2 (explicit ingress certificate)](#option-2-explicit-ingress-certificate)
