@@ -152,6 +152,7 @@ metadata:
   name: {{ .DEPLOYMENT_NAME }}-external
   annotations:
     # @Note: get rid of any psg annotations
+    # @Note: make sure you DON'T have the following annotation: kubernetes.io/tls-acme: "true"
     # @Note: add the enabled annotation to cert-manager.io/enabled
     cert-manager.io/enabled: "true"
     ingress.kubernetes.io/backend-protocol: "HTTPS"
@@ -288,6 +289,7 @@ metadata:
   name: {{ .DEPLOYMENT_NAME }}-internal
   annotations:
     # @Note: get rid of any psg annotations
+    # @Note: make sure you DON'T have the following annotation: kubernetes.io/tls-acme: "true"
     # @Note: add the enabled annotation to cert-manager.io/enabled
     cert-manager.io/enabled: "true"
     ingress.kubernetes.io/backend-protocol: "HTTPS"
