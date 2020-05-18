@@ -73,6 +73,8 @@ Migrating from the former [kube-cert-manager](https://github.com/PalmStoneGames/
 
 As stated above the cert-manager can also handle internal certificates i.e. those signed by the internal ACP Certificate Authority _(this is self signed btw)_. At the moment you might be using [cfssl-sidekick](https://github.com/UKHomeOffice/cfssl-sidekick) to perform this, but this can be completely replaced.
 
+If you want to create a certificate for a service, assuming the service is called `myservice` in namespace `mynamespace`, the Certificate definition would look like:
+
 ```YAML
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
@@ -83,11 +85,38 @@ spec:
   issuerRef:
     name: platform-ca
     kind: ClusterIssuer
-  commonName: site.svc.project.cluster.local
   dnsNames:
+  - myservice
+  - myservice.mynamespace
+  - myservice.mynamespace.svc
+  - myservice.mynamespace.svc.cluster.local
   - localhost
   - 127.0.0.1
 ```
+
+Ingress resources are checked by admission policies to ensure the platform-ca cluster issuer only issues certificates for DNS names that are hosted inside the namespace.
+
+So if you want to create a certificate for a replica in a statefulset, assuming your statufelset is called `mysts`, the Certificate definition would look like:
+
+```YAML
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: tls
+spec:
+  secretName: tls
+  issuerRef:
+    name: platform-ca
+    kind: ClusterIssuer
+  dnsNames:
+  - mysts-0.myservice.mynamespace
+  - mysts-0.myservice.mynamespace.svc
+  - mysts-0.myservice.mynamespace.svc.cluster.local
+  - localhost
+  - 127.0.0.1
+```
+
+Note that `mysts-0.myservice` is intentionally missing from the list in `dnsNames` because those names need to be either a hostname (for the service) or a name ending with `mynamespace`, `mynamespace.svc` or `mynamespace.svc.cluster.local`.
 
 This would create a kubernetes secret named `tls` in your namespace with the signed certificate. An interesting thing to note here is that although this is using the ClusterIssuer platform-ca created by the ACP team, there is nothing stopping a project from creating a local Issuer for their own project. So for example.
 
@@ -117,6 +146,30 @@ spec:
   - 127.0.0.1
 ```
 
+Finally, if you want to use your certificate for client auth (as well as server auth in the following example), you need to add a `keyUsages` section to your Certificate resource:
+
+```YAML
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: tls
+spec:
+  secretName: tls
+  issuerRef:
+    name: platform-ca
+    kind: ClusterIssuer
+  keyUsages:
+  - server auth
+  - client auth
+  dnsNames:
+  - myservice
+  - myservice.mynamespace
+  - myservice.mynamespace.svc
+  - myservice.mynamespace.svc.cluster.local
+  - localhost
+  - 127.0.0.1
+```
+
 ### **As a developer I want to retrieve a certificate for my external service**
 
 Let's assume we have an externally facing site which we wish to expose via ingress and we want a valid LetsEncrypt certificate.
@@ -127,7 +180,7 @@ Optionally, the acme solver to be used by the cluster issuer can be specified wi
 
 Please note that `cert-manager.io/enabled` is an annotation but `cert-manager.io/solver` is a label.
 
-When the site is externally facing i.e. the ingress class on the ingress is `kubernetes.io/ingress.class: nginx-external` you should always default to using a http01 challenge.
+When the site is externally facing i.e. the ingress class on the ingress is `kubernetes.io/ingress.class: nginx-external` you should always default to using a http01 challenge. However, if you know that the domain whitelisted in your namespace is hosted in AWS by Route53, you can instead specify a label of `cert-manager.io/solver: route53`
 
 ```YAML
 apiVersion: networking.k8s.io/v1beta1

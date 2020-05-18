@@ -482,6 +482,11 @@ For an externally accessed service, no labelling is required.
 
 However for an internally accessed service whose certificate ACME challenge is resolved with dns01, the following label should be added: `cert-manager.io/solver: route53`.
 
+For internal certificates issued by the `platform-ca` cluster issuer, please be aware of the following:
+
+- if you use your certificate for client auth, you need to add a `keyUsages` section to your certificate (please see the main [cert-manager guide](cert-manager.md) for more detail)
+- if you want to create a certificate for replicas in your statefulset, you should specify a DNS name of `mysts-0.myservice.mynamespace` to avoid having your resource being rejected by the admission policies (please see the main [cert-manager guide](cert-manager.md) for more detail)
+
 ### Network Policy resources changes
 
 The following `NetworkPolicy` resources used to be required to allow successful `http01` ACME challenges for cert-manager v0.8 resources.
