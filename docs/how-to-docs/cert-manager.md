@@ -91,6 +91,7 @@ spec:
   - myservice.mynamespace.svc
   - myservice.mynamespace.svc.cluster.local
   - localhost
+  ipAddresses:
   - 127.0.0.1
 ```
 
@@ -113,6 +114,7 @@ spec:
   - mysts-0.myservice.mynamespace.svc
   - mysts-0.myservice.mynamespace.svc.cluster.local
   - localhost
+  ipAddresses:
   - 127.0.0.1
 ```
 
@@ -143,6 +145,7 @@ spec:
   commonName: site.svc.project.cluster.local
   dnsNames:
   - localhost
+  ipAddresses:
   - 127.0.0.1
 ```
 
@@ -167,6 +170,7 @@ spec:
   - myservice.mynamespace.svc
   - myservice.mynamespace.svc.cluster.local
   - localhost
+  ipAddresses:
   - 127.0.0.1
 ```
 
