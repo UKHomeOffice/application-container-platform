@@ -8,12 +8,12 @@
     1. [Option 2 (explicit ingress certificate)](#option-2-explicit-ingress-certificate)
 1. [Getting cert-manager resources](#getting-cert-manager-resources)
 1. [Updating cert-manager resources for v0.13.1](#updating-cert-manager-resources-for-v0131)
-    1. [Option 1 changes (recommended)](#option-1-changes-recommended)
-        1. [External Ingress changes (recommended)](#external-ingress-changes-recommended)
-        1. [Internal Ingress changes (recommended)](#internal-ingress-changes-recommended)
+    1. [Option 1 changes (simplest)](#option-1-changes-simplest)
+        1. [External Ingress changes (simplest)](#external-ingress-changes-simplest)
+        1. [Internal Ingress changes (simplest)](#internal-ingress-changes-simplest)
     1. [Option 2 changes](#option-2-changes)
-        1. [External Ingress changes (2 stages)](#external-ingress-changes-2-stages)
-        1. [Internal Ingress changes (2 stages)](#internal-ingress-changes-2-stages)
+        1. [External Ingress changes (safest with 2 stages)](#external-ingress-changes-safest-with-2-stages)
+        1. [Internal Ingress changes (safest with 2 stages)](#internal-ingress-changes-safest-with-2-stages)
     1. [Certificate resources changes](#certificate-resources-changes)
     1. [Network Policy resources changes](#network-policy-resources-changes)
     1. [Deployment verification](#deployment-verification)
@@ -49,11 +49,13 @@ There are 2 possible approaches for the migration of resources. The high-level s
 
 For a more detailed understanding of how the manifest files need to be updated, please refer to section [Updating cert-manager resources for v0.13.1](#updating-cert-manager-resources-for-v0131) below.
 
-Option 1 below is strongly recommended as the approach.
+Option 1 is the simplest and is appropriate if you can afford some down-time (typically a couple of minutes, but longer if there is an issue).
+
+If you have to minimise disruption to users, option 2 is likely more appropriate.
 
 ### Option 1 (renaming secrets)
 
-By far the easiest and safest option is to amend the annotations and labels as described below **while at the same time also renaming the associated secrets**.
+The simplest option is to amend the annotations and labels as described below **while at the same time also renaming the associated secrets**.
 
 Renaming the secret (changing the value of `secretName` in either `Ingress` or `Certificate` resources) will make sure that the same secret is not managed by 2 `Certificate` resources (the v0.8 certificate and its v0.13.1 counter-part) - whether those `Certificate` resources are part of your deployments or it's one of the resources managed automatically for you by cert-manager when it deals with `Ingress` annotations.
 
@@ -77,17 +79,19 @@ The main draw-back of this approach is that the value for the new secret being c
 During the time the new certificate is being requested and LetsEncrypt performs its http or dns challenge, your ingress will not have a valid certificate.
 So access to the endpoint is disrupted for that period whilst the challenge is being completed and new cert/secret generated.
 
-If you are keen on minimising service disruption further and only have current connections reset, please evaluate Option 2 below.
+Note that if there is an issue obtaining certificates from LetsEncrypt (e.g. due to a rate limit), you might have to roll back the change and carry on using the previous certificates for a while longer. This is typically very rare, but can occur for example due to rate limits or in instances where DNS is set up differently in prod from notprod.
+
+If you are keen on minimising service disruption and only have current connections reset, please evaluate Option 2 below.
 
 ### Option 2 (explicit ingress certificate)
 
-This option is more complex than Option 1 and should only be considered if there are concerns with service availability while ingresses do not have a valid certifcate during the initial new certificate request.
+This option is more complex than Option 1 and should only be considered if there are concerns with service availability while ingresses do not have a valid certificate during the initial new certificate request.
 
-If not performed properly, you will gain nothing from it and it will have the same impact as Option 1.
+If not performed properly (i.e. if you do a single deployment instead of two as described in this section), you will gain nothing from it and it will have the same impact as Option 1.
 
 The high levels steps are:
 
-- Leave the current `Ingress` resource as it is (whith old v0.8 annotations)
+- Leave the current `Ingress` resource as it is (with old v0.8 annotations)
 - Create a `Certificate` resource with `letsencrypt-prod` as the clusterIssuer, a secret name different from the one used by the Ingress and the appropriate stanzas as shown later on this guide. You might want to use the `letsencrypt-staging` clusterIssuer instead of `letsencrypt-prod` while changing your Certificate manifest file and testing it in order to not reach the weekly limits imposed by LetsEncrypt on its prod server and switch to `letsencrypt-prod` once you know your `Certificate` resource works as you expect.
 - Deploy the changes to create the new certificate resource. Please note that the certificate and associated secret will at that point be unused, but make sure the `Certificate` is ready before deploying the next set of changes. You can check that by running `kubectl get certificates.cert-manager.io` in your namespace.
 - Update your `Ingress` resources
@@ -134,9 +138,9 @@ kubectl -n project get challenge.certmanager.k8s.io
 
 The following examples are based on the [kube-example](https://github.com/ukhomeoffice/kube-example-app) project.
 
-### Option 1 changes (recommended)
+### Option 1 changes (simplest)
 
-#### External Ingress changes (recommended)
+#### External Ingress changes (simplest)
 
 Changes required for websites or services exposed externally
 
@@ -198,7 +202,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-#### Internal Ingress changes (recommended)
+#### Internal Ingress changes (simplest)
 
 Changes required for websites or services exposed internally
 
@@ -267,7 +271,7 @@ spec:
 
 ### Option 2 changes
 
-#### External Ingress changes (2 stages)
+#### External Ingress changes (safest with 2 stages)
 
 Changes required for websites or services exposed externally
 
@@ -348,7 +352,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-#### Internal Ingress changes (2 stages)
+#### Internal Ingress changes (safest with 2 stages)
 
 Changes required for websites or services exposed internally
 
