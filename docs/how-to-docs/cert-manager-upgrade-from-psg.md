@@ -8,14 +8,14 @@
     1. [Option 2 (explicit ingress certificate)](#option-2-explicit-ingress-certificate)
 1. [Getting cert-manager resources](#getting-cert-manager-resources)
 1. [Updating cert-manager resources for v0.13.1](#updating-cert-manager-resources-for-v0131)
-    1. [Option 1 changes (recommended)](#option-1-changes-recommended)
-        1. [External Ingress with DNS challenge changes (recommended)](#external-ingress-with-dns-challenge-changes-recommended)
-        1. [External Ingress with HTTP challenge changes (recommended)](#external-ingress-with-http-challenge-changes-recommended)
-        1. [Internal Ingress with DNS challenge changes (recommended)](#internal-ingress-with-dns-challenge-changes-recommended)
+    1. [Option 1 changes (simplest)](#option-1-changes-simplest)
+        1. [External Ingress with DNS challenge changes (simplest)](#external-ingress-with-dns-challenge-changes-simplest)
+        1. [External Ingress with HTTP challenge changes (simplest)](#external-ingress-with-http-challenge-changes-simplest)
+        1. [Internal Ingress with DNS challenge changes (simplest)](#internal-ingress-with-dns-challenge-changes-simplest)
     1. [Option 2 changes](#option-2-changes)
-        1. [External Ingress with DNS challenge changes (2 stages)](#external-ingress-with-dns-challenge-changes-2-stages)
-        1. [External Ingress with HTTP challenge changes (2 stages)](#external-ingress-with-http-challenge-changes-2-stages)
-        1. [Internal Ingress with DNS challenge changes (2 stages)](#internal-ingress-with-dns-challenge-changes-2-stages)
+        1. [External Ingress with DNS challenge changes (safest with 2 stages)](#external-ingress-with-dns-challenge-changes-safest-with-2-stages)
+        1. [External Ingress with HTTP challenge changes (safest with 2 stages)](#external-ingress-with-http-challenge-changes-safest-with-2-stages)
+        1. [Internal Ingress with DNS challenge changes (safest with 2 stages)](#internal-ingress-with-dns-challenge-changes-safest-with-2-stages)
     1. [Deployment verification](#deployment-verification)
 
 ## Background (understanding why a migration is needed)
@@ -28,11 +28,13 @@ There are 2 possible approaches for the migration of `Ingress` resources. The hi
 
 For a more detailed understanding of how the manifest files need to be updated, please refer to section [Updating cert-manager resources for v0.13.1](#updating-cert-manager-resources-for-v0131) below.
 
-Option 1 below is strongly recommended as the approach.
+Option 1 is the simplest and is appropriate if you can afford some down-time (typically a couple of minutes, but longer if there is an issue).
+
+If you have to minimise disruption to users, option 2 is likely more appropriate.
 
 ### Option 1 (renaming secrets)
 
-By far the easiest and safest option is to amend the annotations and labels of your `Ingress` resources as described below **while at the same time also renaming the associated secrets**.
+The simplest option is to amend the annotations and labels of your `Ingress` resources as described below **while at the same time also renaming the associated secrets**.
 
 Renaming the secret (changing the value of `secretName` in your `Ingress` resource) will make sure that the same secret is not managed by 2 certificate managers (PSG kube-cert-manager and JetStack's cert-manager v0.13.1).
 
@@ -51,13 +53,15 @@ The main draw-back of this approach is that the value for the new secret being c
 During the time the new certificate is being requested and LetsEncrypt performs its http or dns challenge, your ingress will not have a valid certificate.
 So access to the endpoint is disrupted for that period whilst the challenge is being completed and new cert/secret generated.
 
+Note that if there is an issue obtaining certificates from LetsEncrypt (e.g. due to a rate limit), you might have to roll back the change and carry on using the previous certificates for a while longer. This is typically very rare, but can occur for example due to rate limits or in instances where DNS is set up differently in prod from notprod.
+
 If you are keen on minimising service disruption further and only have current connections reset, please evaluate Option 2 below.
 
 ### Option 2 (explicit ingress certificate)
 
-This option is more complex than Option 1 and should only be considered if there are concerens with service availability while ingresses do not have a valid certifcate during the initial new certificate request.
+This option is more complex than Option 1 and should only be considered if there are concerens with service availability while ingresses do not have a valid certificate during the initial new certificate request.
 
-If not performed properly, you will gain nothing from it and it will have the same impact as Option 1.
+If not performed properly (i.e. if you do a single deployment instead of two as described in this section), you will gain nothing from it and it will have the same impact as Option 1.
 
 The high levels steps are:
 
@@ -107,9 +111,9 @@ kubectl -n project get challenge.certmanager.k8s.io
 
 The following examples are based on the [kube-example](https://github.com/ukhomeoffice/kube-example-app) project.
 
-### Option 1 changes (recommended)
+### Option 1 changes (simplest)
 
-#### External Ingress with DNS challenge changes (recommended)
+#### External Ingress with DNS challenge changes (simplest)
 
 Changes required for websites or services exposed externally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
 
@@ -178,7 +182,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-#### External Ingress with HTTP challenge changes (recommended)
+#### External Ingress with HTTP challenge changes (simplest)
 
 Changes required for websites or services exposed externally with ACME HTTP challenge
 
@@ -246,7 +250,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-#### Internal Ingress with DNS challenge changes (recommended)
+#### Internal Ingress with DNS challenge changes (simplest)
 
 Changes required for websites or services exposed internally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
 
@@ -317,7 +321,7 @@ spec:
 
 ### Option 2 changes
 
-#### External Ingress with DNS challenge changes (2 stages)
+#### External Ingress with DNS challenge changes (safest with 2 stages)
 
 Changes required for websites or services exposed externally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
 
@@ -403,7 +407,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-#### External Ingress with HTTP challenge changes (2 stages)
+#### External Ingress with HTTP challenge changes (safest with 2 stages)
 
 Changes required for websites or services exposed externally
 
@@ -489,7 +493,7 @@ spec:
     secretName: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
 ```
 
-#### Internal Ingress with DNS challenge changes (2 stages)
+#### Internal Ingress with DNS challenge changes (safest with 2 stages)
 
 Changes required for websites or services exposed internally with ACME DNS challenge suitable when your domain is hosted as a Route53 zone.
 
