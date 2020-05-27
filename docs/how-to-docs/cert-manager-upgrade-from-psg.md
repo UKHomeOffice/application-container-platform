@@ -22,6 +22,10 @@
 
 [PalmStoneGames/kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager) has been deprecated and not updated for 2 years, but more importantly it will stop being supported by LetsEncrypt in June 2020.
 
+Please note that although cert-manager v0.13.1 was initially deployed, it quickly had to be replaced with a deployment of v0.15.0 because of [No configured Challenge Solvers for ACME Prod only](https://github.com/jetstack/cert-manager/issues/2494).
+
+cert-manager v0.13.1 supports the `cert-manager.io/v1alpha2` API version whereas v0.15.0 supports both `cert-manager.io/v1alpha2` and `cert-manager.io/v1alpha3`. v0.15.0 converts the v1alpha2 objects to v1alpha3, so although technically `cert-manager.io/v1alpha3` is specified as the `apiVersion` for `Certificate` objects, it will also work with `cert-manager.io/v1alpha2`
+
 ## Migration options
 
 There are 2 possible approaches for the migration of `Ingress` resources. The high-level steps for both approaches are expanded below.
@@ -360,7 +364,7 @@ should be initially left unchanged.
 Deploy a new certificate
 
 ```YAML
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
@@ -445,7 +449,7 @@ should be initially left unchanged.
 Deploy a new certificate
 
 ```YAML
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
@@ -532,7 +536,7 @@ should be initially left unchanged.
 Deploy a new certificate
 
 ```YAML
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: {{ .DEPLOYMENT_NAME }}-internal-tls-cmio
