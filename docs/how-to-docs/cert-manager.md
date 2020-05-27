@@ -2,7 +2,7 @@
 
 ## VERY IMPORTANT upgrade information
 
-`cert-manager` is being upgraded from v0.8 to v0.13.1. If you have cert-manager resources deployed in your namespaces, you MUST follow the [instructions to upgrade from v0.8](cert-manager-upgrade-from-v0.8.md) to upgrade annotations and labels in order for them to be managed by the new version of cert-manager.
+`cert-manager` is being upgraded from v0.8 to v0.15.0. If you have cert-manager resources deployed in your namespaces, you MUST follow the [instructions to upgrade from v0.8](cert-manager-upgrade-from-v0.8.md) to upgrade annotations and labels in order for them to be managed by the new version of cert-manager.
 
 To find out if you are using v0.8 cert-manager resources in your namespace, you can run:
 
@@ -10,7 +10,7 @@ To find out if you are using v0.8 cert-manager resources in your namespace, you 
 kubectl get certificates.certmanager.k8s.io
 ```
 
-Also LetsEncrypt will no longer be supporting PSG's kube-cert-manager from June 2020. So if you are using PSG kube-cert-manager to obtain certificates for your ingresses, you also need to migrate to JetStack's cert-manager v0.13.1 and follow the [instructions to upgrade from PGS's kube-cert-manager](cert-manager-upgrade-from-psg.md)
+Also LetsEncrypt will no longer be supporting PSG's kube-cert-manager from June 2020. So if you are using PSG kube-cert-manager to obtain certificates for your ingresses, you also need to migrate to JetStack's cert-manager v0.15.0 and follow the [instructions to upgrade from PGS's kube-cert-manager](cert-manager-upgrade-from-psg.md)
 
 To find out if you are using PSG kube-cert-manager to manage your ingresses certificates, you can run:
 
@@ -35,14 +35,14 @@ Without wishing to duplicate documentation which can be found in the [readme](ht
 
 **IMPORTANT NOTE:**
 
-`cert-manager` is being upgraded from v0.8 to v0.13.1. In order to allow development teams to upgrade their `cert-manager` resources according to their own schedule, both v0.8 and v.13.1 resources will be available concurrently for a period of time.
+`cert-manager` is being upgraded from v0.8 to v0.15.0. In order to allow development teams to upgrade their `cert-manager` resources according to their own schedule, both v0.8 and v.13.1 resources will be available concurrently for a period of time.
 
-While the older version of `cert-manager` (v0.8) is still available on the ACP platform, resources managed by the newer version of cert-manager (v0.13.1+) can only be accessed from the API server by suffixing the resource kind with `.cert-manager.io`.
+While the older version of `cert-manager` (v0.8) is still available on the ACP platform, resources managed by the newer version of cert-manager (v0.15.0+) can only be accessed from the API server by suffixing the resource kind with `.cert-manager.io`.
 
 For example:
 
 ```
-# to access v0.13.1 cert-manager resources
+# to access v0.15.0 cert-manager resources
 kubectl -n project get certificate.cert-manager.io
 kubectl -n project get orders.acme.cert-manager.io
 kubectl -n project get challenge.acme.cert-manager.io
@@ -76,7 +76,7 @@ As stated above the cert-manager can also handle internal certificates i.e. thos
 If you want to create a certificate for a service, assuming the service is called `myservice` in namespace `mynamespace`, the Certificate definition would look like:
 
 ```YAML
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: tls
@@ -100,7 +100,7 @@ Ingress resources are checked by admission policies to ensure the platform-ca cl
 So if you want to create a certificate for a replica in a statefulset, assuming your statufelset is called `mysts`, the Certificate definition would look like:
 
 ```YAML
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: tls
@@ -124,7 +124,7 @@ This would create a kubernetes secret named `tls` in your namespace with the sig
 
 ```YAML
 ---
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Issuer
 metadata:
   name: project-ca
@@ -132,7 +132,7 @@ spec:
   ca:
     secretName: project-ca
 ---
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: tls
@@ -152,7 +152,7 @@ spec:
 Finally, if you want to use your certificate for client auth (as well as server auth in the following example), you need to add a `keyUsages` section to your Certificate resource:
 
 ```YAML
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: tls
@@ -227,7 +227,7 @@ A few things to note here:
 - when using ingress annotations and labels, cert-manager uses another internal controller to pick up the ingress resources and create a `Certificate` resource on your behalf. Of course, you can instead define this directly yourself but you will also have to define annotations on the ingress resource to specify which secret should be used for TLS termination. This is the recommended and safest approach when migrating from `kube-cert-manager` to `cert-manager`.
 
 ```YAML
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: example
@@ -256,7 +256,7 @@ $ kubectl -n project get challenge
 
 **Network Policies**
 
-Please note that as part of the implementation of cert-manager v0.13.1, a `GlobalNetworkPolicy` object managing ingress traffic for `http01` challenges has been deployed.
+Please note that as part of the implementation of cert-manager v0.15.0, a `GlobalNetworkPolicy` object managing ingress traffic for `http01` challenges has been deployed.
 
 This means that you no longer need to have a `NetworkPolicy` in your namespaces allowing ingress traffic from port 8089 to the ephemeral pods that cert-manager creates to handle the `http01` challenge.
 
@@ -272,7 +272,7 @@ This is done by adding the following to your ingress resource:
 **Very Important**: in order to successfully switch to a DNS challenge, please ensure you have contacted the ACP team before attempting this for the first time on your sub-domain as the correct permissions need to exist to permit cert-manager to add records to the domain.
 
 ```YAML
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: example-tls
@@ -403,7 +403,7 @@ spec:
 Or with a `Certificate`:
 
 ```YAML
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: example

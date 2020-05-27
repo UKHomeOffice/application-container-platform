@@ -35,13 +35,17 @@ The following official cert-manager documentation provides good background infor
 - [Upgrading from v0.7 to v0.8](https://cert-manager.io/docs/installation/upgrading/upgrading-0.7-0.8/)
 - [Upgrading from v0.10 to v0.11](https://cert-manager.io/docs/installation/upgrading/upgrading-0.10-0.11/)
 
-Essentially, the cert-manager API version has been changed from `certmanager.k8s.io/v1alpha1` to `cert-manager.io/v1alpha2`. This means that both `Ingress` and `Certificate` resources have to be changed: there are annotations and labels changes for both resource types, as well as structural changes for `Certificate`s.
+Essentially, the cert-manager API version has been changed from `certmanager.k8s.io/v1alpha1` to `cert-manager.io/v1alpha3`. This means that both `Ingress` and `Certificate` resources have to be changed: there are annotations and labels changes for both resource types, as well as structural changes for `Certificate`s.
 
 Please note that when updating annotations and labels, you should only do that on resources you have created yourselves (not the ones managed automatically by cert-manager).
 
 For example, if you your manifest file contains a `Certificate` resource definition to terminate TLS on a sidecar, you should update annotations and labels as described below.
 
 However, please be aware that when annotating an `Ingress` resource with cert-manager annotations, cert-manager will automatically create a `Certificate` resource to handle certificate resources to LetsEncrypt. Those `Certificate` resources, which have the same name as the secret name specified in the `Ingress`, are internally managed by cert-manager should not be modified.
+
+Please note that although cert-manager v0.13.1 was initially deployed, it quickly had to be replaced with a deployment of v0.15.0 because of [No configured Challenge Solvers for ACME Prod only](https://github.com/jetstack/cert-manager/issues/2494).
+
+cert-manager v0.13.1 supports the `cert-manager.io/v1alpha2` API version whereas v0.15.0 supports both `cert-manager.io/v1alpha2` and `cert-manager.io/v1alpha3`. v0.15.0 converts the v1alpha2 objects to v1alpha3, so although technically `cert-manager.io/v1alpha3` is specified as the `apiVersion` for `Certificate` objects, it will also work with `cert-manager.io/v1alpha2`
 
 ## Migration options
 
@@ -308,7 +312,7 @@ should be initially left unchanged.
 Deploy a new certificate
 
 ```YAML
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: {{ .DEPLOYMENT_NAME }}-external-tls-cmio
@@ -390,7 +394,7 @@ should be initially left unchanged.
 Deploy a new certificate
 
 ```YAML
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: {{ .DEPLOYMENT_NAME }}-internal-tls-cmio
@@ -459,11 +463,11 @@ spec:
   - app.{{ .KUBE_NAMESPACE }}.svc
 ```
 
-should be changed to a v0.11 `Certificate`
+should be changed to a v0.15 `Certificate`
 
 ```YAML
 # @Note: change the apiVersion
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: {{ .DEPLOYMENT_NAME }}-service-tls
