@@ -65,17 +65,17 @@ web-portal.example-service.homeoffice.gov.uk
 ## Application Composition
 The following are containers that we create for use alongside your own application
 
-#### Keycloak Gatekeeper
-[Keycloak Proxy](https://github.com/keycloak/keycloak-gatekeeper): a container for putting auth in front of your application.
+#### Louketo Proxy (formerly Keycloak Proxy/Gatekeeper)
+[Louketo Proxy](https://github.com/louketo/louketo-proxy): a proxy that can be used to protect applications with Keycloak.
 #### Nginx Proxy
 [Nginx Proxy](https://github.com/UKHomeOffice/docker-nginx-proxy): for TLS and proxying your application container.
-#### cert-manager
-[Cert-manager](how-to-docs/cert-manager.md): for obtaining internal and external certificates.
+#### Cert Manager
+[Cert-Manager](how-to-docs/cert-manager.md): for obtaining internal and external certificates.
 
 ## Logging
-Logging stack consists of [Elasticsearch](https://github.com/UKHomeOffice/docker-elasticsearch), [Logstash](https://github.com/UKHomeOffice/docker-logstash-kubernetes), [Kibana](https://github.com/UKHomeOffice/docker-kibana)).
+Logging stack consists of [Elasticsearch](https://github.com/UKHomeOffice/docker-elasticsearch), [Fluentd](https://github.com/fluent/fluentd), [Kibana](https://github.com/UKHomeOffice/docker-kibana)).
 
-- Logstash agents deployed as a daemonSet will collect all workload logs and index them in Elasticsearch.
+- Fluentd agents deployed as a daemonSet will collect all workload logs and index them in Elasticsearch.
 - Logs are searchable for a period of 5 days through [Kibana UI](https://kibana.acp.homeoffice.gov.uk). Access to view logs can be requested via [Support request](https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/34).
 
 #### Current Log Retention Policy
