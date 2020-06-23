@@ -8,7 +8,7 @@ One pattern we are exploring is the use of a proxy cluster with an authenticated
 
 The workflow for this is as follows, note the following example is assuming we have peered with a network in the proxy cluster which is exposing x services.
 
-* A request via BAU the provisioning of a service on the Chisel server.
+* A request via the ACP service desk for the provisioning of a service on the Chisel server.
 * Once done user is provided credentials for service.
 * You add into your deployment a chisel container running in client mode and add the configuration as described to route the traffic. In regard to DNS and hostnames, kubernetes pods permit the user to add host entries into the container DNS, enabling you to override.
 * The traffic is picked up, encrypted over an ssh tunnel and pushed to the Chisel server where the user credentials are evaluated. Assuming everything is ok the traffic is then proxied on to destination.
