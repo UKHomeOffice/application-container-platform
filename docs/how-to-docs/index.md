@@ -8,7 +8,7 @@ This tree contains a collection of how-to guides for Developers.
 {!docs/how-to-docs/debug-issues.md!}
 {!docs/how-to-docs/dms-migration.md!}
 {!docs/how-to-docs/downscaling.md!}
-{!docs/how-to-docs/drone-how-to.md!}
+{!docs/how-to-docs/drone-ci.md!}
 {!docs/how-to-docs/elastic-container-registry.md!}
 {!docs/how-to-docs/ingress.md!}
 {!docs/how-to-docs/cert-manager.md!}
