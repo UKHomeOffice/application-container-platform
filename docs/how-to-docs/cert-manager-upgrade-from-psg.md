@@ -69,7 +69,7 @@ If not performed properly (i.e. if you do a single deployment instead of two as 
 
 The high levels steps are:
 
-- Leave the current `Ingress` resource as it is (whith the PSG annotations)
+- Leave the current `Ingress` resource as it is (with the PSG annotations)
 - Create a `Certificate` resource with `letsencrypt-prod` as the clusterIssuer, a secret name different from the one used by the Ingress and the appropriate stanzas as shown later on this guide. You might want to use the `letsencrypt-staging` clusterIssuer instead of `letsencrypt-prod` while changing your Certificate manifest file and testing it in order to not reach the weekly limits imposed by LetsEncrypt on its prod server and switch to `letsencrypt-prod` once you know your `Certificate` resource works as you expect.
 - Deploy the changes to create the new `Certificate` resource. Please note that the certificate and associated secret will at that point be unused, but make sure the `Certificate` is ready before deploying the next set of changes. You can check that by running `kubectl get certificates.cert-manager.io` in your namespace.
 - Update your `Ingress` resources

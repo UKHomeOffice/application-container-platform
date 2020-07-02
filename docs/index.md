@@ -22,7 +22,7 @@ We focus on enabling self-service where possible, and have developed a Platform 
 For definitions on each phase of the lifecycle and the criteria for production-ready, please refer [here](service-lifecycle.md). Release notes for ACP services can be found [here](https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/tree/master/release-notes).
 
 ## Accessing the Services
-When trying to get onto the platform for the first time you will need to get access to a various things that will allow you to get to other things. The full flow for this can be found [here](newuser.md)
+Users can access most ACP services through the use of Office 365 (O365). Full (licensed) O365 accounts can be requested from the Programme Offices. ACP can request 'AD-only' accounts on your behalf. More information can be found [here](https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/blob/master/newuser.md).
 
 ## Support
 [You can find more information about support here](https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support)
