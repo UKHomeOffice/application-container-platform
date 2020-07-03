@@ -10,7 +10,7 @@ Each profile will expire after a certain amount of time (8-72 hours), users will
 GitHub is where we store our open source code. You need to be added to the Uk HomeOffice organisation to access most of our code. More documentation can be found [here](https://help.github.com/)
 
 #### GitLab
-[GitLab](https://gitlab.digital.homeoffice.gov.uk) is where we store our more private code. Hosted in our ops cluster, you will need an office 365 account to get in via single sign on. Each project has its own group which are managed by members of that project. More in depth guides to gitlab can be found [here](https://docs.gitlab.com/ce/README.html).
+[GitLab](https://gitlab.digital.homeoffice.gov.uk) is where we store our more private code. Hosted in our ops cluster, you will need an office 365 account to get in via single sign on. Each project has its own group which are managed by members of that project. More in depth guides to Gitlab can be found [here](https://docs.gitlab.com/ce/README.html).
 
 ## CI
 #### Drone
@@ -73,7 +73,7 @@ The following are containers that we create for use alongside your own applicati
 [Cert-Manager](how-to-docs/cert-manager.md): for obtaining internal and external certificates.
 
 ## Logging
-Logging stack consists of [Elasticsearch](https://github.com/UKHomeOffice/docker-elasticsearch), [Fluentd](https://github.com/fluent/fluentd), [Kibana](https://github.com/UKHomeOffice/docker-kibana)).
+Logging stack consists of [Elasticsearch](https://github.com/UKHomeOffice/docker-elasticsearch), [Fluentd](https://github.com/fluent/fluentd), [Kibana](https://github.com/UKHomeOffice/docker-kibana).
 
 - Fluentd agents deployed as a daemonSet will collect all workload logs and index them in Elasticsearch.
 - Logs are searchable for a period of 5 days through [Kibana UI](https://kibana.acp.homeoffice.gov.uk). Access to view logs can be requested via [Support request](https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/34).
@@ -81,14 +81,14 @@ Logging stack consists of [Elasticsearch](https://github.com/UKHomeOffice/docker
 #### Current Log Retention Policy
 - Logs are searchable in Kibana for 5 days and remain within Elasticsearch for 10 days.
 - Collected workload logs will be persisted in S3 indefinitely and migrated to the infrequent access storage class and then glacier storage after 60 and 180 days respectively. **NOTE: this may change in the future!**
-- The same policy applies to all logs within ELK
+- The same policy applies to all logs within EFK
 
 ## Metrics / Monitoring
 #### Sysdig
-[Sysdig](https://sysdig.digital.homeoffice.gov.uk) is our metric collection tool. We are working closely with Sysdig on the development of this. It can be used for dashboards, alerting and much more. More information can be found on the [Sysdig Monitor site](https://sysdig.com) and for the open-source tool, [Sysdig](http://sysdig.org) (command line tool) and [Sysdig Inspect](https://github.com/draios/sysdig-inspect).
+[Sysdig](https://sysdig.digital.homeoffice.gov.uk) is our metric collection tool. We are working closely with Sysdig on the development of this. It can be used for dashboards, alerting and much more. More information (including the command line tool)  can be found on the [Sysdig Monitor site](https://sysdig.com) and [Sysdig Inspect](https://github.com/draios/sysdig-inspect).
 
 #### Sysdig training
-Sysdig have an online training course which covers the basics of using the product, [Sysdig 101](https://sysdig.teachable.com/). Sysdig recommends new users complete this training.
+Sysdig have an online training course which covers the basics of using the product, [Sysdig 101](https://learn.sysdig.com/). Sysdig recommends new users complete this training.
 
 ## Security and disaster recovery
 

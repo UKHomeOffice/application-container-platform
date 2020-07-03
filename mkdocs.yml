@@ -7,7 +7,6 @@ nav:
   - Release Notes: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/tree/master/release-notes/
   - How To's: how-to-docs/index.md
   - Developer Getting Started Guide: developer-docs/index.md
-  - New User Guide: newuser.md
   - RBAC Guide: rbac.md
   - ACP External IPs: external-addresses.md
   - Service Lifecycle: service-lifecycle.md
