@@ -1,6 +1,6 @@
-# **Cert Manager**
+## **Cert Manager**
 
-## VERY IMPORTANT upgrade information
+### VERY IMPORTANT upgrade information
 
 `cert-manager` is being upgraded from v0.8 to v0.15.0. If you have cert-manager resources deployed in your namespaces, you MUST follow the [instructions to upgrade from v0.8](cert-manager-upgrade-from-v0.8.md) to upgrade annotations and labels in order for them to be managed by the new version of cert-manager.
 
@@ -20,7 +20,7 @@ kubectl get ingresses -o yaml | grep stable.k8s.psg.io
 
 Please also be aware that admission policies have been updated and will reject `Ingress` resources with annotations or labels supported by more than one certificate manager. There are currently ingresses with both cert-manager v0.8 and PSG annotations or labels and those will now fail applying.
 
-## Background
+### Background
 
 The ACP platform presently has two certificate management services.
 
@@ -59,9 +59,9 @@ kubectl -n project get orders.certmanager.k8s.io
 kubectl -n project get challenge.certmanager.k8s.io
 ```
 
-## **How-tos**
+### **How-tos**
 
-### **As a developer I already have a certificate from the legacy kube-cert-manager, how do I migrate?**
+#### **As a developer I already have a certificate from the legacy kube-cert-manager, how do I migrate?**
 
 Migrating from the former [kube-cert-manager](https://github.com/PalmStoneGames/kube-cert-manager) over to [cert-manager](https://github.com/jetstack/cert-manager) means creating the certificate request as below and removing the annotations from the ingress. However, the safe way would be to;
 
@@ -69,7 +69,7 @@ Migrating from the former [kube-cert-manager](https://github.com/PalmStoneGames/
 - Push out the change and wait for the certificate to be fulfilled.
 - Once you have the certificate you can update your ingress to use the new secret,**remove** the annotations and use the Certificate resource thereafter.
 
-### **As a developer I want to retrieve an internal certificate**
+#### **As a developer I want to retrieve an internal certificate**
 
 As stated above the cert-manager can also handle internal certificates i.e. those signed by the internal ACP Certificate Authority _(this is self signed btw)_. At the moment you might be using [cfssl-sidekick](https://github.com/UKHomeOffice/cfssl-sidekick) to perform this, but this can be completely replaced.
 
@@ -174,7 +174,7 @@ spec:
   - 127.0.0.1
 ```
 
-### **As a developer I want to retrieve a certificate for my external service**
+#### **As a developer I want to retrieve a certificate for my external service**
 
 Let's assume we have an externally facing site which we wish to expose via ingress and we want a valid LetsEncrypt certificate.
 
@@ -260,7 +260,7 @@ Please note that as part of the implementation of cert-manager v0.15.0, a `Globa
 
 This means that you no longer need to have a `NetworkPolicy` in your namespaces allowing ingress traffic from port 8089 to the ephemeral pods that cert-manager creates to handle the `http01` challenge.
 
-### **As a developer I want to retrieve a certificate for a service behind the vpn, or simply wish to use the DNS validation**
+#### **As a developer I want to retrieve a certificate for a service behind the vpn, or simply wish to use the DNS validation**
 
 When a site is internal / behind the vpn, in order to handle the challenge you need to switch to using a DNS challenge.
 
@@ -326,7 +326,7 @@ spec:
     secretName: example-tls
 ```
 
-### **As a developer I want to use LetsEncrypt staging while configuring my cert-manager resources**
+#### **As a developer I want to use LetsEncrypt staging while configuring my cert-manager resources**
 
 You should use the staging version of LetsEncrypt in order to not be impacted by rate limits of the production version while setting up and testing the cert-manager annotations and labels you specify on your resources.
 
@@ -366,7 +366,7 @@ Not specifying this annotation is equivalent to specifying `cert-manager.io/clus
 
 Please note that the certificates issued by the staging version of LetsEncrypt are not signed and should not be used in production.
 
-### **As a developer I want to get a certificate for a server with a DNS name longer than 63 characters**
+#### **As a developer I want to get a certificate for a server with a DNS name longer than 63 characters**
 
 A certificate's `commonName` is used to create a Certificate Signing Request and populate a field that is limited to 63 characters.
 
