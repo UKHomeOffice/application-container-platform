@@ -34,6 +34,8 @@ Please download the VPN profile named **"Kube Platform"** and use the `openvpn` 
 
 VPN profiles expire after 72 hours. You'll need to download and connect with a new VPN Profile when it expires.
 
+If you cannot resolve the [Platform Hub] or other ACP services behind the VPN such as [sysdig], then please try setting your DNS servers to 8.8.8.8 (Google's DNS servers).
+
 ## Platform Hub registration
 > **Please note** that you need to have your VPN running to access the Platform Hub and also talk to cluster APIs.
 
@@ -64,7 +66,7 @@ Platform users can join [our Slack instance][hod dsp slack] using a Home Office 
 
 > **Please note** that the sign up process involves clicking a link that will be emailed to you, so if you only have an AD-only digital account (i.e. if your digital email does not have a mailbox), you will need to [raise a request][misc request form] to have your corporate email invited to Slack.
 
-Once you have an account on Slack, please join the `#acp-support` and `#acp-induction` channels. Other useful channels include `#acp-service-alerts` for the current status of ACP services (which can also be found on our [status page][acp status page]) and `#acp-feedback` where you can provide feedback regarding our platform.
+Once you have an account on Slack, please join the `#acp-support` and `#acp-induction` channels. Other useful channels include `#acp-service-status` for the current status of ACP services (which can also be found on our [status page][acp status page]) and `#acp-feedback` where you can provide feedback regarding our platform.
 
 ## Required binaries
 
@@ -115,7 +117,9 @@ drone version 0.8.6
 
 #### Install Kubectl
 
-You can follow the instructions to install version `v1.13.4` of `kubectl` from the [Kubernetes website][install kubectl]. You can verify the installation is successful with:
+You can follow the instructions to install `kubectl` from the [Kubernetes website][install kubectl]. The version you should install should be within one minor version of the Kubernetes version that we are currently running. You can check what version we are currently running [here][kubernetes release notes] (versions that are not within one minor version may still work correctly for most resources, however it is not guaranteed).
+
+You can verify the installation is successful with:
 
 ```bash
 $ kubectl version
@@ -180,3 +184,4 @@ Finally, please head over and read through our [support documentation] to famili
 [misc request form]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/118
 [acp status page]: https://status.acp.homeoffice.gov.uk/
 [sysdig]: https://sysdig.digital.homeoffice.gov.uk/
+[kubernetes release notes]: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/blob/master/release-notes/kubernetes.md
