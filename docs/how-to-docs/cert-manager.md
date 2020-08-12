@@ -287,13 +287,6 @@ spec:
   commonName: mysite.example.com
   dnsNames:
   - example.com
-  acme:
-    config:
-    - dns01:
-        provider: route53
-      domains:
-      - mysite.example.com
-      - example.com
 ```
 
 Or via ingress you would use
