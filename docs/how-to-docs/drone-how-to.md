@@ -1,4 +1,4 @@
-## Drone How To
+## Drone How To (LEGACY v0.8)
 
 #### Install Drone CLI
 
