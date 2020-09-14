@@ -8,7 +8,7 @@ nav:
   - How To's: how-to-docs/index.md
   - Developer Getting Started Guide: developer-docs/index.md
   - RBAC Guide: rbac.md
-  - ACP External IPs: external-addresses.md
+  - ACP External IPs: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/blob/master/acp_ips.md
   - Service Lifecycle: service-lifecycle.md
 
 markdown_extensions:
