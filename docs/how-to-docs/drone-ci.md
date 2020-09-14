@@ -26,6 +26,7 @@ Drone CI v1 is now available within ACP. For a short time, we will be running bo
 - Parallelism: Multiple Pipeline objects can be defined for a single repository and executed in parallel. In addition, build steps can be described as a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph), allowing for more complex execution flows.
 - Organisation Secrets: Secrets can be created and managed at an Organisation level, i.e. made available to all repositories within your Gitlab group.
 - Container Registry Authentication: Pipeline steps referencing images stored in ACP ECR or Artifactory can be pulled by default, without the need to manually authenticate with separate credentials.
+- Starlark plugin: define your pipelines by generating a data structure using the [Starlark](https://docs.bazel.build/versions/master/skylark/language.html) language.
 
 ### Repository Migration
 
@@ -33,7 +34,7 @@ An initial database migration has occurred from 01/07/2020 to populate the new D
 
 1. Download and install the latest version of the [drone-cli](https://docs.drone.io/cli/install/) binary.
 
-    It is likely that you will have to interact with the old and the new instances of drone. If that's the case, you might want to rename the `drone` binary you've just downloaed to `drone1` so that you can use the `drone` CLI to interact with the old drone instances (v0.8) and `drone1` to interact with the new ones (v1). Please note that any further reference to `drone` as the CLI refers to the latest version of drone-cli for the v1 instances.
+    It is likely that you will have to interact with the old and the new instances of drone. If that's the case, you might want to rename the `drone` binary you've just downloaded to `drone1` so that you can use the `drone` CLI to interact with the old drone instances (v0.8) and `drone1` to interact with the new ones (v1). Please note that any further reference to `drone` as the CLI refers to the latest version of drone-cli for the v1 instances.
 1. Navigate to your repository containing the `.drone.yml` file
 1. Use the drone-cli to initially convert to the new format: `drone convert` (run `drone convert --save` after validating the output).
 1. For each pipeline definition, specify the `type` to state using the kubernetes build runner. For example:
@@ -44,7 +45,7 @@ An initial database migration has occurred from 01/07/2020 to populate the new D
     type: kubernetes
     ```
 
-1. If your pipeline deal with `deployment` events, replace that event type with `promote`. For example:
+1. If your pipeline deals with `deployment` events, replace that event type with `promote`. For example:
 
     ```yml
     # from
