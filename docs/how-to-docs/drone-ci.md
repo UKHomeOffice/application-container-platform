@@ -1,22 +1,22 @@
 ## Drone CI (v1)
 
-- [Drone CI](#drone-ci)
-  - [Overview](#overview)
-  - [Repository Migration](#repository-migration)
-  - [Example Pipelines](#example-pipelines)
-  - [Services](#services)
-    - [Docker-in-Docker](#docker-in-docker)
-    - [Anchore Image Scanning](#anchore-image-scanning)
-    - [ECR](#ecr)
+- [Overview](#overview)
+- [Repository Migration](#repository-migration)
+- [Example Pipelines](#example-pipelines)
+- [Services](#services)
+  - [Docker-in-Docker](#docker-in-docker)
+  - [Anchore Image Scanning](#anchore-image-scanning)
+  - [ECR](#ecr)
+- [Starlark](#starlark)
 
 ### Overview
 
 Drone CI v1 is now available within ACP. For a short time, we will be running both old and new instances to allow projects to migrate each of their own repositories over to the new instances. For reference, the endpoints are:
 
-- [OLD-GITLAB] https://drone-gitlab.acp.homeoffice.gov.uk
-- [OLD-GITHUB] https://drone.acp.homeoffice.gov.uk
-- [NEW-GITLAB] https://drone-gl.acp.homeoffice.gov.uk
-- [NEW-GITHUB] https://drone-gh.acp.homeoffice.gov.uk
+- [OLD-GITLAB] [https://drone-gitlab.acp.homeoffice.gov.uk](https://drone-gitlab.acp.homeoffice.gov.uk)
+- [OLD-GITHUB] [https://drone.acp.homeoffice.gov.uk](https://drone.acp.homeoffice.gov.uk)
+- [NEW-GITLAB] [https://drone-gl.acp.homeoffice.gov.uk](https://drone-gl.acp.homeoffice.gov.uk)
+- [NEW-GITHUB] [https://drone-gh.acp.homeoffice.gov.uk](https://drone-gh.acp.homeoffice.gov.uk)
 
 **Notable changes:**
 
@@ -33,47 +33,49 @@ Drone CI v1 is now available within ACP. For a short time, we will be running bo
 An initial database migration has occurred from 01/07/2020 to populate the new Drone CI instances with repository secrets, in order to ease the migration process for users. There are required changes to your `.drone.yml` file however, before you are able to activate and execute any new builds.
 
 1. Download and install the latest version of the [drone-cli](https://docs.drone.io/cli/install/) binary.
-
     It is likely that you will have to interact with the old and the new instances of drone. If that's the case, you might want to rename the `drone` binary you've just downloaded to `drone1` so that you can use the `drone` CLI to interact with the old drone instances (v0.8) and `drone1` to interact with the new ones (v1). Please note that any further reference to `drone` as the CLI refers to the latest version of drone-cli for the v1 instances.
 1. Navigate to your repository containing the `.drone.yml` file
 1. Use the drone-cli to initially convert to the new format: `drone convert` (run `drone convert --save` after validating the output).
-1. For each pipeline definition, specify the `type` to state using the kubernetes build runner. For example:
-
-    ```yml
-    kind: pipeline
-    name: default
-    type: kubernetes
-    ```
-
+1. For each pipeline definition, specify the `type` to state using the kubernetes build runner (see example below).
 1. If your pipeline deals with `deployment` events, replace that event type with `promote`. For example:
-
-    ```yml
-    # from
-      when:
-        event:
-        - deployment
-
-    # to
-      when:
-        event:
-        - promote
-    ```
-
 1. If any of your steps are running docker builds or leveraging anchore-submission, review the [Services](#Services) section for further updates.
 1. De-activate your repository within Drone v0.8 CI: `https://<old-drone-url>/<organisation>/<repository-name>/settings`
 1. Activate your repository within Drone v1 CI: `https://<new-drone-url>/<organisation>/<repository-name>/settings`
 1. Push your commit to trigger a build (at least the clone step)
 
+Here's an example of setting the runner type as `kubernetes`:
+
+```yml
+kind: pipeline
+name: default
+type: kubernetes
+```
+
+And here's how deployments have to be changed to promotions:
+
+from:
+
+```yml
+  when:
+    event:
+    - deployment
+```
+
+to:
+
+```yml
+  when:
+    event:
+    - promote
+```
+
 Please note that:
 
 1. As the `deployment` event has been replaced by the `promote` and `rollback` events, the `drone` CLI no longer supports `drone deploy`.
-
     Instead, `drone build promote` has to be used to trigger a `promote` event.
 1. If you think you might have to switch to the old pipeline syntax running on the old drone instances during development and testing of your new drone pipeline - for example, if there is a need to apply a fix to a higher environment when your new pipeline is not yet ready, consider specifying a different pipeline file for drone v1.
-
     In `https://<new-drone-url>/<organisation>/<repository-name>/settings`, you can specify the name of the pipeline file. Drone v0.8 will use `.drone.yml` and for Drone v1, you could specify another file name, e.g. `.drone-v1.yml`. This would allow you to easily and quickly switch between the old and new drone instances and still get the drone servers to use the appropriate pipeline, from the same commit point.
 1. Gitlab supports only one webhook to Drone per repository. So, assuming a repo is active on the old drone instance for gitlab, activating it on the new drone instance will get Gitlab to only send events to the new drone instance (even though the repository will still appear to be active on the old drone instance).
-
     However, Github supports several webhooks. In that case, simply activating a repo on the new drone instance will not prevent the old drone instance to attempt to run the old pipeline. So make sure you deactivate the repo on the old drone instance unless you really want both pipelines to be active at the same time.
 1. If a repo is activate on a new Drone instance without its pipeline being modified, it will hang and needs to be cancelled.
 
