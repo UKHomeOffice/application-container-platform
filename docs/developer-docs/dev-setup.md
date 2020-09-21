@@ -104,16 +104,14 @@ Docker version 18.03.1-ce, build 9ee9f40
 
 #### Install Drone
 
-Drone CLI can be downloaded from the [Drone CI website]. Instructions installing on multiple operating systems are shown on the webpage. Currently our Drone server instance is compatible with version `0.8.6`, which can be found [here][drone cli github download] or [here][drone cli 0.8 docs].
+Drone CLI can be downloaded from the [Drone CI website]. Instructions installing on multiple operating systems are shown on the webpage. Currently our Drone server instance is compatible with version `1.2.2`, which can be found [here][drone cli github download].
 
 Verify that the installation is successful:
 
 ```bash
 $ drone --version
-drone version 0.8.6
+drone version 1.2.2
 ```
-
-> **Please note** that Drone CLI version `1.0` and above are not fully compatible with our version of the Drone server. Please install `v0.8.6`.
 
 #### Install Kubectl
 
@@ -175,8 +173,7 @@ Finally, please head over and read through our [support documentation] to famili
 [Connected Identities]:https://hub.acp.homeoffice.gov.uk/identities
 [support documentation]:https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support
 [official AWS documentation]:https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
-[drone cli github download]: https://github.com/drone/drone-cli/releases/tag/v0.8.6
-[drone cli 0.8 docs]: https://0-8-0.docs.drone.io/cli-installation/
+[drone cli github download]: https://github.com/drone/drone-cli/releases/tag/v1.2.2
 [add colleague to service desk]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/100
 [update email request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/98
 [hod dsp slack]: https://hod-dsp.slack.com/
