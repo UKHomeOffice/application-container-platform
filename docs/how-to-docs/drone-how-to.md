@@ -566,35 +566,78 @@ ${DRONE_COMMIT_SHA} --> $${DRONE_COMMIT_SHA}
 ACP provides Anchore as a scanning solution for images built into the Drone pipeline, allowing users to scan both ephemeral _(built within the context of the drone, but not pushed to a repository yet)_ as well as any public images.
 
 Example pipeline:
-```YAML
-pipeline:
-  build:
-    image: docker:17.09.0-ce
-    environment:
-    - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-    - docker build -t docker.digital.homeoffice.gov.uk/myimage:$${DRONE_BUILD_NUMBER} .
 
-  scan:
-    # The location of the drone plugin
-    image: quay.io/ukhomeofficedigital/anchore-submission:latest
-    # The optional path of a Dockerfile
-    dockerfile: Dockerfile
-    # Note the lack of double $ here (due to the way drone injects variables)
-    image_name: docker.digital.homeoffice.gov.uk/myimage:${DRONE_BUILD_NUMBER}
-    # Indicates the image is locally available
-    local_image: true
-    # This indicates we are willing tolerate any vulnerabilities which are below medium (valid values: negligible, low, medium, high, critical)
-    tolerate: medium
-    # An optional whitelist (comma separated list of CVE's)
-    whitelist: CVE_SOMENAME_1,CVE_SOMENAME_2
-    # An optional whitelist file containing a list of CSV relative to the repo path
-    whitelist_file: <PATH>
-    # Indicates we should show all vulnerabilities regardless
-    show_all_vulnerabilities: false
-    # By default the plugin will exit will fail if any vulnerabilities are discovered which are not tolerated,
-    # you change this behaviour by setting the below
-    fail_on_detection: false
+```YAML
+  kind: pipeline
+  name: default
+  type: kubernetes
+
+  platform:
+    os: linux
+    arch: amd64
+
+  steps:
+  - name: build
+    pull: if-not-exists
+    image: docker:19.03.12-dind
+    commands:
+    # wait for docker service to be up before running docker build
+    - n=0; while [ "$n" -lt 60 ] && [ ! -e /var/run/docker.sock ]; do n=$(( n + 1 )); sleep 1; done
+    - docker build -t acp-example-app:$${DRONE_COMMIT_SHA} . --no-cache
+    volumes:
+    - name: dockersock
+      path: /var/run
+    when:
+      event:
+      - push
+      - tag
+
+  - name: scan-image
+    image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
+    environment:
+      IMAGE_NAME: acp-example-app:${DRONE_COMMIT_SHA}
+      SERVICE_URL: http://anchore-submission-server:10080
+      # An optional whitelist (comman separated list of CVE's)s
+      WHITELIST: CVE_SOMENAME_1,CVE_SOMENAME_2
+      IMAGE_NAME: docker.digital.homeoffice.gov.uk/myimage:${DRONE_BUILD_NUMBER}
+      SERVICE_URL: http://anchore-submission-server:10080
+      # The optional path of a Dockerfile
+      DOCKERFILE: Dockerfile
+      # This indicates we are willing tolerate any vulnerabilities which are below medium
+      TOLARATES: medium
+      # An optional whitelist file containing a list of CSV relative to the repo path
+      WHITELIST_FILE: <PATH>
+      # By default the pligin will exit will fail if any vulnerabilities are discovered which are not tolarated,
+      # you change this behaviour by setting the bellow
+      FAIL_ON_DETECTION: false
+    when:
+      event:
+      - push
+      - tag
+
+  services:
+  - name: docker
+    image: docker:19.03.12-dind
+    volumes:
+    - name: dockersock
+      path: /var/run
+
+  - name: anchore-submission-server
+    image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
+    commands:
+      - /anchore-submission server
+    environment:
+      ANCHORE_URL: "acp-anchore.acp.homeoffice.gov.uk"
+      REGISTRY_URL: "acp-ephemeral-registry.acp.homeoffice.gov.uk"
+    volumes:
+    - name: dockersock
+      path: /var/run
+
+  volumes:
+  - name: dockersock
+    temp: {}
+
+  ...
 ```
 
 #### Q&As
