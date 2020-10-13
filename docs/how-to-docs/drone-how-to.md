@@ -1,4 +1,4 @@
-## Drone How To (LEGACY v0.8)
+## Drone How To
 
 #### Install Drone CLI
 
@@ -53,8 +53,6 @@ Email: youremail@gmail.com
 
 Once you are logged in to Drone, you will find a list of repos by clicking the icon in the top right corner and going to [Repositories][drone github repos page].
 
-Sync your repository access rights with Drone by clicking the icon in the top right corner again with the `Synchronize` button - this needs to be applied everytime when a new repository is created.
-
 Select the repo you want to activate.
 
 Navigate to your repository's settings in Github (or Gitlab) and you will see a webhook has been created. You need to update the url for the newly created web hook so that it matches this pattern:
@@ -108,7 +106,7 @@ If your repository is hosted on Gitlab, you don't want to publish your images to
 Register for a free [Quay account][quay link] using your Github account linked to the Home Office organisation.
 
 Once you've logged into Quay check that you have `ukhomeofficedigital` under Users and Organisations.
-If you do not, [submit a support request on the support portal for access to the ukhomeoffice organisation][add to quay support request].
+If you do not, [submit a support request on the platform hub for access to the ukhomeoffice organisation][add to quay support request].
 
 Once you have access to view the `ukhomeofficedigital` repositories, click repositories and
 click the `+ Create New Repositories` that is:
@@ -116,7 +114,7 @@ click the `+ Create New Repositories` that is:
 - public
 - empty - no need to create a repo from a Dockerfile or link it to an existing repository
 
-Add your project to the UKHomeOffice Quay account and [submit a support request on the support portal for a new Quay robot][quay robot support request].
+Add your project to the UKHomeOffice Quay account and [submit a support request on the platform hub for a new Quay robot][quay robot support request].
 
 Add the step to publish the docker image to Quay in your Drone pipeline:
 
@@ -231,7 +229,7 @@ docker tag <image_name> docker.digital.homeoffice.gov.uk/ukhomeofficedigital/<yo
 
 is the name of the image you tagged previously in the build step.
 
-The image should now be published on Artifactory. Please note that we regularly remove container images that have not been downloaded in a year.
+The image should now be published on Artifactory.
 
 #### Deployments
 
@@ -563,38 +561,79 @@ ${DRONE_COMMIT_SHA} --> $${DRONE_COMMIT_SHA}
 
 ## Scanning Images in Drone
 
-ACP provides Anchore as a scanning solution for images built into the Drone pipeline, allowing users to scan both ephemeral _(built within the context of the drone, but not pushed to a repository yet)_ as well as any public images.
+ACP provides Anchore as scanning solution to images built into the Drone pipeline, allowing users to scan both ephemeral _(built within the context of the drone, but not pushed to a repository yet)_ as well and well any public images.
 
-Example pipeline:
 ```YAML
-pipeline:
-  build:
-    image: docker:17.09.0-ce
-    environment:
-    - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-    - docker build -t docker.digital.homeoffice.gov.uk/myimage:$${DRONE_BUILD_NUMBER} .
+  kind: pipeline
+  name: default
+  type: kubernetes
 
-  scan:
-    # The location of the drone plugin
-    image: quay.io/ukhomeofficedigital/anchore-submission:latest
-    # The optional path of a Dockerfile
-    dockerfile: Dockerfile
-    # Note the lack of double $ here (due to the way drone injects variables)
-    image_name: docker.digital.homeoffice.gov.uk/myimage:${DRONE_BUILD_NUMBER}
-    # Indicates the image is locally available
-    local_image: true
-    # This indicates we are willing tolerate any vulnerabilities which are below medium (valid values: negligible, low, medium, high, critical)
-    tolerate: medium
-    # An optional whitelist (comma separated list of CVE's)
-    whitelist: CVE_SOMENAME_1,CVE_SOMENAME_2
-    # An optional whitelist file containing a list of CSV relative to the repo path
-    whitelist_file: <PATH>
-    # Indicates we should show all vulnerabilities regardless
-    show_all_vulnerabilities: false
-    # By default the plugin will exit will fail if any vulnerabilities are discovered which are not tolerated,
-    # you change this behaviour by setting the below
-    fail_on_detection: false
+  platform:
+    os: linux
+    arch: amd64
+
+  steps:
+  - name: build
+    pull: if-not-exists
+    image: docker:19.03.12-dind
+    commands:
+    # wait for docker service to be up before running docker build
+    - n=0; while [ "$n" -lt 60 ] && [ ! -e /var/run/docker.sock ]; do n=$(( n + 1 )); sleep 1; done
+    - docker build -t acp-example-app:$${DRONE_COMMIT_SHA} . --no-cache
+    volumes:
+    - name: dockersock
+      path: /var/run
+    when:
+      event:
+      - push
+      - tag
+
+  - name: scan-image
+    image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
+    environment:
+      IMAGE_NAME: acp-example-app:${DRONE_COMMIT_SHA}
+      SERVICE_URL: http://anchore-submission-server:10080
+      # An optional whitelist (comman separated list of CVE's)s
+      WHITELIST: CVE_SOMENAME_1,CVE_SOMENAME_2
+      IMAGE_NAME: docker.digital.homeoffice.gov.uk/myimage:${DRONE_BUILD_NUMBER}
+      SERVICE_URL: http://anchore-submission-server:10080
+      # The optional path of a Dockerfile
+      DOCKERFILE: Dockerfile
+      # This indicates we are willing tolerate any vulnerabilities which are below medium
+      TOLARATES: medium
+      # An optional whitelist file containing a list of CSV relative to the repo path
+      WHITELIST_FILE: <PATH>
+      # By default the pligin will exit will fail if any vulnerabilities are discovered which are not tolarated,
+      # you change this behaviour by setting the bellow
+      FAIL_ON_DETECTION: false
+    when:
+      event:
+      - push
+      - tag
+
+  services:
+  - name: docker
+    image: docker:19.03.12-dind
+    volumes:
+    - name: dockersock
+      path: /var/run
+
+  - name: anchore-submission-server
+    image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
+    commands:
+      - /anchore-submission server
+    environment:
+      ANCHORE_URL: "acp-anchore.acp.homeoffice.gov.uk"
+      REGISTRY_URL: "acp-ephemeral-registry.acp.homeoffice.gov.uk"
+    volumes:
+    - name: dockersock
+      path: /var/run
+
+  volumes:
+  - name: dockersock
+    temp: {}
+
+  ...
 ```
 
 #### Q&As
@@ -659,22 +698,22 @@ A: No. This is because there is currently no way to give access to namespaces vi
 
 I.e. There is no way to give access to any namespace with the format: `my-temp-namespace-*` (where \* would be build number or something similar).
 
-Alternatively, you can be given a named namespace in the CI cluster. Please create an issue on our [Support Portal][support portal] if you require this.
+Alternatively, you can be given a named namespace in the CI cluster. Please create an issue on our [BAU board][bau repo] if you require this.
 
-[drone docs - cli install]: https://0-8-0.docs.drone.io/cli-installation/
+[drone docs - cli install]: https://docs.drone.io/cli-installation/
 [drone cli releases]: https://github.com/drone/drone-cli/releases
 [drone github token page]: https://drone.acp.homeoffice.gov.uk/account/token
 [drone github repos page]: https://drone.acp.homeoffice.gov.uk/account/repos
 [quay link]: https://quay.io
-[add to quay support request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/88
-[quay robot support request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/37
+[add to quay support request]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/add-to-quay-org
+[quay robot support request]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/quay-robot-request
 [artifactory link]: https://docker.digital.homeoffice.gov.uk
-[artifactory support request]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/30
-[drone docs - environments]: http://0-8-0.docs.drone.io/environment/
-[drone docs - conditions]: http://0-8-0.docs.drone.io/step-conditions/
+[artifactory support request]: https://hub.acp.homeoffice.gov.uk/help/support/requests/new/artifactory-token
+[drone docs - environments]: http://docs.drone.io/environment/
+[drone docs - conditions]: http://docs.drone.io/conditional-steps/
 [kube signed commit check repo]: https://github.com/UKHomeOffice/kube-signed-commit-check
 [kd repo]: https://github.com/UKHomeOffice/kd
 [kube token how to]: kubernetes-user-token.md
 [drone-trigger repo]: https://github.com/UKHomeOffice/drone-trigger
-[drone docs - environment conditional]: http://0-8-0.docs.drone.io/step-conditions/#environment
-[support portal]: https://support.acp.homeoffice.gov.uk/servicedesk
+[drone docs - environment conditional]: http://docs.drone.io/conditional-steps/#environment
+[bau repo]: https://github.com/UKHomeOffice/application-container-platform-bau
