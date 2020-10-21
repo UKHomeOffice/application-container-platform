@@ -10,11 +10,11 @@ Each profile will expire after a certain amount of time (8-72 hours), users will
 GitHub is where we store our open source code. You need to be added to the Uk HomeOffice organisation to access most of our code. More documentation can be found [here](https://help.github.com/)
 
 #### GitLab
-[GitLab](https://gitlab.digital.homeoffice.gov.uk) is where we store our more private code. Hosted in our ops cluster, you will need an office 365 account to get in via single sign on. Each project has its own group which are managed by members of that project. More in depth guides to Gitlab can be found [here](https://docs.gitlab.com/ce/README.html).
+[GitLab](https://gitlab.digital.homeoffice.gov.uk) is where we store our more private code. Hosted in our ops cluster, you will need an office 365 account to get in via single sign on. Each project has its own group which are managed by members of that project. Authentication should be via SSH on port 2222/tcp. More in depth guides to Gitlab can be found [here](https://docs.gitlab.com/ce/README.html).
 
 ## CI
 #### Drone
-Drone is our CI tool for building and deploying applications. We have two instances, one for [GitLab](https://drone-gitlab.acp.homeoffice.gov.uk) and one for [GitHub](https://drone.acp.homeoffice.gov.uk). More instructions can be found [here](how-to-docs/drone-how-to.md).
+Drone is our CI tool for building and deploying applications. We have two instances, one for [GitLab](https://drone-gl.acp.homeoffice.gov.uk) and one for [GitHub](https://drone-gh.acp.homeoffice.gov.uk). More instructions can be found [here](how-to-docs/drone-how-to.md).
 
 #### Jenkins
 Jenkins is considered a legacy system and is not supported.
