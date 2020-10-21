@@ -1,31 +1,50 @@
 ---
+kind: pipeline
+name: default
+type: kubernetes
+
+platform:
+  os: linux
+  arch: amd64
+
 clone:
-  git:
-    image: plugins/git
+  disable: true
+
+steps:
+- name: git
+  pull: if-not-exists
+  image: plugins/git
+  settings:
     recursive: true
 
-pipeline:
+- name: build
+  pull: if-not-exists
+  image: python:alpine
+  commands:
+  - apk add -U gcc musl-dev
+  - pip install mkdocs mkdocs-material markdown-include
+  - mkdocs build
+  when:
+    event:
+    - pull_request
 
-  build:
-    image: python:alpine
-    commands:
-      - apk add -U gcc musl-dev
-      - pip install mkdocs mkdocs-material markdown-include
-      - mkdocs build
-    when:
-      event: pull_request
+- name: deploy
+  pull: if-not-exists
+  image: python:alpine
+  commands:
+  - apk add -U openssh git-fast-import gcc musl-dev
+  - mkdir /root/.ssh && echo -n "$SSH_KEY" > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa
+  - touch /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts && ssh-keyscan -H github.com > /etc/ssh/ssh_known_hosts 2> /dev/null
+  - git remote remove origin && git remote add origin git@github.com:UKHomeOffice/application-container-platform.git
+  - pip install mkdocs mkdocs-material markdown-include
+  - mkdocs gh-deploy --force
+  environment:
+    SSH_KEY:
+      from_secret: SSH_KEY
+  when:
+    branch:
+    - master
+    event:
+    - push
 
-  deploy:
-    image: python:alpine
-    commands:
-      - apk add -U openssh git-fast-import gcc musl-dev
-      - mkdir /root/.ssh && echo -n "$SSH_KEY" > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa
-      - touch /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts && ssh-keyscan -H github.com > /etc/ssh/ssh_known_hosts 2> /dev/null
-      - git remote remove origin && git remote add origin git@github.com:UKHomeOffice/application-container-platform.git
-      - pip install mkdocs mkdocs-material markdown-include
-      - mkdocs gh-deploy --force
-    secrets:
-    - SSH_KEY
-    when:
-      event: push
-      branch: master
+...
