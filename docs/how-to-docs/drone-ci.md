@@ -324,6 +324,33 @@ volumes:
 
 ```
 
+#### Pushing to quay.io
+
+Drone CI has an [official docker plugin](http://plugins.drone.io/drone-plugins/drone-docker/), which can be used for both the build and push of a Docker image in a single step.
+
+``` yml
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+- name: push_to_quay
+  image: plugins/docker
+  settings:
+    registry: quay.io
+    repo: quay.io/ukhomeofficedigital/my-quay-repo
+    tags: ${DRONE_COMMIT_SHA}
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: QUAY_PASSWORD
+    DOCKER_USERNAME: ukhomeofficedigital+my_quay_repo
+  when:
+    branch:
+    - master
+    event:
+    - push
+```
+
 ### Starlark
 
 TL;DR Drone pipelines can be defined using the Starlark language. A `main` function is responsible for returning a data structure in a format compatible with the `.drone.yml` file.
