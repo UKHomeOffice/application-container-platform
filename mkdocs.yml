@@ -2,7 +2,7 @@ site_name: Application Container Platform
 theme: material
 use_directory_urls: false
 nav:
-  - Home: index.md
+  - Home: README.md
   - Services: services.md
   - Release Notes: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/tree/master/release-notes/
   - How To's: how-to-docs/index.md
