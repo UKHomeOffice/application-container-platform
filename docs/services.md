@@ -34,6 +34,8 @@ To standardise on how services route their application traffic to the appropriat
 
 In parallel to this, users need to also be aware of [the limits on certificates and letsencrypt](https://letsencrypt.org/docs/rate-limits/) if they are wanting external TLS certificates for their services.
 
+If you require a service.gov.uk subdomain, you will need to liaise with the Government Digital Service to get it delegated to our control. Please note that we will not be able to point the apex of such delegated domains to our ingress controllers due to the limitations of CNAME records. You will need to use a subdomain for ingress (e.g. www.foo.service.gov.uk rather than foo.service.gov.uk).
+
 #### For Non-production Services
 The following categories are something we would expect a service to specify:
 
@@ -63,7 +65,7 @@ web-portal.example-service.homeoffice.gov.uk
 ```
 
 ## Application Composition
-The following are containers that we create for use alongside your own application
+The following containers are typically used in applications hosted on ACP:
 
 #### Louketo Proxy (formerly Keycloak Proxy/Gatekeeper)
 [Louketo Proxy](https://github.com/louketo/louketo-proxy): a proxy that can be used to protect applications with Keycloak.
@@ -104,7 +106,6 @@ The Platform is spread across multiple availability zones, which are essentially
 The recovery of products hosted on the Platform are subject to considerations set out for the Production Ready criteria in [Service Lifecycle](service-lifecycle.md).
 
 For further information on security and disaster recovery considerations, please raise a ticket on the [Support Portal](https://support.acp.homeoffice.gov.uk/servicedesk).
-
 
 ## Reusable components
 Whilst building ACP, we've written a things that other projects may be interested in reusing. These can be found on GitHub here
