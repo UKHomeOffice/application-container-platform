@@ -37,6 +37,19 @@ An initial database migration has occurred from 01/07/2020 to populate the new D
 1. Navigate to your repository containing the `.drone.yml` file
 1. Use the drone-cli to initially convert to the new format: `drone convert` (run `drone convert --save` after validating the output).
 1. For each pipeline definition, specify the `type` to state using the kubernetes build runner (see example below).
+1. The `workspace` section syntax has been changed: the `base` argument has been deprecated, instead `path` should contain the absolute path
+   - from:
+      ```
+      workspace:
+        base: /go
+        path: src/gitlab.digital.homeoffice.gov.uk/${DRONE_REPO}
+      ```
+   - to:
+      ```
+      workspace:
+        path: /go/src/gitlab.digital.homeoffice.gov.uk/${DRONE_REPO}
+      ```
+
 1. If your pipeline deals with `deployment` events, replace that event type with `promote`. For example:
 1. If any of your steps are running docker builds or leveraging anchore-submission, review the [Services](#Services) section for further updates.
 1. De-activate your repository within Drone v0.8 CI: `https://<old-drone-url>/<organisation>/<repository-name>/settings`
