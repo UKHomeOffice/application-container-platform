@@ -2,6 +2,7 @@
 
 - [Overview](#overview)
 - [Repository Migration](#repository-migration)
+- [Caveats & Known Issues](#caveats-&-known-issues)
 - [Example Pipelines](#example-pipelines)
 - [Services](#services)
   - [Docker-in-Docker](#docker-in-docker)
@@ -82,7 +83,7 @@ to:
     - promote
 ```
 
-Please note that:
+### Caveats & Known Issues
 
 1. As the `deployment` event has been replaced by the `promote` and `rollback` events, the `drone` CLI no longer supports `drone deploy`.
     Instead, `drone build promote` has to be used to trigger a `promote` event.
@@ -90,7 +91,8 @@ Please note that:
     In `https://<new-drone-url>/<organisation>/<repository-name>/settings`, you can specify the name of the pipeline file. Drone v0.8 will use `.drone.yml` and for Drone v1, you could specify another file name, e.g. `.drone-v1.yml`. This would allow you to easily and quickly switch between the old and new drone instances and still get the drone servers to use the appropriate pipeline, from the same commit point.
 1. Gitlab supports only one webhook to Drone per repository. So, assuming a repo is active on the old drone instance for gitlab, activating it on the new drone instance will get Gitlab to only send events to the new drone instance (even though the repository will still appear to be active on the old drone instance).
     However, Github supports several webhooks. In that case, simply activating a repo on the new drone instance will not prevent the old drone instance to attempt to run the old pipeline. So make sure you deactivate the repo on the old drone instance unless you really want both pipelines to be active at the same time.
-1. If a repo is activate on a new Drone instance without its pipeline being modified, it will hang and needs to be cancelled.
+1. If a repo is activated on a new Drone instance without its pipeline being modified to include a  `type: kubernetes` argument it will hang because the new k8s runners will omit it. In this circumstance the job must be cancelled - it can be retried once the `.drone.yml` is amended accordingly.
+1. At present, the system has a limit of 20MB of logs per step, which equates to roughly 150,000 lines. If this limit is exceeded the step's logs will not be displayed, regardless of the outcome, and subsequent steps will be skipped. An error will be displayed stating that the payload was too large to be sent to the server.
 
 ### Example Pipelines
 
