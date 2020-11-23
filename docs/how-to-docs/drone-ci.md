@@ -9,6 +9,7 @@
   - [Anchore Image Scanning](#anchore-image-scanning)
   - [ECR](#ecr)
 - [Starlark](#starlark)
+- [Resource Intensive Builds](#resource-intensive-builds)
 
 ### Overview
 
@@ -444,3 +445,48 @@ OPTIONS:
    --build.commit value    build commit sha
    --build.message value   build commit message
 ```
+### Resource Intensive Builds
+
+As Drone CI v1 builds are now Kubernetes native, pipelines now do not consume CPU and memory resources based off agents but are rather are run as separate Kubernetes pods within ephemeral namespaces.
+You can now declare your pipeline's resource utilisation explicitly on a per-step basis (requests, limits, or both). This is particularly useful when executing resource intensive steps as part of your pipeline to ensure its optimal running:
+```yml
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+- name: build
+  image: golang
+  commands:
+    - go build
+    - go test
+  resources:
+    requests:
+      cpu: 100
+      memory: 100MiB
+    limits:
+      cpu: 500
+      memory: 500MiB
+
+steps:
+- name: publish
+  image: plugins/ecr
+  environment:
+    AWS_REGION: eu-west-2
+  settings:
+    access_key:
+      from_secret: aws_access_key_id
+    secret_key:
+      from_secret: aws_secret_access_key
+    repo: <ecr-repo-name>
+    registry: 340268328991.dkr.ecr.eu-west-2.amazonaws.com
+  resources:
+    requests:
+      cpu: 100
+      memory: 100MiB
+    limits:
+      cpu: 500
+      memory: 500MiB
+```
+With the example above, Drone would allocate the whole pipeline with `200m` CPU and `200MiB` of memory as requests within Kubernetes, and `1000m` CPU along with `1000MiB` of memory on limits respectively.
+> NOTE: CPU metrics are defined as millicpu - 1000m in this case would equate to '1' CPU unit within Kubernetes.
