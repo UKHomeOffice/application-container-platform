@@ -131,49 +131,15 @@ name: default
 
 steps:
 - name: build-image
-  image: docker:dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
   # wait for docker service to be up before running docker build
-  - n=0; while [ "$n" -lt 60 ] && [ ! -e /var/run/docker.sock ]; do n=$(( n + 1 )); sleep 1; done
-  - docker build -t test .
-  volumes:
-  - name: dockersock
-    path: /var/run
-
-services:
-- name: docker
-  image: docker:dind
-  volumes:
-  - name: dockersock
-    path: /var/run
-
-volumes:
-- name: dockersock
-  temp: {}
-```
-
-Alternatively, the same can be achieved without the need to share volumes and the docker socket file. Services within a pipeline can be accessed from any step, via a hostname of which the value is identical to the name of the service. For example, the above docker build can also be achieved as follows:
-
-```yml
-kind: pipeline
-type: kubernetes
-name: default
-
-steps:
-- name: build-image
-  image: docker:dind
-  environment:
-    DOCKER_HOST: tcp://docker:2375
-  commands:
-  # wait for docker service to be up before running docker build
-  - sleep 5
+  - n=0; while [ "$n" -lt 60 ] && [ ! docker stats --no-stream ]; do n=$(( n + 1 )); sleep 1; done
   - docker build -t test .
 
 services:
 - name: docker
-  image: docker:dind
-  environment:
-    DOCKER_TLS_CERTDIR: ""
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
 ```
 
 #### Anchore Image Scanning
@@ -187,14 +153,11 @@ name: default
 
 steps:
 - name: build-image
-  image: docker:dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
   # wait for docker service to be up before running docker build
-  - n=0; while [ "$n" -lt 60 ] && [ ! -e /var/run/docker.sock ]; do n=$(( n + 1 )); sleep 1; done
+  - n=0; while [ "$n" -lt 60 ] && [ ! docker stats --no-stream ]; do n=$(( n + 1 )); sleep 1; done
   - docker build -t test:$${DRONE_COMMIT_SHA} .
-  volumes:
-  - name: dockersock
-    path: /var/run
 
 - name: scan-image
   image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
@@ -204,10 +167,7 @@ steps:
 
 services:
 - name: docker
-  image: docker:dind
-  volumes:
-  - name: dockersock
-    path: /var/run
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
 
 - name: anchore-submission-server
   image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
@@ -216,13 +176,6 @@ services:
   environment:
     ANCHORE_URL: "acp-anchore.acp.homeoffice.gov.uk"
     REGISTRY_URL: "acp-ephemeral-registry.acp.homeoffice.gov.uk"
-  volumes:
-  - name: dockersock
-    path: /var/run
-
-volumes:
-- name: dockersock
-  temp: {}
 ```
 
 Here are the environment variables supported by the image used in the `scan-image` step:
@@ -292,11 +245,9 @@ steps:
     AWS_REGION: eu-west-2
   commands:
   # wait for docker service to be up before running docker build
-  - n=0; while [ "$n" -lt 60 ] && [ ! -e /var/run/docker.sock ]; do n=$(( n + 1 )); sleep 1; done
+  - n=0; while [ "$n" -lt 60 ] && [ ! docker stats --no-stream ]; do n=$(( n + 1 )); sleep 1; done
   - aws ecr get-login-password --region $${AWS_REGION} | docker login --username AWS --password-stdin 340268328991.dkr.ecr.$${AWS_REGION}.amazonaws.com
   volumes:
-  - name: dockersock
-    path: /var/run
   - name: dockerclientconfig
     path: /root/.docker
   when:
@@ -306,14 +257,12 @@ steps:
 
 - name: build
   pull: if-not-exists
-  image: docker:19.03.12-dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   environment:
     AWS_REGION: eu-west-2
   commands:
   - docker build -t 340268328991.dkr.ecr.eu-west-2.amazonaws.com/my-project/my-image:$${DRONE_COMMIT_SHA} . --no-cache
   volumes:
-  - name: dockersock
-    path: /var/run
   - name: dockerclientconfig
     path: /root/.docker
   when:
@@ -325,14 +274,9 @@ steps:
 
 services:
 - name: docker
-  image: docker:19.03.12-dind
-  volumes:
-  - name: dockersock
-    path: /var/run
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
 
 volumes:
-- name: dockersock
-  temp: {}
 - name: dockerclientconfig
   temp: {}
 
