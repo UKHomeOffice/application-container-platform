@@ -21,3 +21,4 @@ This tree contains a collection of how-to guides for Developers.
 {!docs/how-to-docs/pv-and-storage-classes.md!}
 {!docs/how-to-docs/ssl-passthrough.md!}
 {!docs/how-to-docs/write-dockerfiles.md!}
+{!docs/how-to-docs/clamav.md!}
