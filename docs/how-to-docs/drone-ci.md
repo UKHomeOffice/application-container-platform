@@ -176,8 +176,7 @@ services:
     - /run.sh server
 ```
 
-For more information about Anchore scan click here 
-
+For more information about [Anchore scan click here](https://github.com/UKHomeOffice/application-container-platform/blob/master/docs/how-to-docs/anchore-scan.md) 
 
 
 #### ECR
