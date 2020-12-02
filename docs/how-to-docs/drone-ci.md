@@ -176,21 +176,8 @@ services:
     - /run.sh server
 ```
 
-Here are the environment variables supported by the image used in the `scan-image` step:
+For more information about [Anchore scan click here](anchore-scan.md) 
 
-| Variable | Usage | Default |
-| --- | --- | --- |
-| SERVICE_URL | the url the anchore submission service is running on | http://172.17.0.1:10080 |
-| IMAGE_NAME | the name of the image you wish to have scanned | n/a |
-| DOCKERFILE | the path to the Dockerfile | n/a |
-| TOLERATE | the minimum level of vulnerability we are willing to tolerate (low, medium, high) | medium |
-| WHITELIST | a collection of CVEs (allows for comma separation) we are willing to accept | n/a |
-| WHITELIST_FILE | the path to a file containing a list of whitelisted CVEs | n/a |
-| FAIL_ON_DETECTION | indicates if we should exit with 1 if a vulnerability is found | true |
-| SHOW_ALL_VULNERABILITIES | indicates we should show all vulnerabilities regardless | false |
-| LOCAL_IMAGE | indicates the image is locally available | false |
-| AUTH_TOKEN | an authentication token used to speak to the api with | n/a |
-| TIMEOUT | the max time you are willing to wait for the scan to complete (in s) | 20 minutes |
 
 #### ECR
 
