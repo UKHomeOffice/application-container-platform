@@ -161,9 +161,9 @@ steps:
 
 - name: scan-image
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
+  pull: always
   environment:
     IMAGE_NAME: test:${DRONE_COMMIT_SHA}
-    SERVICE_URL: http://anchore-submission-server:10080
 
 services:
 - name: docker
@@ -171,11 +171,9 @@ services:
 
 - name: anchore-submission-server
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
+  pull: always
   commands:
     - /run.sh server
-  environment:
-    ANCHORE_URL: "acp-anchore.acp.homeoffice.gov.uk"
-    REGISTRY_URL: "acp-ephemeral-registry.acp.homeoffice.gov.uk"
 ```
 
 Here are the environment variables supported by the image used in the `scan-image` step:
