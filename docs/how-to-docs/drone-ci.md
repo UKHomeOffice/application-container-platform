@@ -160,7 +160,7 @@ steps:
   - docker build -t test:$${DRONE_COMMIT_SHA} .
 
 - name: scan-image
-  image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
   environment:
     IMAGE_NAME: test:${DRONE_COMMIT_SHA}
     SERVICE_URL: http://anchore-submission-server:10080
@@ -170,9 +170,9 @@ services:
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
 
 - name: anchore-submission-server
-  image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
   commands:
-    - /anchore-submission server
+    - /run.sh server
   environment:
     ANCHORE_URL: "acp-anchore.acp.homeoffice.gov.uk"
     REGISTRY_URL: "acp-ephemeral-registry.acp.homeoffice.gov.uk"
