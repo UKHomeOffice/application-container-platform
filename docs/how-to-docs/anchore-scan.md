@@ -86,40 +86,40 @@ We can achieve this by doing the following 4 steps
 
 1. Make a repo for this example we will call it `my-cve-exceptions`
 
-1. Add a file in the root directory called `list.txt`
+2. Add a file in the root directory called `list.txt`
 
     ```text
     CVE-2008-4318
     CVE-2020-25613
     ```
 
-1. Go back to the `drone.yml` and add a new step to the file, here is how it will look. Make sure it's above the scan-image step.
+3. Go back to the `drone.yml` and add a new step to the file, here is how it will look. Make sure it's above the scan-image step.
 
-    ```YAML
-    - name: cloning-repo
-      image: alpine/git
-      commands:
-      - git clone https://github.com/UKHomeOffice/my-cve-exceptions
-      when:
-        event:
-        - push
-        - tag
-    ```
+```YAML
+- name: cloning-repo
+  image: alpine/git
+  commands:
+  - git clone https://github.com/UKHomeOffice/my-cve-exceptions
+  when:
+    event:
+    - push
+    - tag
+```
 
-1. Replace environment variable `WHITELIST` within scan-image step with `WHITELIST_FILE` and replace the value with the location of the file in this example `my-cve-exceptions/list.txt`
+4. Replace environment variable `WHITELIST` within scan-image step with `WHITELIST_FILE` and replace the value with the location of the file in this example `my-cve-exceptions/list.txt`
 
-    ```YAML
-    - name: scan-image
-      image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
-      pull: always
-      environment:
-        IMAGE_NAME: acp-example-app:${DRONE_COMMIT_SHA}
-        WHITELIST_FILE: my-cve-exceptions/list.txt
-      when:
-        event:
-        - push
-        - tag
-    ```
+```YAML
+- name: scan-image
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
+  pull: always
+  environment:
+    IMAGE_NAME: acp-example-app:${DRONE_COMMIT_SHA}
+    WHITELIST_FILE: my-cve-exceptions/list.txt
+  when:
+    event:
+    - push
+    - tag
+```
 
 ### Bespoke anchore submission server service name
 
