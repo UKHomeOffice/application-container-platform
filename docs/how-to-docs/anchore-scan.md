@@ -12,7 +12,7 @@ The Common Vulnerabilities and Exposures (CVE) system establishes a standard for
 
 To setup anchore, we need to go to the `drone.yml` file and we need to add two parts: a step and a service.
 
-1. Add the step.
+ 1. Add the step.
 
 Within the steps section, you will need to define a step for the anchore submission client. In this example, we are working with the acp-example repository. So, when creating your scan step, you will need to change the value of the `IMAGE_NAME` environment variable.
 
@@ -29,7 +29,7 @@ steps:
     - tag
 ```
 
-2. Add the service.
+ 2. Add the service.
 
 The anchore submission client from the `scan-image` step needs to communicate with an anchore submission server that has access to the image that needs scanning. The server is defined below:
 
@@ -84,16 +84,16 @@ We could also add a centralised place to list all vulnerabilities that we would 
 
 We can achieve this by doing the following 4 steps
 
-1. Make a repo for this example we will call it `my-cve-exceptions`
+ 1. Make a repo for this example we will call it `my-cve-exceptions`
 
-2. Add a file in the root directory called `list.txt`
+ 2. Add a file in the root directory called `list.txt`
 
-    ```text
-    CVE-2008-4318
-    CVE-2020-25613
-    ```
+```text
+CVE-2008-4318
+CVE-2020-25613
+```
 
-3. Go back to the `drone.yml` and add a new step to the file, here is how it will look. Make sure it's above the scan-image step.
+ 3. Go back to the `drone.yml` and add a new step to the file, here is how it will look. Make sure it's above the scan-image step.
 
 ```YAML
 - name: cloning-repo
@@ -106,7 +106,7 @@ We can achieve this by doing the following 4 steps
     - tag
 ```
 
-4. Replace environment variable `WHITELIST` within scan-image step with `WHITELIST_FILE` and replace the value with the location of the file in this example `my-cve-exceptions/list.txt`
+ 4. Replace environment variable `WHITELIST` within scan-image step with `WHITELIST_FILE` and replace the value with the location of the file in this example `my-cve-exceptions/list.txt`
 
 ```YAML
 - name: scan-image
