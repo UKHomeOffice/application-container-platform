@@ -419,3 +419,9 @@ steps:
 ```
 With the example above, Drone would allocate the whole pipeline with `200m` CPU and `200MiB` of memory as requests within Kubernetes, and `1000m` CPU along with `1000MiB` of memory on limits respectively.
 > NOTE: CPU metrics are defined as millicpu - 1000m in this case would equate to '1' CPU unit within Kubernetes.
+
+### Cron Jobs
+
+Cron jobs running on Drone can be set up programmatically or from the web UI.
+
+However, please be aware that this service is a best-endeavour type of service. Precise timing is not guaranteed and the scheduling frequency will not be honoured if set to a less than one hour. This frequency constraint is in place in order to protect the Drone service against too aggressive cron schedules that could cause service availability issues.
