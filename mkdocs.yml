@@ -3,10 +3,11 @@ theme: material
 use_directory_urls: false
 nav:
   - Home: README.md
+  - Getting Started: developer-docs/index.md
   - Services: services.md
+  - Developer Onboarding: developer-docs/dev-setup.md
   - Release Notes: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/tree/master/release-notes/
   - How To's: how-to-docs/index.md
-  - Developer Getting Started Guide: developer-docs/index.md
   - RBAC Guide: rbac.md
   - ACP External IPs: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/blob/master/acp_ips.md
   - Service Lifecycle: service-lifecycle.md
