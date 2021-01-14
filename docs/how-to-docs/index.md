@@ -23,3 +23,4 @@ This tree contains a collection of how-to guides for Developers.
 {!docs/how-to-docs/write-dockerfiles.md!}
 {!docs/how-to-docs/clamav.md!}
 {!docs/how-to-docs/anchore-scan.md!}
+{!docs/how-to-docs/aws-resources.md!}
