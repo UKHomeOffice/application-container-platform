@@ -1,4 +1,4 @@
-# Developer setup guide
+# Developer Onboarding
 ## Introduction
 
 This guide aims to prepare developers to use the Application Container Platform. You must complete the steps below before attending the ACP Induction.
@@ -6,14 +6,14 @@ This guide aims to prepare developers to use the Application Container Platform.
 All examples in this document are for Linux distributions and instructions for other operating systems will vary. If you choose to use a Windows device, please ensure that [Windows Subsystem for Linux] is installed.
 
   1. [Set up GovWifi credentials](#connecting-to-govwifi)
-  1. [Office 365](#office-365)
-  1. [Connecting to ACP VPN](#connecting-to-acp-vpn)
-  1. [Platform Hub registration](#platform-hub-registration)
-  1. [Add a ssh key to Gitlab](#add-a-ssh-key-to-gitlab)
-  1. [Sign in to Sysdig](#sign-in-to-sysdig)
-  1. [Join our Slack instance](#join-our-slack-instance)
-  1. [Required binaries](#required-binaries)
-  1. [User agreement](#user-agreement)
+  2. [Office 365](#office-365)
+  3. [Connecting to ACP VPN](#connecting-to-acp-vpn)
+  4. [Platform Hub registration](#platform-hub-registration)
+  5. [Add a ssh key to Gitlab](#add-a-ssh-key-to-gitlab)
+  6. [Sign in to Sysdig](#sign-in-to-sysdig)
+  7. [Join our Slack instance](#join-our-slack-instance)
+  8. [Required binaries](#required-binaries)
+  9. [User agreement](#user-agreement)
 
 
 ## Connecting to GovWifi
