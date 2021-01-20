@@ -1,16 +1,16 @@
 # Services
 
-ACP (Application Container Platform) is a series of services that the Home Office recommends developers use to develop and host Home Office applications. This page provides an overview of how ACP uses each service.
+ACP (Application Container Platform) is a series of services which Home Office developers should use to develop and host Home Office applications. This page provides an overview of how ACP uses each service.
 
 To use ACP, you require knowledge of the following services:
 
   * Docker: a software tool designer that allows you to create, deploy and run applications using containers
-  * Kubernetes: an open-source platform for automating deployment, scarling, and operation of application containers across clusters of hosts
+  * Kubernetes: an open-source platform for automating deployment, scaling, and operation of application containers across clusters of hosts
   * GitHub and GitLab: repositories which store open-source and private code respectively
   * Drone: a CI (Continuous Integration) tool for building and deploying applications
   * Quay: an open-source container repository
-  * Amazon Elastic Container Registry (ECR): a container registry for storing, managing, and deploying private Docker container images.
-  * Artifactory: an internal repository to store artifacts (including binaries and dependencies) to
+  * Amazon Elastic Container Registry (ECR): a container registry for storing, managing, and deploying private Docker container images
+  * Artifactory: an internal repository to store artefacts (including binaries and dependencies)
   * Keycloak: an open-source identity and access-management tool
   * Sysdig: an alert monitoring tool for containers, Kubernetes and cloud-based services
 
@@ -23,11 +23,11 @@ Any other information on individual services is outside the scope of our documen
 ## VPN
 
 
-For security reasons, ACP services run behind a VPN using the OpenVPN protocol.
+For security reasons, most ACP services run behind a VPN using the OpenVPN protocol.
 
-Download VPN Profiles from the [ACP VPN][acp_vpn]. The kube-platform profile provides you with access to ACP services.
+Download VPN Profiles from [ACP VPN][acp_vpn]. The kube-platform profile provides you with access to ACP services. If you also need access to the production environment, raise a request on [ACP Support][support].
 
-Note that in addition to a VPN profile, some environments require access rights. If you want to also manage production namespaces, raise a support ticket.
+Note that in addition to a VPN profile, some environments require access rights. Contact your project administrator for more information.
 
 kube-platform profiles expire after 72 hours, after which you must download a new kube-platform profile to continue accessing ACP services.
 
@@ -37,7 +37,7 @@ kube-platform profiles expire after 72 hours, after which you must download a ne
 
 ### GitHub
 
-ACP's open-source code repository is on GitHub, in the [UKHomeOffice organisation][ho_repo]. To access it, connect your GitHub identity to ACP Hub.
+ACP's open-source code repository is on GitHub, in the [UKHomeOffice organisation][ho_repo].
 
 For more information on GitHub, see the [GitHub documentation][github_docs].
 
@@ -65,7 +65,7 @@ For more information on Drone, see the [Drone documentation][drone_docs].
 
 ## Container Storage
 
-ACP recommends separate repositories for open-source and private container images:
+ACP recommends having separate registries for open-source and private container images:
 
   * if your code is open-source and hosted on GitHub, use Quay to store container images
   * if your code is private and hosted on GitLab, use Amazon ECR
@@ -76,11 +76,11 @@ For more information on ECR, see the [Amazon ECR documentation][ecr _docs].
 
 
 
-## Artifact Storage
+## Artefact Storage
 
 ### Artifactory
 
-ACP uses [Artifactory][artifactory] as its internal binary repository store for projects to push build time artifacts and dependencies to, such as jars and python modules.  
+ACP uses [Artifactory][artifactory] as its internal binary store for projects to push build time artefacts and dependencies to, such as jars and python modules.  
 
 Before ACP began using Amazon ECR, we also stored Docker images on Artifactory. You can now access those images [here][docker_images]. Note that if an image is not downloaded for one year, we remove it from the repository.
 
@@ -92,7 +92,7 @@ For more information on Artifactory, see the [JFrog Artifactory documentation][a
 
 Applications hosted on ACP typically use the following containers:
 
-  * [Keycloak Gatekeeper][gatekeeper]: protects applications using [Keycloak][keycloak]. Note that in the future ACP is going to deprecate its usage.
+  * [Keycloak Gatekeeper][gatekeeper]: protects applications using [Keycloak][keycloak]. Note that in the future Red Hat is going to deprecate support and ACP will use an alternative.
   * [Nginx Proxy][nginx]: provides TLS and proxying for your application container
   * [Cert-Manager][cert_mgr]: obtains internal and external certificates
 
