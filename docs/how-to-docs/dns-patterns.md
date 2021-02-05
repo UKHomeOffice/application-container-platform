@@ -1,6 +1,6 @@
 ## DNS Patterns
 
-To provide a consistent way both for services route their application traffic to the appropriate hosting platforms, and for ACP to utilise DNS, we use naming conventions for DNS across services.
+To provide a consistent way both for services to route their application traffic to the appropriate hosting platforms, and for ACP to utilise DNS, we use naming conventions for DNS across services.
 
 If you require TLS certificates for a service, ensure you are aware of the rate limits on certificates and Let’s Encrypt. For more information on rate limits, see the [Let’s Encrypt documentation](https://letsencrypt.org/docs/rate-limits/).
 
