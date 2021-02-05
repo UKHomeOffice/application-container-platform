@@ -122,9 +122,7 @@ The following applies both to workload logs and all logs within EFK:
 
 ACP uses Sysdig for container monitoring and metric collection. Sysdig provides these through alert monitoring and metric dashboards for your Kubernetes infrastructure. You can access our instance [here][acp_sysdig].
 
-We are working with Sysdig to develop integration between our services. For more information, including the Sysdig Inspect command line tool, see the [Sysdig documentation][sysdig_docs] and [Sysdig Inspect][sysdig_inspect].
-
-New users should complete Sysdig's online training course, [Sysdig Monitor 101][sysdig_101], which covers the basics of using Sysdig.
+For more information on Sysdig, see the [Sysdig documentation][sysdig_docs].
 
 
 
