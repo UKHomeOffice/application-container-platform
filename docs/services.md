@@ -95,6 +95,8 @@ Applications hosted on ACP typically use the following containers:
   * [Keycloak Gatekeeper][gatekeeper]: protects applications using [Keycloak][keycloak]. Note that in the future Red Hat is going to deprecate support and ACP will use an alternative.
   * [Nginx Proxy][nginx]: provides TLS and proxying for your application container
   * [Cert-Manager][cert_mgr]: obtains internal and external certificates
+  
+For an example ACP application with deployment files, see [acp-example-app][acp_example] and [kube-example-app][kube_example].
 
 
 
@@ -181,3 +183,5 @@ We have also developed the following open-source components you can utilise for 
 [support]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portals
 [terraform]: https://github.com/UKHomeOffice?utf8=%E2%9C%93&q=acp-tf&type=&language=
 [base_images]: https://github.com/UKHomeOffice?utf8=%E2%9C%93&q=docker-&type=&language=
+[kube_example]: https://github.com/UKHomeOffice/kube-example-app
+[acp_example]: https://github.com/UKHomeOffice/acp-example-app
