@@ -1,4 +1,4 @@
-# ACP Developer Documentation
+# Getting Started
 
 ## Introduction
 ACP serves as a platform for teams to build and deploy projects in the Home Office. In addition to other technologies that we use, we strongly recommend to get an understanding of two of the core technologies that ACP is based on - Docker and Kubernetes:   

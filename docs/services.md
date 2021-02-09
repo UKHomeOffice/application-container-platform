@@ -1,114 +1,187 @@
-These are the core services which we provide across our platform.
+# Services
+
+ACP (Application Container Platform) is a series of services which Home Office developers should use to develop and host Home Office applications. This page provides an overview of how ACP uses each service.
+
+To use ACP, you require knowledge of the following services:
+
+  * Docker: a software tool designer that allows you to create, deploy and run applications using containers
+  * Kubernetes: an open-source platform for automating deployment, scaling, and operation of application containers across clusters of hosts
+  * GitHub and GitLab: repositories which store open-source and private code respectively
+  * Drone: a CI (Continuous Integration) tool for building and deploying applications
+  * Quay: an open-source container repository
+  * Amazon Elastic Container Registry (ECR): a container registry for storing, managing, and deploying private Docker container images
+  * Artifactory: an internal repository to store artefacts (including binaries and dependencies)
+  * Keycloak: an open-source identity and access-management tool
+  * Sysdig: an alert monitoring tool for containers, Kubernetes and cloud-based services
+
+Where a service requires a bespoke or custom configuration to use ACP, we will provide details of the prerequisites. For example, for instructions on how to set up your services for the ACP induction, see [Developer Onboarding][dev_onboarding].
+
+Any other information on individual services is outside the scope of our documentation. For information on how to achieve configurations on the service side, we recommend referring to the service vendor’s documentation.    
+
+
 
 ## VPN
-Many of our services are behind a VPN (using [OpenVPN](https://wiki.archlinux.org/index.php/OpenVPN) protocol) for security reasons. We have many different roles and profiles for accessing different environments. These profiles are all found at [Access ACP](https://access-acp.digital.homeoffice.gov.uk).
-You can download VPN profiles for the environments you have access to. New profiles can be set up to connect through to things like project specific AWS accounts.
-Each profile will expire after a certain amount of time (8-72 hours), users will have to download a new profile once their certificates which are baked into the openvpn profiles expire.
+
+
+For security reasons, most ACP services run behind a VPN using the OpenVPN protocol.
+
+Download VPN Profiles from [ACP VPN][acp_vpn]. The kube-platform profile provides you with access to ACP services. If you also need access to the production environment, raise a request on [ACP Support][support].
+
+Note that in addition to a VPN profile, some environments require access rights. Contact your project administrator for more information.
+
+kube-platform profiles expire after 72 hours, after which you must download a new kube-platform profile to continue accessing ACP services.
+
+
 
 ## Source Code Management
-#### GitHub
-GitHub is where we store our open source code. You need to be added to the Uk HomeOffice organisation to access most of our code. More documentation can be found [here](https://help.github.com/)
 
-#### GitLab
-[GitLab](https://gitlab.digital.homeoffice.gov.uk) is where we store our more private code. Hosted in our ops cluster, you will need an office 365 account to get in via single sign on. Each project has its own group which are managed by members of that project. Authentication should be via SSH on port 2222/tcp. More in depth guides to Gitlab can be found [here](https://docs.gitlab.com/ce/README.html).
+### GitHub
+
+ACP's open-source code repository is on GitHub, in the [UKHomeOffice organisation][ho_repo].
+
+For more information on GitHub, see the [GitHub documentation][github_docs].
+
+### GitLab
+
+ACP’s private code repository is on GitLab, which we host on our ops cluster. To access it you need an Office 365 account with single sign-on capabilities.
+
+Each project has its own group and manager(s). To authenticate, use SSH on TCP port 2222.
+
+For more information on GitLab, see the [GitLab documentation][gitlab_docs].
+
+
 
 ## CI
-#### Drone
-Drone is our CI tool for building and deploying applications. We have two instances, one for [GitLab](https://drone-gl.acp.homeoffice.gov.uk) and one for [GitHub](https://drone-gh.acp.homeoffice.gov.uk). More instructions can be found [here](how-to-docs/drone-how-to.md).
 
-#### Jenkins
-Jenkins is considered a legacy system and is not supported.
+### Drone
 
-## Binary / Artefact Storage
-#### Quay
-[Quay](https://quay.io/ukhomeofficedigital) is where store all of our open source container images.
+ACP uses Drone as its CI tool for building and deploying applications. There are two ACP instances of Drone: one for [GitHub][drone_gh] and one for [GitLab][drone_gl].
 
-#### ECR
-We use AWS ECR to host our private container images for high availability and resiliency. For more information on how to use ECR see [here](how-to-docs/drone-how-to.md)
+For more information on using Drone with ACP, see [Drone CI][drone_ci].
 
-#### Artifactory
-We use [Artifactory](https://artifactory.digital.homeoffice.gov.uk) as our internal binary repository store where projects can push build time artefacts and dependencies. Prior to the introduction of ECR, Docker images were also pushed here and can be accessed via https://docker.digital.homeoffice.gov.uk. Please note that we regularly remove container images that have not been downloaded in a year.
+For more information on Drone, see the [Drone documentation][drone_docs].
 
-## Domain Name System (DNS) Pattern
-To standardise on how services route their application traffic to the appropriate hosting platform and to offer consistency in how we approach DNS we have a standard DNS naming convention for services.
 
-In parallel to this, users need to also be aware of [the limits on certificates and letsencrypt](https://letsencrypt.org/docs/rate-limits/) if they are wanting external TLS certificates for their services.
 
-If you require a service.gov.uk subdomain, you will need to liaise with the Government Digital Service to get it delegated to our control. Please note that we will not be able to point the apex of such delegated domains to our ingress controllers due to the limitations of CNAME records. You will need to use a subdomain for ingress (e.g. www.foo.service.gov.uk rather than foo.service.gov.uk).
+## Container Storage
 
-#### For Non-production Services
-The following categories are something we would expect a service to specify:
+ACP recommends having separate registries for open-source and private container images:
 
-`Service Name` - The name of the service users or other services will attempt to consume i.e. `web-portal`
+  * if your code is open-source and hosted on GitHub, use Quay to store container images
+  * if your code is private and hosted on GitLab, use Amazon ECR
 
-`Env` - The environment of the service i.e. `Dev`
+For more information on Quay, see the [Quay][quay_docs].
 
-`Service` - The overall service name or project name i.e. `example-service`
+For more information on ECR, see the [Amazon ECR documentation][ecr _docs].
 
-```
-<servicename>.<env>.<service>-notprod.homeoffice.gov.uk
 
-web-portal.dev.example-service-notprod.homeoffice.gov.uk
-```
 
-#### For Production Services
-As we want to protect production services from hitting limits and to create a distinction between services that are non-production, (not prod)  and production, we simplify the overall approach by using the main service name as the domain.
+## Artefact Storage
 
-`Service Name` - The name of the service users or other services will attempt to consume i.e. `web-portal`
+### Artifactory
 
-`Service` - The overall service name or project name i.e. `example-service`
+ACP uses [Artifactory][artifactory] as its internal binary store for projects to push build time artefacts and dependencies to, such as jars and python modules.  
 
-```
-<servicename>.<service>.homeoffice.gov.uk
+Before ACP began using Amazon ECR, we also stored Docker images on Artifactory. You can now access those images [here][docker_images]. Note that if an image is not downloaded for one year, we remove it from the repository.
 
-web-portal.example-service.homeoffice.gov.uk
-```
+For more information on Artifactory, see the [JFrog Artifactory documentation][artifactory_docs].
+
+
 
 ## Application Composition
-The following containers are typically used in applications hosted on ACP:
 
-#### Louketo Proxy (formerly Keycloak Proxy/Gatekeeper)
-[Louketo Proxy](https://github.com/louketo/louketo-proxy): a proxy that can be used to protect applications with Keycloak.
-#### Nginx Proxy
-[Nginx Proxy](https://github.com/UKHomeOffice/docker-nginx-proxy): for TLS and proxying your application container.
-#### Cert Manager
-[Cert-Manager](how-to-docs/cert-manager.md): for obtaining internal and external certificates.
+Applications hosted on ACP typically use the following containers:
+
+  * [Keycloak Gatekeeper][gatekeeper]: protects applications using [Keycloak][keycloak]. Note that in the future Red Hat is going to deprecate support and ACP will use an alternative.
+  * [Nginx Proxy][nginx]: provides TLS and proxying for your application container
+  * [Cert-Manager][cert_mgr]: obtains internal and external certificates
+  
+For an example ACP application with deployment files, see [acp-example-app][acp_example] and [kube-example-app][kube_example].
+
+
 
 ## Logging
-Logging stack consists of [Elasticsearch](https://github.com/UKHomeOffice/docker-elasticsearch), [Fluentd](https://github.com/fluent/fluentd), [Kibana](https://github.com/UKHomeOffice/docker-kibana).
 
-- Fluentd agents deployed as a daemonSet will collect all workload logs and index them in Elasticsearch.
-- Logs are searchable for a period of 5 days through [Kibana UI](https://kibana.acp.homeoffice.gov.uk). Access to view logs can be requested via [Support request](https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/34).
+ACP’s logging stack consists of [Elasticsearch][elasticsearch], [Fluentd][fluentd], and [Kibana][kibana], also known as EFK:
 
-#### Current Log Retention Policy
-- Logs are searchable in Kibana for 5 days and remain within Elasticsearch for 10 days.
-- Collected workload logs will be persisted in S3 indefinitely and migrated to the infrequent access storage class and then glacier storage after 60 and 180 days respectively. **NOTE: this may change in the future!**
-- The same policy applies to all logs within EFK
+  * ACP deploys Fluentd agents as a daemonSet, which collect all workload logs and indexes them in Elasticsearch.
+  * you can search for logs on [ACP's Kibana instance][acp_kibana]. To access Kibana for your namespace, raise [this support request][support_kibana] on ACP Support.
 
-## Metrics / Monitoring
-#### Sysdig
-[Sysdig](https://sysdig.digital.homeoffice.gov.uk) is our metric collection tool. We are working closely with Sysdig on the development of this. It can be used for dashboards, alerting and much more. More information (including the command line tool)  can be found on the [Sysdig Monitor site](https://sysdig.com) and [Sysdig Inspect](https://github.com/draios/sysdig-inspect).
+### Log Retention Policy
 
-#### Sysdig training
-Sysdig have an online training course which covers the basics of using the product, [Sysdig 101](https://learn.sysdig.com/). Sysdig recommends new users complete this training.
+The following applies both to workload logs and all logs within EFK:
 
-## Security and disaster recovery
+  * logs remain searchable in Kibana for 5 days and within Elasticsearch for 10 days.
+  * ACP persists workload logs it collects in S3 indefinitely  
+  * after 60 days, ACP migrates logs in S3 to the infrequent access storage class and then glacier storage  
+  * after 180 days, ACP migrates logs in S3 to glacier storage
 
-The Application Container Platform employs robust security principles, including but not limited to:
 
-- encryption of data at rest and in transit
-- restricting access to resources according to operational needs
-- strict authorisation requirements for all endpoints
-- [role based access control](rbac.md)
 
-The Platform is spread across multiple availability zones, which are essentially three different data centres within a region. In case of an entire AWS region going down for a prolonged period of time, the Platform can be recreated in another region within a few hours.
+## Monitoring and Metrics
 
-The recovery of products hosted on the Platform are subject to considerations set out for the Production Ready criteria in [Service Lifecycle](service-lifecycle.md).
+### Sysdig
 
-For further information on security and disaster recovery considerations, please raise a ticket on the [Support Portal](https://support.acp.homeoffice.gov.uk/servicedesk).
+ACP uses Sysdig for container monitoring and metric collection. Sysdig provides these through alert monitoring and metric dashboards for your Kubernetes infrastructure. You can access our instance [here][acp_sysdig].
 
-## Reusable components
-Whilst building ACP, we've written a things that other projects may be interested in reusing. These can be found on GitHub here
-#### [Terraform modules](https://github.com/UKHomeOffice?utf8=%E2%9C%93&q=acp-tf&type=&language=)
+For more information on Sysdig, see the [Sysdig documentation][sysdig_docs].
 
-#### [Base docker images](https://github.com/UKHomeOffice?utf8=%E2%9C%93&q=docker-&type=&language=)
+
+
+## Security and Disaster Recovery
+
+ACP employs robust security principles, including:
+
+  * data encryption at rest and in transit
+  * restricted access to resources in accordance with operational requirements
+  * strict authentication requirements to query endpoints
+  * role-based access control
+
+ACP is spread across multiple availability zones, providing three different data centres within a region. In the event of a prolonged outage for an entire AWS region, the ACP support team can recreate Kubernetes clusters, tenant applications and shared services such as ACP Hub, typically within a few hours.
+
+Recovery of clusters, applications and services hosted on ACP are subject to considerations set out for the Production Ready criteria. See [Service Lifecycle][service_lifecycle] for more information.
+
+For more information on security and disaster recovery, raise a request on [ACP Support][support].
+
+
+
+## Reusable Components
+
+We have also developed the following open-source components you can utilise for your project:
+
+  * [Terraform modules][terraform]: including create network load balancers, setup endpoint services, and build S3 buckets
+  * [Base docker images][base_images]: build container images on top of these for your project’s application environments
+
+[dev_onboarding]: https://ukhomeoffice.github.io/application-container-platform/developer-docs/dev-setup.html
+[acp_vpn]: https://access-acp.digital.homeoffice.gov.uk/ui/profiles
+[ho_repo]: https://github.com/UKHomeOffice
+[github_docs]: https://docs.github.com/en
+[gitlab_docs]: https://docs.gitlab.com/ce/README.html
+[drone_gh]: https://drone-gh.acp.homeoffice.gov.uk/
+[drone_gl]: https://drone-gl.acp.homeoffice.gov.uk/
+[drone_ci]: https://ukhomeoffice.github.io/application-container-platform/how-to-docs/drone-how-to.html
+[drone_docs]: https://docs.drone.io/
+[quay_docs]: https://quay.io/organization/ukhomeofficedigital
+[ecr_docs]: https://docs.aws.amazon.com/ecr/
+[artifactory]: https://artifactory.digital.homeoffice.gov.uk/artifactory/webapp/
+[artifactory_docs]: https://www.jfrog.com/confluence/display/JFROG/JFrog+Artifactory
+[docker_images]: https://docker.digital.homeoffice.gov.uk/artifactory/webapp/#/home
+[gatekeeper]: https://www.keycloak.org/docs/latest/securing_apps/#_keycloak_generic_adapter
+[keycloak]: https://www.keycloak.org/
+[nginx]: https://github.com/UKHomeOffice/docker-nginx-proxy
+[cert_mgr]: https://ukhomeoffice.github.io/application-container-platform/how-to-docs/cert-manager.html
+[elasticsearch]: https://github.com/UKHomeOffice/docker-elasticsearch
+[fluentd]: https://github.com/fluent/fluentd
+[kibana]: https://github.com/UKHomeOffice/docker-kibana
+[acp_kibana]: https://kibana.acp.homeoffice.gov.uk/
+[support_kibana]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/34
+[acp_sysdig]: https://sysdig.digital.homeoffice.gov.uk/#/
+[sysdig_docs]: https://docs.sysdig.com/
+[sysdig_inspect]: https://github.com/draios/sysdig-inspect
+[sysdig_101]: https://learn.sysdig.com/
+[service_lifecycle]: https://ukhomeoffice.github.io/application-container-platform/service-lifecycle.html
+[support]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portals
+[terraform]: https://github.com/UKHomeOffice?utf8=%E2%9C%93&q=acp-tf&type=&language=
+[base_images]: https://github.com/UKHomeOffice?utf8=%E2%9C%93&q=docker-&type=&language=
+[kube_example]: https://github.com/UKHomeOffice/kube-example-app
+[acp_example]: https://github.com/UKHomeOffice/acp-example-app
