@@ -14,7 +14,6 @@ This tree contains a collection of how-to guides for Developers.
 {!docs/how-to-docs/kubernetes-robot-token.md!}
 {!docs/how-to-docs/kubernetes-user-token.md!}
 {!docs/how-to-docs/network-policies.md!}
-{!docs/how-to-docs/performance-testing.md!}
 {!docs/how-to-docs/pod-security-policies.md!}
 {!docs/how-to-docs/private-npm-registry.md!}
 {!docs/how-to-docs/pv-and-storage-classes.md!}
