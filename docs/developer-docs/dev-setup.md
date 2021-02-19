@@ -105,7 +105,7 @@ Docker version 18.03.1-ce, build 9ee9f40# version 17.06 or above is required
 
 ### Install Drone
 
-Our Drone server instance is currently compatible with version 1.2.2, which is available [here][drone_1.2]. See the [Drone website][drone_docs] for instructions on how to download and install Drone CLI; ensure you modify the command to install the correct version.
+Our Drone server instance is currently compatible with version 1.2.4, which is available [here][drone_1.2]. See the [Drone website][drone_docs] for instructions on how to download and install Drone CLI. Ensure the command you run installs the correct version.
 
 Verify the installation was successful:
 
@@ -116,7 +116,7 @@ $ drone --version
 If the installation was successful, the command returns the version of Drone your system is running, for example:
 
 ```
-drone version 1.2.2
+drone version 1.2.4
 ```
 
 ### Install kubectl
@@ -191,7 +191,7 @@ Finally, read the [ACP support documentation][support_docs] to familiarise yours
 [git_docs]: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 [docker_docs]: https://docs.docker.com/engine/install/
 [drone_docs]:https://docs.drone.io/cli/install/
-[drone_1.2]: https://github.com/drone/drone-cli/releases/tag/v1.2.2
+[drone_1.2]: https://github.com/drone/drone-cli/releases/tag/v1.2.4
 [kube_docs]: https://kubernetes.io/docs/tasks/tools/install-kubectl/
 [kube_version]: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/blob/master/release-notes/kubernetes.md
 [aws_docs]: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
