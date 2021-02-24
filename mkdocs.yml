@@ -5,7 +5,7 @@ nav:
   - Home: README.md
   - Getting Started: developer-docs/index.md
   - Services: services.md
-  - Developer Onboarding: developer-docs/dev-setup.md
+  - Developer Onboarding Guide: developer-docs/dev-setup.md
   - Release Notes: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/tree/master/release-notes/
   - How To's: how-to-docs/index.md
   - RBAC Guide: rbac.md
