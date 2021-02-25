@@ -56,11 +56,11 @@ You can join [our Slack workspace][acp_slack] using a Home Office email address.
 
 Once you have access to the workspace, join the following channels:
 
-  * #acp-induction: to communicate with the ACP team and other users completing the induction
-  * #acp-feedback: to provide constructive feedback on ACP
-  * #acp-service-status: provides the current status of ACP services (also available on [ACP Status][acp_status])
-  * #acp-support: to raise specific and/or urgent queries with the ACP Support team
-  * #community: to communicate with other ACP users
+  * acp-induction: to communicate with the ACP team and other users completing the induction
+  * acp-feedback: to provide constructive feedback on ACP
+  * acp-service-status: provides the current status of ACP services (also available on [ACP Status][acp_status])
+  * acp-support: to raise specific and/or urgent queries with the ACP Support team
+  * community: to communicate with other ACP users
 
 ## Install binaries
 
