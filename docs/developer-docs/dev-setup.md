@@ -55,6 +55,7 @@ Sysdig automatically adds you to a default team that does not have access to any
 You can join [our Slack workspace][acp_slack] using a Home Office email address. Note that the signup process requires inbox access; if you have an AD-only Digital account, raise a request on [ACP Support][acp_support] to have your corporate email invited to the HOD-DSP workspace.
 
 Once you have access to the workspace, join the following channels:
+
   * #acp-induction: to communicate with the ACP team and other users completing the induction
   * #acp-feedback: to provide constructive feedback on ACP
   * #acp-service-status: provides the current status of ACP services (also available on [ACP Status][acp_status])
