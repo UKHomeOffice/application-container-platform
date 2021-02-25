@@ -7,7 +7,7 @@ Sign up for the induction [here][induction_signup]. After you sign up, a member 
 
 A week before your confirmed induction date you can request the ACP Induction material from [ACP Support][induction_material].
 
-You should complete each step of this guide before attending the induction. All examples in this document are for Linux distributions; instructions for other operating systems may vary. If you are using a Windows device, ensure that [Windows Subsystem for Linux][https://docs.microsoft.com/en-us/windows/wsl/about] is installed on it.
+You should complete each step of this guide before attending the induction. All examples in this document are for Linux distributions; instructions for other operating systems may vary. If you are using a Windows device, ensure that [Windows Subsystem for Linux][windows_subsystem] is installed on it.
 
 ## Internet access
 
@@ -198,3 +198,4 @@ Finally, read the [ACP support documentation][support_docs] to familiarise yours
 [aws_docs]: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
 [connected_ids]: https://hub.acp.homeoffice.gov.uk/identities
 [support_docs]: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support
+[windows_subsystem]: https://docs.microsoft.com/en-us/windows/wsl/about
