@@ -72,7 +72,7 @@ ACP recommends having separate registries for open-source and private container 
 
 For more information on Quay, see the [Quay][quay_docs].
 
-For more information on ECR, see the [Amazon ECR documentation][ecr _docs].
+For more information on ECR, see the [Amazon ECR documentation][ecr_docs].
 
 
 
@@ -95,7 +95,7 @@ Applications hosted on ACP typically use the following containers:
   * [Keycloak Gatekeeper][gatekeeper]: protects applications using [Keycloak][keycloak]. Note that in the future Red Hat is going to deprecate support and ACP will use an alternative.
   * [Nginx Proxy][nginx]: provides TLS and proxying for your application container
   * [Cert-Manager][cert_mgr]: obtains internal and external certificates
-  
+
 For an example ACP application with deployment files, see [acp-example-app][acp_example] and [kube-example-app][kube_example].
 
 
