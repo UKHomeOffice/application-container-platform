@@ -1,7 +1,7 @@
 ## Affinity/Anti-affinity
 
 ###  Overview
-In Kubernetes you specify an affinity (or anti-affinity) of a pod relative to a group of pods it can be placed with. The node does not have control over the placement. The affinity feature consists of two types, "affinity" and "anti-affinity". 
+In Kubernetes you specify an affinity (or anti-affinity) of a pod relative to a group of pods it can be placed with. The node does not have control over the placement. The affinity feature consists of two types, "affinity" and "anti-affinity". Further information can be found [here](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).
 
 Pod affinity can tell the scheduler to locate a new pod on the same node as other pods if the label selector on the new pod matches the label on the current pod.
 
@@ -15,6 +15,8 @@ There are two types of pod affinity rules: required and preferred. Required rule
 | Specifies rules that must be met for a pod to be scheduled onto a node | Specifies preferences that the scheduler will try to enforce | 
 | Example: "co-locate the pods of service A and service B in the same zone, since they communicate a lot with each other" | Example: "spread the pods from this service across zones" (a hard requirement wouldn't make sense, since you probably have more pods than zones). | 
 
+* Please note that generally speaking `preferred` rules are safer, because if a `required` rule cannot be met, pods won't get scheduled.
+
 ###  Configuring an Anti-affinity Rule
 
 The following example demonstrates how to configure an anti-affinity rule, Based on the [kube-example-app](https://github.com/UKHomeOffice/kube-example-app), the example requires that a pod is not scheduled on the same node as pods which share the same availability zone.
@@ -22,24 +24,16 @@ The following example demonstrates how to configure an anti-affinity rule, Based
 **Example Spec:**
 ```yml
 podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-          labelSelector:
-            matchExpressions:
-            - key: name
-              operator: In
-              values:
-              - {{ .DEPLOYMENT_NAME }}
-           topologyKey: failure-domain.beta.kubernetes.io/zone
-...
+  preferredDuringSchedulingIgnoredDuringExecution:
+    labelSelector:
+      matchExpressions:
+      - key: name
+        operator: In
+        values:
+        - {{ .DEPLOYMENT_NAME }}
+      topologyKey: failure-domain.beta.kubernetes.io/zone
 ```
 The `Labelselector`, specifies key and value which must be met, based on the pods. To ensure that the conditions are met we specify the topology key `failure-domain.beta.kubernetes.io/zone`, which is based on the [kubernetes label system](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#interlude-built-in-node-labels).
-
-
-
-
-
-
-
 
 
 
