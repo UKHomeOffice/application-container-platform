@@ -3,6 +3,7 @@
 This tree contains a collection of how-to guides for Developers.
 
 {!docs/how-to-docs/autoscaling.md!}
+{!docs/how-to-docs/anti-affinity.md!}
 {!docs/how-to-docs/chisel.md!}
 {!docs/how-to-docs/debug-issues.md!}
 {!docs/how-to-docs/dms-migration.md!}
