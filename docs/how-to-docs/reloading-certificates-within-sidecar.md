@@ -4,8 +4,13 @@
 If you are using Nginx sidecar to terminate TLS in pods then you will need to make some updates to your deployment and add a new Certificate when migrating over to Cert Manager.
 
 This can be achieved in two steps.
-1.Creating a new certificate.
-2.Updating your deployment to load use the new certificate and periodically reload it
+
+/*:
+
+- 1.Creating a new certificate.
+- 2.Updating your deployment to load use the new certificate and periodically reload it.
+
+ */
 
 ###1.Creating new certificate.
 Let's start by making a new certificate.
