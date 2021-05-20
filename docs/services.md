@@ -43,7 +43,7 @@ For more information on GitHub, see the [GitHub documentation][github_docs].
 
 ### GitLab
 
-ACP’s private code repository is on GitLab, which we host on our ops cluster. To access it you need an Office 365 account with single sign-on capabilities.
+ACP’s private code repository is on GitLab, which we host on our ops cluster. To access it you need an Office 365 account with single sign-on capabilities. To request an Office 365 account (licensed or AD-user), please search [ITNow][itnow] on POISE for 'digital tenant requests'. ACP cannot request an account on your behalf.
 
 Each project has its own group and manager(s). To authenticate, use SSH on TCP port 2222.
 
@@ -185,3 +185,4 @@ We have also developed the following open-source components you can utilise for 
 [base_images]: https://github.com/UKHomeOffice?utf8=%E2%9C%93&q=docker-&type=&language=
 [kube_example]: https://github.com/UKHomeOffice/kube-example-app
 [acp_example]: https://github.com/UKHomeOffice/acp-example-app
+[itnow]: https://lssiprod.service-now.com/ess
