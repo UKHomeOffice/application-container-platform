@@ -15,7 +15,7 @@ To complete this guide you require an active internet connection. If you are wor
 
 ## Obtain Office 365 credentials
 
-ACP users require Office 365 Single Sign-on (SSO) credentials for the digital.homeoffice.gov.uk domain. To request an account, contact your Programme Management Office.
+ACP users require Office 365 Single Sign-on (SSO) credentials for the digital.homeoffice.gov.uk domain. To request an account (licensed or AD-user), please search [ITNow][itnow] on POISE for 'digital tenant requests'. ACP cannot request an account on your behalf.
 
 ## Connect to ACP VPN
 
@@ -199,3 +199,4 @@ Finally, read the [ACP support documentation][support_docs] to familiarise yours
 [connected_ids]: https://hub.acp.homeoffice.gov.uk/identities
 [support_docs]: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support
 [windows_subsystem]: https://docs.microsoft.com/en-us/windows/wsl/about
+[itnow]: https://lssiprod.service-now.com/ess
