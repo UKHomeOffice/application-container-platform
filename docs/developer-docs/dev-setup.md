@@ -32,7 +32,8 @@ When prompted, connect your GitHub account to your Platform Hub account. This gr
 
 ## Acquire a Kubernetes token
 
-To complete the ACP induction, you require an access token for ACP Kubernetes clusters. On [ACP Support][acp_support], raise a request for ACP Induction access. If you cannot access the Portal, ask one of your team members with access to raise a request to add you to the service desk first.
+To complete the ACP induction, you require an access token for ACP Kubernetes clusters. Ask a colleague to add you to your team on Jira Service Desk using this [ticket][jsd_add_colleague]. After that is complete, raise a request for ACP Induction access on [ACP Support][acp_support].
+
 
 A member of the ACP Support team will receive and review your request. ACP Support emails notifications of request updates; you can also sign in to ACP Support to view updates. If you have an AD-only email account (a digital account without a mailbox), you can request to receive the notifications at an alternative email address [here][email_update].
 
@@ -200,3 +201,4 @@ Finally, read the [ACP support documentation][support_docs] to familiarise yours
 [support_docs]: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support
 [windows_subsystem]: https://docs.microsoft.com/en-us/windows/wsl/about
 [itnow]: https://lssiprod.service-now.com/ess
+[jsd_add_colleague]: https://support.acp.homeoffice.gov.uk/servicedesk/customer/portal/1/create/129
