@@ -24,3 +24,4 @@ This tree contains a collection of how-to guides for Developers.
 {!docs/how-to-docs/aws-resources.md!}
 {!docs/how-to-docs/anti-affinity.md!}
 {!docs/how-to-docs/reloading-certificates-within-sidecar.md!}
+{!docs/how-to-docs/artifactory-overview.md!}
