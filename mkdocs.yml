@@ -1,16 +1,12 @@
 site_name: Application Container Platform
-theme: material
+site_url: https://ukhomeoffice.github.io/application-container-platform/
+theme:
+  name: material
+  custom_dir: mkdocs_material/
 use_directory_urls: false
 nav:
   - Home: README.md
-  - Getting Started: developer-docs/index.md
-  - Services: services.md
-  - Developer Onboarding Guide: developer-docs/dev-setup.md
-  - Release Notes: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/tree/master/release-notes/
-  - How To's: how-to-docs/index.md
-  - RBAC Guide: rbac.md
-  - ACP External IPs: https://gitlab.digital.homeoffice.gov.uk/acp-docs/acp-support/blob/master/acp_ips.md
-  - Service Lifecycle: service-lifecycle.md
+  - Documentation: https://docs.acp.homeoffice.gov.uk
 
 markdown_extensions:
   - toc:

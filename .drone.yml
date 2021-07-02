@@ -1,4 +1,3 @@
----
 kind: pipeline
 name: default
 type: kubernetes
@@ -46,5 +45,3 @@ steps:
     - master
     event:
     - push
-
-...
